@@ -1,0 +1,31 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "8f9cb13f-f551-439c-83e4-fac6801c3fab",
+    "name": "Trivy",
+    "friendlyName": "Trivy: Take control of your application security ",
+    "description": "Trivy is the world’s most popular open source vulnerability and misconfiguration scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.",
+    "helpMarkDown": "[Learn more about this task](https://github.com/aquasecurity/trivy-task)",
+    "category": "Test",
+    "author": "Aqua Security",
+    "version": {
+        "Major": 0,
+        "Minor": 1,
+        "Patch": 0
+    },
+    "instanceNameFormat": "Echo trivy $(version)",
+    "inputs": [
+        {
+            "name": "version",
+            "type": "string",
+            "label": "Version",
+            "defaultValue": "v0.28.0",
+            "required": false,
+            "helpMarkDown": "The version of trivy to use"
+        }
+    ],
+    "execution": {
+        "Node10": {
+            "target": "index.js"
+        }
+    }
+}

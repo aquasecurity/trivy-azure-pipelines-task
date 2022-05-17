@@ -1,0 +1,31 @@
+{
+  "name": "trivy-task",
+  "version": "0.1.0",
+  "description": "An Azure DevOps Task for Trivy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "local": "tsc index.ts && INPUT_VERSION=v0.28.0 node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aquasecurity/trivy-task.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aquasecurity/trivy-task/issues"
+  },
+  "homepage": "https://github.com/aquasecurity/trivy-task#readme",
+  "dependencies": {
+    "azure-pipelines-task-lib": "^3.2.0",
+    "azure-pipelines-tool-lib": "^1.3.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^9.1.1",
+    "@types/node": "^17.0.34",
+    "@types/q": "^1.5.5",
+    "sync-request": "^6.1.0"
+  }
+}
