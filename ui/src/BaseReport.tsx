@@ -32,31 +32,41 @@ export class BaseReport extends React.Component<BaseReportProps, BaseReportState
 
     render() {
         return (
-            <div className="flex-column">
-                <TabBar
-                    onSelectedTabChanged={this.onSelectedTabChanged}
-                    selectedTabId={this.state.selectedTabId}
-                    tabSize={TabSize.Tall}
-                >
-                    <Tab id="vulnerabilities" name="Vulnerabilities" key="vulnerabilities"
-                         badgeCount={countReportVulnerabilities(this.props.report)}/>
-                    <Tab id="misconfigurations" name="Misconfigurations" key="misconfigurations"
-                         badgeCount={countReportMisconfigurations(this.props.report)}/>
-                    <Tab id="secrets" name="Secrets" key="secrets"
-                         badgeCount={countReportSecrets(this.props.report)}/>
-                </TabBar>
+            <div className="flex-grow">
+                <div className="flex-row">
+                    <TabBar
+                        onSelectedTabChanged={this.onSelectedTabChanged}
+                        selectedTabId={this.state.selectedTabId}
+                        tabSize={TabSize.Tall}
+                    >
+                        <Tab id="vulnerabilities" name="Vulnerabilities" key="vulnerabilities"
+                             badgeCount={countReportVulnerabilities(this.props.report)}/>
+                        <Tab id="misconfigurations" name="Misconfigurations" key="misconfigurations"
+                             badgeCount={countReportMisconfigurations(this.props.report)}/>
+                        <Tab id="secrets" name="Secrets" key="secrets"
+                             badgeCount={countReportSecrets(this.props.report)}/>
+                    </TabBar>
+                </div>
+                <div className="tab-content">
                 {
                     this.state.selectedTabId === "vulnerabilities" &&
-                    <VulnerabilitiesTable results={this.props.report.Results}/>
+                    <div className="flex-row">
+                        <VulnerabilitiesTable results={this.props.report.Results}/>
+                    </div>
                 }
                 {
                     this.state.selectedTabId === "misconfigurations" &&
-                    <MisconfigurationsTable results={this.props.report.Results}/>
+                    <div className="flex-row">
+                        <MisconfigurationsTable results={this.props.report.Results}/>
+                    </div>
                 }
                 {
                     this.state.selectedTabId === "secrets" &&
-                    <SecretsTable results={this.props.report.Results}/>
+                    <div className="flex-row">
+                        <SecretsTable results={this.props.report.Results}/>
+                    </div>
                 }
+                </div>
             </div>
         )
     }
