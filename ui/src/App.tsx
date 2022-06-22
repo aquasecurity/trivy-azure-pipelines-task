@@ -77,7 +77,7 @@ export class App extends React.Component<AppProps, AppState> {
 
         attachments.forEach(function (attachment: Attachment) {
             recordIds.forEach(async function (recordId) {
-                let buffer = await this.buildClient.getAttachment(
+                const buffer = await this.buildClient.getAttachment(
                     this.project.id,
                     build.id,
                     timeline.id,
