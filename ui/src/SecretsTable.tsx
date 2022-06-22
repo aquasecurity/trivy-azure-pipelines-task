@@ -222,7 +222,7 @@ function convertLocation(result: Result, secret: Secret): ISimpleListCell {
 function convertSecrets(results: Result[]): ListSecret[] {
     const output: ListSecret[] = []
     results.forEach(result => {
-        if (result.hasOwnProperty("Secrets") && result.Secrets !== null) {
+        if (Object.prototype.hasOwnProperty.call(result, "Secrets") && result.Secrets !== null) {
             result.Secrets.forEach(function (secret: Secret) {
                 output.push({
                     Severity: { text: secret.Severity },

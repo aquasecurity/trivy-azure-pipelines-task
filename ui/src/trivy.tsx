@@ -123,7 +123,7 @@ export function countReportIssues(report: Report): number {
 export function countReportVulnerabilities(report: Report): number {
     let total = 0
     report.Results.forEach(function (result: Result) {
-        if(result.hasOwnProperty('Vulnerabilities') && result.Vulnerabilities !== null) {
+        if(Object.prototype.hasOwnProperty.call(result, 'Vulnerabilities') && result.Vulnerabilities !== null) {
             total += result.Vulnerabilities.length
         }
     })
@@ -133,7 +133,7 @@ export function countReportVulnerabilities(report: Report): number {
 export function countReportMisconfigurations(report: Report): number {
     let total = 0
     report.Results.forEach(function (result: Result) {
-        if(result.hasOwnProperty('Misconfigurations') && result.Misconfigurations !== null) {
+        if(Object.prototype.hasOwnProperty.call(result, 'Misconfigurations') && result.Misconfigurations !== null) {
             total += result.Misconfigurations.length
         }
     })
@@ -144,7 +144,7 @@ export function countReportMisconfigurations(report: Report): number {
 export function countReportSecrets(report: Report): number {
     let total = 0
     report.Results.forEach(function (result: Result) {
-        if(result.hasOwnProperty('Secrets') && result.Secrets !== null) {
+        if(Object.prototype.hasOwnProperty.call(result, 'Secrets') && result.Secrets !== null) {
             total += result.Secrets.length
         }
     })

@@ -193,7 +193,7 @@ function convertLocation(result: Result, misconfiguration: Misconfiguration): IS
 function convertMisconfigurations(results: Result[]): ListMisconfiguration[] {
     const output: ListMisconfiguration[] = []
     results.forEach(result => {
-        if (result.hasOwnProperty("Misconfigurations") && result.Misconfigurations !== null) {
+        if (Object.prototype.hasOwnProperty.call(result, "Misconfigurations") && result.Misconfigurations !== null) {
             result.Misconfigurations.forEach(function (misconfiguration: Misconfiguration) {
                 output.push({
                     Severity: {text: misconfiguration.Severity},
