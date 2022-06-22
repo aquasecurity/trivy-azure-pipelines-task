@@ -1,16 +1,18 @@
 import * as React from 'react';
 import {Tab, TabBar, TabSize} from "azure-devops-ui/Tabs";
 import {
-    ArtifactType, countAllReportsIssues, countAllReportsMisconfigurations, countAllReportsSecrets,
+    ArtifactType,
+    countAllReportsIssues,
+    countAllReportsMisconfigurations,
+    countAllReportsSecrets,
     countAllReportsVulnerabilities,
     countReportIssues,
-    countReportVulnerabilities,
     Report
 } from './trivy';
 import {ImageReport} from "./ImageReport";
 import {FilesystemReport} from "./FilesystemReport";
-import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
-import { Card } from "azure-devops-ui/Card";
+import {MessageCard, MessageCardSeverity} from "azure-devops-ui/MessageCard";
+import {Card} from "azure-devops-ui/Card";
 
 interface ReportsPaneProps {
     reports: Report[]
@@ -70,12 +72,13 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                             className="flex-self-stretch"
                             severity={MessageCardSeverity.Info}
                         >
-                            No reports found for this build. Add Trivy to your pipeline configuration or check the build logs for more information.
+                            No reports found for this build. Add Trivy to your pipeline configuration or check the build
+                            logs for more information.
                         </MessageCard> :
                         <Card className="flex-grow">
-                            <div className="flex-row" style={{ flexWrap: "wrap" }}>
+                            <div className="flex-row" style={{flexWrap: "wrap"}}>
                                 {stats.map((items, index) => (
-                                    <div className="flex-column" style={{ minWidth: "120px" }} key={index}>
+                                    <div className="flex-column" style={{minWidth: "120px"}} key={index}>
                                         <div className="body-m secondary-text">{items.name}</div>
                                         <div className="body-m primary-text">{items.value}</div>
                                     </div>
