@@ -73,8 +73,6 @@ export class App extends React.Component<AppProps, AppState> {
             return
         }
 
-        const reports: Report[] = []
-
         attachments.forEach(function (attachment: Attachment) {
             recordIds.forEach(async function (recordId) {
                 const buffer = await this.buildClient.getAttachment(
@@ -86,12 +84,12 @@ export class App extends React.Component<AppProps, AppState> {
                     attachment.name,
                 )
                 const report = this.decodeReport(buffer)
-                reports.push(report)
-                console.log(report)
+                this.setState(prevState => ({
+                    status: build.status,
+                    reports: [...prevState.reports, report]
+                }))
             }.bind(this))
         }.bind(this))
-        console.log(reports)
-        this.setState({status: build.status, reports: reports})
     }
 
     setError(msg: string) {
