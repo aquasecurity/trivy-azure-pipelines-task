@@ -1,0 +1,59 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "8f9cb13f-f551-439c-83e4-fac6801c3fab",
+    "name": "trivy",
+    "friendlyName": "Trivy: Take control of your application security",
+    "description": "Trivy is the world’s most popular open source vulnerability and misconfiguration scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.",
+    "helpMarkDown": "[Learn more about this task](https://github.com/aquasecurity/trivy-azure-pipelines-task)",
+    "category": "Test",
+    "author": "Aqua Security",
+    "version": { VERSION_PLACEHOLDER },
+    "instanceNameFormat": "Echo trivy $(version)",
+    "inputs": [
+        {
+            "name": "version",
+            "type": "string",
+            "label": "Trivy Version",
+            "defaultValue": "v0.29.1",
+            "required": false,
+            "helpMarkDown": "The version of Trivy to use"
+        },
+        {
+            "name": "debug",
+            "type": "boolean",
+            "label": "Enable Debug",
+            "defaultValue": "false",
+            "required": false,
+            "helpMarkDown": "Enable debug logging in build output"
+        },
+        {
+            "name": "path",
+            "type": "string",
+            "label": "The path to scan",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The specified path will be scanned using an 'fs' scan type. If this option is used, the 'image' option cannot be set."
+        },
+        {
+            "name": "image",
+            "type": "string",
+            "label": "The image to scan",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The specified image will be scanned using an 'image' scan type. If this option is used, the 'path' option cannot be set."
+        },
+        {
+            "name": "skipCleanup",
+            "type": "boolean",
+            "label": "Skip cleaning up results files",
+            "defaultValue": "false",
+            "required": false,
+            "helpMarkDown": "Skip removing any left over results files after Trivy completes"
+        }
+    ],
+    "execution": {
+        "Node10": {
+            "target": "index.js"
+        }
+    }
+}
