@@ -18,9 +18,13 @@ export class FilesystemReport extends React.Component<FilesystemReportProps> {
 
     render() {
         return (
-            <div className="flex-row">
-                <ReportStats report={this.props.report}/>
-                <BaseReport report={this.props.report}/>
+            <div className="flex-grow">
+                <div className="flex-row">
+                    <ReportStats report={this.props.report}/>
+                </div>
+                <div className="flex-row">
+                    <BaseReport report={this.props.report}/>
+                </div>
             </div>
         )
     }

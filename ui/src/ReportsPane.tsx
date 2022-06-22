@@ -76,7 +76,7 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                             No reports found for this build. Add Trivy to your pipeline configuration or check the build
                             logs for more information.
                         </MessageCard> :
-                        <div className="flex-column">
+                        <div className="flex-grow">
                             <div className="flex-row">
                                 <Card className="flex-grow">
                                     <div className="flex-row" style={{flexWrap: "wrap"}}>
@@ -108,6 +108,8 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                                         })
                                     }
                                 </TabBar>
+                            </div>
+                            <div className="flex-row">
                                 {
                                     this.props.reports[parseInt(this.state.selectedTabId)].ArtifactType == ArtifactType.Image ?
                                         <ImageReport report={this.props.reports[parseInt(this.state.selectedTabId)]}/> :
