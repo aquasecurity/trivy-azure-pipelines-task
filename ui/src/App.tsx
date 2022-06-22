@@ -64,12 +64,12 @@ export class App extends React.Component<AppProps, AppState> {
             }
         })
         if (recordIds.length === 0) {
-            this.setState({error: "Timeline record(s) missing: cannot load results. Is tfsec configured to run on this build?"})
+            this.setState({error: "Timeline record(s) missing: cannot load results. Is Trivy configured to run on this build?"})
             return
         }
         const attachments = await this.buildClient.getAttachments(this.project.id, build.id, "JSON_RESULT")
         if (attachments.length === 0) {
-            this.setState({error: "No attachments found: cannot load results. Did tfsec run properly?"})
+            this.setState({error: "No attachments found: cannot load results. Did Trivy run properly?"})
             return
         }
 
