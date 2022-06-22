@@ -38,6 +38,7 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
     }
 
     render() {
+        const report = this.props.reports[parseInt(this.state.selectedTabId)]
         return (
             <div className="flex-column">
                 {this.renderSummary()}
@@ -60,15 +61,9 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                     }
                 </TabBar>
                 {
-                        () => {
-                            const report = this.props.reports[parseInt(this.state.selectedTabId)]
-                            console.log(report)
-                            return (
-                                report.ArtifactType == ArtifactType.Image ?
-                                    <ImageReport report={report}/> :
-                                    <FilesystemReport report={report}/>
-                            )
-                        }
+                    report.ArtifactType == ArtifactType.Image ?
+                        <ImageReport report={report}/> :
+                        <FilesystemReport report={report}/>
                 }
             </div>
         )
