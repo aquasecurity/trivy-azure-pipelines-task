@@ -188,7 +188,7 @@ export class VulnerabilitiesTable extends React.Component<VulnerabilitiesTablePr
 function convertVulnerabilities(results: Result[]): ListVulnerability[] {
     const output: ListVulnerability[] = []
     results.forEach(result => {
-        if (result.Vulnerabilities !== null) {
+        if (result.hasOwnProperty("Vulnerabilities") && result.Vulnerabilities !== null) {
             result.Vulnerabilities.forEach(function (vulnerability: Vulnerability) {
                 output.push({
                     Severity: {text: vulnerability.Severity},
