@@ -39,8 +39,7 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
         this.setState({selectedTabId: newTabId});
     };
 
-    private renderSummary = () => {
-
+    render() {
         const stats = [
             {
                 name: "Total Scans",
@@ -63,38 +62,31 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                 value: countAllReportsSecrets(this.props.reports)
             }
         ]
-
-        return (
-            <div className="flex-column">
-                {
-                    this.props.reports.length === 0 ?
-                        <MessageCard
-                            className="flex-self-stretch"
-                            severity={MessageCardSeverity.Info}
-                        >
-                            No reports found for this build. Add Trivy to your pipeline configuration or check the build
-                            logs for more information.
-                        </MessageCard> :
-                        <Card className="flex-grow">
-                            <div className="flex-row" style={{flexWrap: "wrap"}}>
-                                {stats.map((items, index) => (
-                                    <div className="flex-column" style={{minWidth: "120px"}} key={index}>
-                                        <div className="body-m secondary-text">{items.name}</div>
-                                        <div className="body-m primary-text">{items.value}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </Card>
-                }
-            </div>
-        )
-    }
-
-    render() {
         const report = this.props.reports[parseInt(this.state.selectedTabId)]
         return (
             <div className="flex-column">
-                {this.renderSummary()}
+                <div className="flex-column">
+                    {
+                        this.props.reports.length === 0 ?
+                            <MessageCard
+                                className="flex-self-stretch"
+                                severity={MessageCardSeverity.Info}
+                            >
+                                No reports found for this build. Add Trivy to your pipeline configuration or check the build
+                                logs for more information.
+                            </MessageCard> :
+                            <Card className="flex-grow">
+                                <div className="flex-row" style={{flexWrap: "wrap"}}>
+                                    {stats.map((items, index) => (
+                                        <div className="flex-column" style={{minWidth: "120px"}} key={index}>
+                                            <div className="body-m secondary-text">{items.name}</div>
+                                            <div className="body-m primary-text">{items.value}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
+                    }
+                </div>
                 <TabBar
                     onSelectedTabChanged={this.onSelectedTabChanged}
                     selectedTabId={this.state.selectedTabId}
