@@ -41,14 +41,6 @@
             "defaultValue": "",
             "required": false,
             "helpMarkDown": "The specified image will be scanned using an 'image' scan type. If this option is used, the 'path' option cannot be set."
-        },
-        {
-            "name": "skipCleanup",
-            "type": "boolean",
-            "label": "Skip cleaning up results files",
-            "defaultValue": "false",
-            "required": false,
-            "helpMarkDown": "Skip removing any left over results files after Trivy completes"
         }
     ],
     "execution": {

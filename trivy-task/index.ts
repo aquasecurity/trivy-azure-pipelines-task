@@ -48,13 +48,7 @@ async function run() {
     }
 
     console.log("Publishing JSON results...")
-    task.addAttachment("JSON_RESULT", "trivy.json", outputPath)
-
-    if (!task.getBoolInput("skipCleanup", false)) {
-        console.log("Tidying up...")
-        task.rmRF(outputPath);
-    }
-
+    task.addAttachment("JSON_RESULT", "trivy-" +  Math.random() + ".json", outputPath)
     console.log("Done!");
 }
 

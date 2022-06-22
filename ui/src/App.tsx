@@ -77,19 +77,20 @@ export class App extends React.Component<AppProps, AppState> {
 
         attachments.forEach(function (attachment: Attachment) {
             recordIds.forEach(async function (recordId) {
-                await this.buildClient.getAttachment(
+                let buffer = await this.buildClient.getAttachment(
                     this.project.id,
                     build.id,
                     timeline.id,
                     recordId,
                     "JSON_RESULT",
                     attachment.name,
-                ).then((buffer: ArrayBuffer) => {
-                    const report = this.decodeReport(buffer)
-                    reports.push(report)
-                })
+                )
+                const report = this.decodeReport(buffer)
+                reports.push(report)
+                console.log(report)
             }.bind(this))
         }.bind(this))
+        console.log(reports)
         this.setState({status: build.status, reports: reports})
     }
 

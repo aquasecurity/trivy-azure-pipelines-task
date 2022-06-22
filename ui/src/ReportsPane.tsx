@@ -48,6 +48,8 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                     <Tab id="summary" name="Summary" key="summary"/>
                     {
                         this.props.reports.map(function (report: Report, index: number) {
+                            console.log("REPORT")
+                            console.log(report)
                             return (
                                 <Tab
                                     key={index}

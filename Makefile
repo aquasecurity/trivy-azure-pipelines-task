@@ -27,8 +27,8 @@ package: build
 
 .PHONY: local
 local: build-task
-	cd trivy-task && INPUT_SKIPCLEANUP=true INPUT_VERSION=v0.29.0 INPUT_PATH=. node index.js
+	cd trivy-task && INPUT_VERSION=v0.29.0 INPUT_PATH=. node index.js
 
 .PHONY: local-image
 local-image: build-task
-	cd trivy-task && INPUT_SKIPCLEANUP=true INPUT_VERSION=v0.29.0 INPUT_IMAGE=ubuntu node index.js
+	cd trivy-task && INPUT_VERSION=v0.29.0 INPUT_IMAGE=ubuntu node index.js
