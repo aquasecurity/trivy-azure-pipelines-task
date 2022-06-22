@@ -120,6 +120,36 @@ export function countReportIssues(report: Report): number {
     return countReportMisconfigurations(report) + countReportVulnerabilities(report) + countReportSecrets(report)
 }
 
+export function countAllReportsIssues(reports: Report[]): number {
+    let total = 0
+    reports.forEach(function (report: Report) {
+        total += countReportIssues(report)
+    })
+    return total
+}
+
+export function countAllReportsVulnerabilities(reports: Report[]): number {
+    let total = 0
+    reports.forEach(function (report: Report) {
+        total += countReportVulnerabilities(report)
+    })
+    return total
+}
+export function countAllReportsMisconfigurations(reports: Report[]): number {
+    let total = 0
+    reports.forEach(function (report: Report) {
+        total += countReportMisconfigurations(report)
+    })
+    return total
+}
+export function countAllReportsSecrets(reports: Report[]): number {
+    let total = 0
+    reports.forEach(function (report: Report) {
+        total += countReportSecrets(report)
+    })
+    return total
+}
+
 export function countReportVulnerabilities(report: Report): number {
     let total = 0
     report.Results.forEach(function (result: Result) {

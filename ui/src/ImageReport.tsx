@@ -1,32 +1,27 @@
 import * as React from 'react';
 import {Report} from './trivy';
 import {BaseReport} from "./BaseReport";
+import {ReportStats} from "./ReportStats";
 
 interface ImageReportProps {
     report: Report
 }
 
-interface ImageReportState {
-    nothing: boolean
-}
-
-export class ImageReport extends React.Component<ImageReportProps, ImageReportState> {
+export class ImageReport extends React.Component<ImageReportProps> {
 
     public props: ImageReportProps
-    public state: ImageReportState
 
     constructor(props: ImageReportProps) {
         super(props)
         this.props = props
-        this.state = {
-            nothing: true
-        }
     }
 
     render() {
-        // TODO add image info
         return (
-            <BaseReport report={this.props.report}/>
+            <div className="flex-row">
+                <ReportStats report={this.props.report}/>
+                <BaseReport report={this.props.report}/>
+            </div>
         )
     }
 }

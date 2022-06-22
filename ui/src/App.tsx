@@ -9,7 +9,7 @@ import {
 import * as SDK from "azure-devops-extension-sdk";
 import * as API from "azure-devops-extension-api";
 import {CommonServiceIds, IProjectInfo, IProjectPageService} from "azure-devops-extension-api";
-import {TimelineRecord, Attachment} from "azure-devops-extension-api/Build/Build";
+import {Attachment, TimelineRecord} from "azure-devops-extension-api/Build/Build";
 import {Report} from './trivy'
 import {Loading} from './Loading'
 import {ReportsPane} from './ReportsPane'
@@ -35,7 +35,7 @@ export class App extends React.Component<AppProps, AppState> {
 
     constructor(props) {
         super(props)
-        if(props.checkInterval == 0) {
+        if (props.checkInterval == 0) {
             props.checkInterval = 5000
         }
         this.props = props
@@ -73,6 +73,8 @@ export class App extends React.Component<AppProps, AppState> {
             return
         }
 
+        this.setState({status: build.status})
+
         attachments.forEach(function (attachment: Attachment) {
             recordIds.forEach(async function (recordId) {
                 const buffer = await this.buildClient.getAttachment(
@@ -85,7 +87,6 @@ export class App extends React.Component<AppProps, AppState> {
                 )
                 const report = this.decodeReport(buffer)
                 this.setState(prevState => ({
-                    status: build.status,
                     reports: [...prevState.reports, report]
                 }))
             }.bind(this))
