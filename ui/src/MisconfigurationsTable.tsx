@@ -166,6 +166,7 @@ export class MisconfigurationsTable extends React.Component<MisconfigurationsTab
                 />
                 :
                 <Table
+                    pageSize={this.results.length}
                     selectableText={true}
                     ariaLabel="Misconfigurations Table"
                     role="table"

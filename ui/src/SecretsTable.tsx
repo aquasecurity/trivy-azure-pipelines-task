@@ -195,6 +195,7 @@ export class SecretsTable extends React.Component<SecretsTableProps> {
                 />
                 :
                 <Table
+                    pageSize={this.results.length}
                     selectableText={true}
                     ariaLabel="Secrets Table"
                     role="table"

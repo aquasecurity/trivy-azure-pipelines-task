@@ -173,6 +173,7 @@ export class VulnerabilitiesTable extends React.Component<VulnerabilitiesTablePr
                 />
                 :
                 <Table
+                    pageSize={this.results.length}
                     selectableText={true}
                     ariaLabel="Vulnerabilities Table"
                     role="table"
