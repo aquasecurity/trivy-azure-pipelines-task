@@ -21,7 +21,7 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
         super(props)
         this.props = props
         this.state = {
-            selectedTabId: "summary"
+            selectedTabId: "0"
         }
     }
 
@@ -40,21 +40,19 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
     render() {
         return (
             <div className="flex-column">
+                {this.renderSummary()}
                 <TabBar
                     onSelectedTabChanged={this.onSelectedTabChanged}
                     selectedTabId={this.state.selectedTabId}
                     tabSize={TabSize.Tall}
                 >
-                    <Tab id="summary" name="Summary" key="summary"/>
                     {
                         this.props.reports.map(function (report: Report, index: number) {
-                            console.log("REPORT")
-                            console.log(report)
                             return (
                                 <Tab
                                     key={index}
                                     id={index + ""}
-                                    name={report.ArtifactType + ": " + report.ArtifactName}
+                                    name={report.ArtifactType + " (" + report.ArtifactName + ")"}
                                     badgeCount={countReportIssues(report)}
                                 />
                             )
@@ -62,10 +60,9 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                     }
                 </TabBar>
                 {
-                    this.state.selectedTabId == "summary" ?
-                        this.renderSummary() :
                         () => {
                             const report = this.props.reports[parseInt(this.state.selectedTabId)]
+                            console.log(report)
                             return (
                                 report.ArtifactType == ArtifactType.Image ?
                                     <ImageReport report={report}/> :
