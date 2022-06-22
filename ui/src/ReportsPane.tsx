@@ -29,6 +29,9 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
 
     constructor(props: ReportsPaneProps) {
         super(props)
+        if (props.reports === null) {
+            props.reports = []
+        }
         this.props = props
         this.state = {
             selectedTabId: "0"
@@ -62,19 +65,18 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                 value: countAllReportsSecrets(this.props.reports)
             }
         ]
-        const report = this.props.reports[parseInt(this.state.selectedTabId)]
         return (
             <div className="flex-column">
-                <div className="flex-column">
-                    {
-                        this.props.reports.length === 0 ?
-                            <MessageCard
-                                className="flex-self-stretch"
-                                severity={MessageCardSeverity.Info}
-                            >
-                                No reports found for this build. Add Trivy to your pipeline configuration or check the build
-                                logs for more information.
-                            </MessageCard> :
+                {
+                    this.props.reports.length === 0 ?
+                        <MessageCard
+                            className="flex-self-stretch"
+                            severity={MessageCardSeverity.Info}
+                        >
+                            No reports found for this build. Add Trivy to your pipeline configuration or check the build
+                            logs for more information.
+                        </MessageCard> :
+                        <div className="flex-column">
                             <Card className="flex-grow">
                                 <div className="flex-row" style={{flexWrap: "wrap"}}>
                                     {stats.map((items, index) => (
@@ -85,31 +87,32 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                                     ))}
                                 </div>
                             </Card>
-                    }
-                </div>
-                <TabBar
-                    onSelectedTabChanged={this.onSelectedTabChanged}
-                    selectedTabId={this.state.selectedTabId}
-                    tabSize={TabSize.Tall}
-                >
-                    {
-                        this.props.reports.map(function (report: Report, index: number) {
-                            return (
-                                <Tab
-                                    key={index}
-                                    id={index + ""}
-                                    name={report.ArtifactType + " (" + report.ArtifactName + ")"}
-                                    badgeCount={countReportIssues(report)}
-                                />
-                            )
-                        })
-                    }
-                </TabBar>
-                {
-                    report.ArtifactType == ArtifactType.Image ?
-                        <ImageReport report={report}/> :
-                        <FilesystemReport report={report}/>
+                            <TabBar
+                                onSelectedTabChanged={this.onSelectedTabChanged}
+                                selectedTabId={this.state.selectedTabId}
+                                tabSize={TabSize.Tall}
+                            >
+                                {
+                                    this.props.reports.map(function (report: Report, index: number) {
+                                        return (
+                                            <Tab
+                                                key={index}
+                                                id={index + ""}
+                                                name={report.ArtifactType + " (" + report.ArtifactName + ")"}
+                                                badgeCount={countReportIssues(report)}
+                                            />
+                                        )
+                                    })
+                                }
+                            </TabBar>
+                            {
+                                this.props.reports[parseInt(this.state.selectedTabId)].ArtifactType == ArtifactType.Image ?
+                                    <ImageReport report={this.props.reports[parseInt(this.state.selectedTabId)]}/> :
+                                    <FilesystemReport report={this.props.reports[parseInt(this.state.selectedTabId)]}/>
+                            }
+                        </div>
                 }
+
             </div>
         )
     }
