@@ -18,7 +18,7 @@ export class ImageReport extends React.Component<ImageReportProps> {
 
     render() {
         return (
-            <div className="flex-row">
+            <div className="flex-grow">
                 <div className="flex-row">
                     <ReportStats report={this.props.report}/>
                 </div>

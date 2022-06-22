@@ -33,7 +33,7 @@ export class BaseReport extends React.Component<BaseReportProps, BaseReportState
     render() {
         return (
             <div className="flex-grow">
-                <div className="flex-row">
+                <div className="flex-grow">
                     <TabBar
                         onSelectedTabChanged={this.onSelectedTabChanged}
                         selectedTabId={this.state.selectedTabId}
@@ -47,22 +47,22 @@ export class BaseReport extends React.Component<BaseReportProps, BaseReportState
                              badgeCount={countReportSecrets(this.props.report)}/>
                     </TabBar>
                 </div>
-                <div className="tab-content">
+                <div className="tab-content flex-row">
                 {
                     this.state.selectedTabId === "vulnerabilities" &&
-                    <div className="flex-row">
+                    <div className="flex-grow">
                         <VulnerabilitiesTable results={this.props.report.Results}/>
                     </div>
                 }
                 {
                     this.state.selectedTabId === "misconfigurations" &&
-                    <div className="flex-row">
+                    <div className="flex-grow">
                         <MisconfigurationsTable results={this.props.report.Results}/>
                     </div>
                 }
                 {
                     this.state.selectedTabId === "secrets" &&
-                    <div className="flex-row">
+                    <div className="flex-grow">
                         <SecretsTable results={this.props.report.Results}/>
                     </div>
                 }
