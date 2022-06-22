@@ -77,39 +77,44 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                             logs for more information.
                         </MessageCard> :
                         <div className="flex-column">
-                            <Card className="flex-grow">
-                                <div className="flex-row" style={{flexWrap: "wrap"}}>
-                                    {stats.map((items, index) => (
-                                        <div className="flex-column" style={{minWidth: "120px"}} key={index}>
-                                            <div className="body-m secondary-text">{items.name}</div>
-                                            <div className="body-m primary-text">{items.value}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </Card>
-                            <TabBar
-                                onSelectedTabChanged={this.onSelectedTabChanged}
-                                selectedTabId={this.state.selectedTabId}
-                                tabSize={TabSize.Tall}
-                            >
+                            <div className="flex-row">
+                                <Card className="flex-grow">
+                                    <div className="flex-row" style={{flexWrap: "wrap"}}>
+                                        {stats.map((items, index) => (
+                                            <div className="flex-column" style={{minWidth: "120px"}} key={index}>
+                                                <div className="body-m secondary-text">{items.name}</div>
+                                                <div className="body-m primary-text">{items.value}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </Card>
+                            </div>
+                            <div className="flex-row">
+                                <TabBar
+                                    onSelectedTabChanged={this.onSelectedTabChanged}
+                                    selectedTabId={this.state.selectedTabId}
+                                    tabSize={TabSize.Tall}
+                                >
+                                    {
+                                        this.props.reports.map(function (report: Report, index: number) {
+                                            return (
+                                                <Tab
+                                                    key={index}
+                                                    id={index + ""}
+                                                    name={report.ArtifactType + " (" + report.ArtifactName + ")"}
+                                                    badgeCount={countReportIssues(report)}
+                                                />
+                                            )
+                                        })
+                                    }
+                                </TabBar>
                                 {
-                                    this.props.reports.map(function (report: Report, index: number) {
-                                        return (
-                                            <Tab
-                                                key={index}
-                                                id={index + ""}
-                                                name={report.ArtifactType + " (" + report.ArtifactName + ")"}
-                                                badgeCount={countReportIssues(report)}
-                                            />
-                                        )
-                                    })
+                                    this.props.reports[parseInt(this.state.selectedTabId)].ArtifactType == ArtifactType.Image ?
+                                        <ImageReport report={this.props.reports[parseInt(this.state.selectedTabId)]}/> :
+                                        <FilesystemReport
+                                            report={this.props.reports[parseInt(this.state.selectedTabId)]}/>
                                 }
-                            </TabBar>
-                            {
-                                this.props.reports[parseInt(this.state.selectedTabId)].ArtifactType == ArtifactType.Image ?
-                                    <ImageReport report={this.props.reports[parseInt(this.state.selectedTabId)]}/> :
-                                    <FilesystemReport report={this.props.reports[parseInt(this.state.selectedTabId)]}/>
-                            }
+                            </div>
                         </div>
                 }
 
