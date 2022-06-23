@@ -8,11 +8,7 @@ const tmpPath = "/tmp/"
 
 async function run() {
 
-    const version: string | undefined = task.getInput('version', true);
-    if (version === undefined) {
-        throw new Error("version is not defined")
-    }
-    const trivyPath = await installTrivy(version)
+
 
     console.log("Preparing output location...")
     let outputPath = tmpPath + "trivy-results-" + Math.random() + ".json";
@@ -28,7 +24,8 @@ async function run() {
         throw new Error("You must specify only one of the 'image' or 'path' options. Use multiple task definitions if you want to scan multiple targets.")
     }
 
-    let runner: ToolRunner = task.tool(trivyPath);
+    const runner = await createRunner();
+
     if (task.getBoolInput("debug", false)) {
         runner.arg("--debug")
     }
@@ -52,13 +49,27 @@ async function run() {
     console.log("Done!");
 }
 
+async function createRunner(): Promise<ToolRunner> {
+    const version: string | undefined = task.getInput('version', true);
+    if (version === undefined) {
+        throw new Error("version is not defined")
+    }
+
+    const docker = true
+
+    if (!docker) {
+        console.log("Run requested using local Trivy binary...")
+        const trivyPath = await installTrivy(version)
+        return task.tool(trivyPath);
+    }
+
+    console.log("Run requested using docker...")
+    const runner = task.tool("docker");
+    runner.line("run --rm -v ~/.docker/config.json:/root/.docker/config.json -v /tmp:/tmp aquasec/trivy:" + stripV(version))
+    return runner
+}
+
 function configureImageScan(runner: ToolRunner, image: string, outputPath: string) {
-
-    // TODO: investigate using docker instead...
-    // docker run --rm -v /home/faro/.docker/config.json:/root/.docker/config.json  \
-    //     -v /tmp/trivy-docker:/root/.cache/  \
-    //     aquasec/trivy 123456789.dkr.ecr.eu-west-1.amazonaws.com/my-image:0.0.0.54
-
     console.log("Configuring options for image scan...")
     runner.arg(["image"]);
     runner.arg(["--exit-code", "1"])
@@ -108,11 +119,14 @@ async function installTrivy(version: string): Promise<string> {
     return binPath
 }
 
-async function getArtifactURL(version: string): Promise<string> {
-    let nonV = version
-    if (nonV.length > 0 && nonV[0] === 'v') {
-        nonV = nonV?.substring(1)
+function stripV(version: string): string {
+    if (version.length > 0 && version[0] === 'v') {
+        version = version?.substring(1)
     }
+    return version
+}
+
+async function getArtifactURL(version: string): Promise<string> {
     console.log("Required Trivy version is " + version)
     let arch = ""
     switch (os.arch()) {
@@ -132,7 +146,7 @@ async function getArtifactURL(version: string): Promise<string> {
             throw new Error("unsupported architecture: " + os.arch())
     }
     // e.g. trivy_0.29.1_Linux-ARM.tar.gz
-    let artifact: string = util.format("trivy_%s_Linux-%s.tar.gz", nonV, arch);
+    let artifact: string = util.format("trivy_%s_Linux-%s.tar.gz", stripV(version), arch);
     return util.format("https://github.com/aquasecurity/trivy/releases/download/%s/%s", version, artifact);
 }
 
