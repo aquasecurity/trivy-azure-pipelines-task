@@ -78,7 +78,7 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                             logs for more information.
                         </MessageCard> :
                         <div className="flex-grow">
-                            <div className="flex-row">
+                            <div className="flex-row" style={{paddingBottom: 100}}>
                                 <Card className="flex-grow">
                                     <div className="flex-row" style={{flexWrap: "wrap"}}>
                                         {stats.map((items, index) => (
