@@ -93,7 +93,7 @@
             "description": "Results for trivy scan(s)",
             "targets": ["ms.vss-build-web.build-results-view"],
             "properties": {
-                "name": "trivy",
+                "name": "Trivy",
                 "uri": "index.html"
             }
         }

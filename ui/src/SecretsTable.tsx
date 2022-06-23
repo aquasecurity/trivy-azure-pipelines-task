@@ -62,7 +62,7 @@ const fixedColumns = [
         name: "Category",
         readonly: true,
         renderCell: renderSimpleCell,
-        width: new ObservableValue(-15),
+        width: new ObservableValue(-10),
         sortProps: {
             ariaLabelAscending: "Sorted A to Z",
             ariaLabelDescending: "Sorted Z to A",
@@ -74,7 +74,7 @@ const fixedColumns = [
         name: "RuleID",
         readonly: true,
         renderCell: renderSimpleCell,
-        width: new ObservableValue(-15),
+        width: new ObservableValue(-10),
         sortProps: {
             ariaLabelAscending: "Sorted A to Z",
             ariaLabelDescending: "Sorted Z to A",
@@ -86,7 +86,7 @@ const fixedColumns = [
         name: "Title",
         readonly: true,
         renderCell: renderSimpleCell,
-        width: new ObservableValue(-15),
+        width: new ObservableValue(-20),
         sortProps: {
             ariaLabelAscending: "Sorted A to Z",
             ariaLabelDescending: "Sorted Z to A",
@@ -98,7 +98,7 @@ const fixedColumns = [
         name: "Location",
         readonly: true,
         renderCell: renderLocation,
-        width: new ObservableValue(-25),
+        width: new ObservableValue(-35),
         sortProps: {
             ariaLabelAscending: "Sorted A to Z",
             ariaLabelDescending: "Sorted Z to A",
@@ -110,7 +110,7 @@ const fixedColumns = [
         name: "Match",
         readonly: true,
         renderCell: renderSimpleCell,
-        width: new ObservableValue(-10),
+        width: new ObservableValue(-25),
     },
 
 ];

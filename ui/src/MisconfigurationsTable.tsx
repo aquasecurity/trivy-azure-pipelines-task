@@ -60,7 +60,7 @@ const fixedColumns = [
         name: "ID",
         readonly: true,
         renderCell: renderSimpleCell,
-        width: new ObservableValue(-15),
+        width: new ObservableValue(-10),
         sortProps: {
             ariaLabelAscending: "Sorted A to Z",
             ariaLabelDescending: "Sorted Z to A",
@@ -72,7 +72,7 @@ const fixedColumns = [
         name: "Description",
         readonly: true,
         renderCell: renderSimpleCell,
-        width: new ObservableValue(-15),
+        width: new ObservableValue(-45),
         sortProps: {
             ariaLabelAscending: "Sorted A to Z",
             ariaLabelDescending: "Sorted Z to A",
@@ -84,7 +84,7 @@ const fixedColumns = [
         name: "Location",
         readonly: true,
         renderCell: renderLocation,
-        width: new ObservableValue(-25),
+        width: new ObservableValue(-45),
         sortProps: {
             ariaLabelAscending: "Sorted A to Z",
             ariaLabelDescending: "Sorted Z to A",

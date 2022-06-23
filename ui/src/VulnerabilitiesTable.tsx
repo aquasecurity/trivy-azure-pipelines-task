@@ -50,7 +50,7 @@ const fixedColumns = [
         name: "ID",
         readonly: true,
         renderCell: renderSimpleCell,
-        width: new ObservableValue(-15),
+        width: new ObservableValue(-10),
         sortProps: {
             ariaLabelAscending: "Sorted A to Z",
             ariaLabelDescending: "Sorted Z to A",
@@ -62,7 +62,7 @@ const fixedColumns = [
         name: "Package",
         readonly: true,
         renderCell: renderSimpleCell,
-        width: new ObservableValue(-15),
+        width: new ObservableValue(-10),
         sortProps: {
             ariaLabelAscending: "Sorted A to Z",
             ariaLabelDescending: "Sorted Z to A",
@@ -74,7 +74,7 @@ const fixedColumns = [
         name: "Title",
         readonly: true,
         renderCell: renderSimpleCell,
-        width: new ObservableValue(-15),
+        width: new ObservableValue(-60),
         sortProps: {
             ariaLabelAscending: "Sorted A to Z",
             ariaLabelDescending: "Sorted Z to A",
@@ -86,7 +86,7 @@ const fixedColumns = [
         name: "FixAvailable",
         readonly: true,
         renderCell: renderSimpleCell,
-        width: new ObservableValue(-25),
+        width: new ObservableValue(-5),
         sortProps: {
             ariaLabelAscending: "Sorted A to Z",
             ariaLabelDescending: "Sorted Z to A",
