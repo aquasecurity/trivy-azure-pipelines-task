@@ -19,7 +19,7 @@
             "helpMarkDown": "The version of Trivy to use"
         },
         {
-            "name": "useDocker",
+            "name": "docker",
             "type": "boolean",
             "label": "Run Trivy using the aquasec/trivy docker image",
             "defaultValue": "true",

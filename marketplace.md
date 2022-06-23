@@ -16,4 +16,3 @@
 
 You can supply several inputs to customise the task.
 
-#### // TODO: Add configuration options

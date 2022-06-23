@@ -71,7 +71,7 @@ const fixedColumns = [
     {
         columnLayout: TableColumnLayout.singleLine,
         id: "RuleID",
-        name: "RuleID",
+        name: "Rule ID",
         readonly: true,
         renderCell: renderSimpleCell,
         width: new ObservableValue(-10),

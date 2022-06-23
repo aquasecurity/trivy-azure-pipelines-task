@@ -83,7 +83,7 @@ const fixedColumns = [
     {
         columnLayout: TableColumnLayout.singleLine,
         id: "FixAvailable",
-        name: "FixAvailable",
+        name: "Fix Available",
         readonly: true,
         renderCell: renderSimpleCell,
         width: new ObservableValue(-5),
