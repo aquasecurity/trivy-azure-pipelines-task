@@ -8,8 +8,6 @@ const tmpPath = "/tmp/"
 
 async function run() {
 
-
-
     console.log("Preparing output location...")
     let outputPath = tmpPath + "trivy-results-" + Math.random() + ".json";
     task.rmRF(outputPath);
@@ -24,16 +22,16 @@ async function run() {
         throw new Error("You must specify only one of the 'image' or 'path' options. Use multiple task definitions if you want to scan multiple targets.")
     }
 
-    const runner = await createRunner();
+    const runner = await createRunner(task.getBoolInput("docker", false));
 
     if (task.getBoolInput("debug", false)) {
         runner.arg("--debug")
     }
 
     if (scanPath !== undefined) {
-        configureFSScan(runner, scanPath, outputPath)
+        configureScan(runner, "fs", scanPath, outputPath)
     } else if (image !== undefined) {
-        configureImageScan(runner, image, outputPath)
+        configureScan(runner, "image", image, outputPath)
     }
 
     console.log("Running Trivy...")
@@ -49,13 +47,11 @@ async function run() {
     console.log("Done!");
 }
 
-async function createRunner(): Promise<ToolRunner> {
+async function createRunner(docker: boolean): Promise<ToolRunner> {
     const version: string | undefined = task.getInput('version', true);
     if (version === undefined) {
         throw new Error("version is not defined")
     }
-
-    const docker = true
 
     if (!docker) {
         console.log("Run requested using local Trivy binary...")
@@ -66,33 +62,30 @@ async function createRunner(): Promise<ToolRunner> {
     console.log("Run requested using docker...")
     const runner = task.tool("docker");
     const home = require('os').homedir();
-    runner.line("run --rm -v " + home + "/.docker/config.json:/root/.docker/config.json -v /tmp:/tmp aquasec/trivy:" + stripV(version))
+    const cwd = process.cwd()
+
+    runner.line("run --rm")
+    runner.line("-v " + home + "/.docker/config.json:/root/.docker/config.json")
+    runner.line("-v /tmp:/tmp")
+    runner.line("-v " + cwd + ":/src")
+    runner.line("--workdir /src")
+    runner.line("aquasec/trivy:" + stripV(version))
     return runner
 }
 
-function configureImageScan(runner: ToolRunner, image: string, outputPath: string) {
+function configureScan(runner: ToolRunner, type: string, target: string, outputPath: string) {
     console.log("Configuring options for image scan...")
-    runner.arg(["image"]);
+    runner.arg([type]);
     runner.arg(["--exit-code", "1"])
     runner.arg(["--format", "json"]);
     runner.arg(["--output", outputPath]);
     runner.arg(["--security-checks", "vuln,config,secret"])
-    runner.arg(image)
-}
-
-function configureFSScan(runner: ToolRunner, scanPath: string, outputPath: string) {
-    console.log("Configuring options for filesystem scan...")
-    runner.arg(["fs"]);
-    runner.arg(["--exit-code", "1"])
-    runner.arg(["--format", "json"]);
-    runner.arg(["--output", outputPath]);
-    runner.arg(["--security-checks", "vuln,config,secret"])
-    runner.arg(scanPath)
+    runner.arg(target)
 }
 
 async function installTrivy(version: string): Promise<string> {
 
-    console.log("Finding correct Trivy version...")
+    console.log("Finding correct Trivy version to install...")
 
     if (os.platform() == "win32") {
         throw new Error("Windows is not currently supported")

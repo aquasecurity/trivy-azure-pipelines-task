@@ -14,9 +14,17 @@
             "name": "version",
             "type": "string",
             "label": "Trivy Version",
-            "defaultValue": "v0.29.1",
+            "defaultValue": "v0.29.2",
             "required": false,
             "helpMarkDown": "The version of Trivy to use"
+        },
+        {
+            "name": "useDocker",
+            "type": "boolean",
+            "label": "Run Trivy using the aquasec/trivy docker image",
+            "defaultValue": "true",
+            "required": false,
+            "helpMarkDown": "This can be useful when being rate limited by dockerhub etc."
         },
         {
             "name": "debug",
