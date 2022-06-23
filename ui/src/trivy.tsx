@@ -118,12 +118,13 @@ export interface Report {
 
 export function getReportTitle(report: Report): string {
     switch(report.ArtifactType){
-        case ArtifactType.FileSystem:
+        case ArtifactType.FileSystem: {
             let title = "Filesystem: " + report.ArtifactName
-            if(report.ArtifactName === ".") {
+            if (report.ArtifactName === ".") {
                 title += " (project root)"
             }
             return title
+        }
         case ArtifactType.Image:
             return "Image: " + report.ArtifactName
     }
