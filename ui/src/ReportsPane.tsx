@@ -109,7 +109,7 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                                     }
                                 </TabBar>
                             </div>
-                            <div className="flex-row">
+                            <div className="flex-grow">
                                 <div className="tab-content">
                                 {
                                     this.props.reports[parseInt(this.state.selectedTabId)].ArtifactType == ArtifactType.Image ?

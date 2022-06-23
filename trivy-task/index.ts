@@ -65,7 +65,8 @@ async function createRunner(): Promise<ToolRunner> {
 
     console.log("Run requested using docker...")
     const runner = task.tool("docker");
-    runner.line("run --rm -v $HOME/.docker/config.json:/root/.docker/config.json -v /tmp:/tmp aquasec/trivy:" + stripV(version))
+    const home = require('os').homedir();
+    runner.line("run --rm -v " + home + "/.docker/config.json:/root/.docker/config.json -v /tmp:/tmp aquasec/trivy:" + stripV(version))
     return runner
 }
 
