@@ -157,9 +157,9 @@ export class MisconfigurationsTable extends React.Component<MisconfigurationsTab
         return (
             this.results.length == 0 ?
                 <ZeroData
-                    primaryText="Build passed."
+                    primaryText="No problems found."
                     secondaryText={
-                        <span>No misconfigurations were found within your project.</span>
+                        <span>No misconfigurations were found for this scan target.</span>
                     }
                     imageAltText="trivy"
                     imagePath={"images/trivy.png"}

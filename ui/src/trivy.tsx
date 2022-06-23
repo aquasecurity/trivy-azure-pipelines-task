@@ -116,6 +116,19 @@ export interface Report {
     Results: Result[]
 }
 
+export function getReportTitle(report: Report): string {
+    switch(report.ArtifactType){
+        case ArtifactType.FileSystem:
+            let title = "Filesystem: " + report.ArtifactName
+            if(report.ArtifactName === ".") {
+                title += " (project root)"
+            }
+            return title
+        case ArtifactType.Image:
+            return "Image: " + report.ArtifactName
+    }
+}
+
 export function countReportIssues(report: Report): number {
     return countReportMisconfigurations(report) + countReportVulnerabilities(report) + countReportSecrets(report)
 }

@@ -7,7 +7,8 @@ import {
     countAllReportsSecrets,
     countAllReportsVulnerabilities,
     countReportIssues,
-    Report
+    Report,
+    getReportTitle,
 } from './trivy';
 import {ImageReport} from "./ImageReport";
 import {FilesystemReport} from "./FilesystemReport";
@@ -101,7 +102,7 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                                                 <Tab
                                                     key={index}
                                                     id={index + ""}
-                                                    name={report.ArtifactType + " (" + report.ArtifactName + ")"}
+                                                    name={getReportTitle(report)}
                                                     badgeCount={countReportIssues(report)}
                                                 />
                                             )

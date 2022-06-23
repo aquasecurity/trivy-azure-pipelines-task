@@ -186,9 +186,9 @@ export class SecretsTable extends React.Component<SecretsTableProps> {
         return (
             this.results.length == 0 ?
                 <ZeroData
-                    primaryText="Build passed."
+                    primaryText="No problems found."
                     secondaryText={
-                        <span>No secrets were found within your project.</span>
+                        <span>No secrets were found for this scan target.</span>
                     }
                     imageAltText="trivy"
                     imagePath={"images/trivy.png"}
