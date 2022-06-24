@@ -14,7 +14,7 @@
             "name": "version",
             "type": "string",
             "label": "Trivy Version",
-            "defaultValue": "v0.29.2",
+            "defaultValue": "latest",
             "required": false,
             "helpMarkDown": "The version of Trivy to use"
         },

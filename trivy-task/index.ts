@@ -4,6 +4,7 @@ import * as tool from 'azure-pipelines-tool-lib';
 import {ToolRunner} from 'azure-pipelines-task-lib/toolrunner';
 import task = require('azure-pipelines-task-lib/task');
 
+const latestTrivyVersion = "v0.29.2"
 const tmpPath = "/tmp/"
 
 async function run() {
@@ -121,6 +122,9 @@ function stripV(version: string): string {
 }
 
 async function getArtifactURL(version: string): Promise<string> {
+    if(version === "latest") {
+        version = latestTrivyVersion
+    }
     console.log("Required Trivy version is " + version)
     let arch = ""
     switch (os.arch()) {

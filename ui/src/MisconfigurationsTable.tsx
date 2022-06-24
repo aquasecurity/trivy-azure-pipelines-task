@@ -186,8 +186,6 @@ function convertLocation(result: Result, misconfiguration: Misconfiguration): IS
     }
     return {
         text: combined,
-        // TODO strip prefix?
-//        text: combined.replace("/home/vsts/work/1/s/", "")
     }
 }
 

@@ -215,8 +215,6 @@ function convertLocation(result: Result, secret: Secret): ISimpleListCell {
     }
     return {
         text: combined,
-        // TODO strip prefix?
-//        text: combined.replace("/home/vsts/work/1/s/", "")
     }
 }
 
