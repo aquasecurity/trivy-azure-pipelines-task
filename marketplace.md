@@ -48,3 +48,19 @@ jobs:
     inputs:
       image: ubuntu
 ```
+
+## Scanning Images in Private Registries
+
+You can scan images in private registries by using the `image` input after completing a `docker login`. For example:
+
+```yaml
+steps:
+- task: Docker@2
+  displayName: Login to ACR
+  inputs:
+    command: login
+    containerRegistry: dockerRegistryServiceConnection1
+- task: trivy@1
+  inputs:
+    image: my.registry/org/my-image:latest
+```

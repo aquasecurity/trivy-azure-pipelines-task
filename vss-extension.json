@@ -9,7 +9,7 @@
         "type": "git",
         "uri": "https://github.com/aquasecurity/trivy-azure-pipelines-task"
     },
-    "public": false,
+    "public": true,
     "categories": [
         "Azure Pipelines"
     ],
