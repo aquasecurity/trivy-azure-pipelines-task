@@ -49,6 +49,14 @@
             "defaultValue": "",
             "required": false,
             "helpMarkDown": "The specified image will be scanned using an 'image' scan type. If this option is used, the 'path' option cannot be set."
+        },
+        {
+            "name": "exitCode",
+            "type": "string",
+            "label": "Exit code when Trivy detects issues.",
+            "defaultValue": "1",
+            "required": false,
+            "helpMarkDown": "Set this to 0 to prevent the build failing when Trivy detects issues."
         }
     ],
     "execution": {

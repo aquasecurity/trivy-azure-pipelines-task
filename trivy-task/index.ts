@@ -76,8 +76,12 @@ async function createRunner(docker: boolean): Promise<ToolRunner> {
 
 function configureScan(runner: ToolRunner, type: string, target: string, outputPath: string) {
     console.log("Configuring options for image scan...")
+    let exitCode = task.getInput("exitCode", false)
+    if (exitCode === undefined) {
+        exitCode = "1"
+    }
     runner.arg([type]);
-    runner.arg(["--exit-code", "1"])
+    runner.arg(["--exit-code", exitCode]);
     runner.arg(["--format", "json"]);
     runner.arg(["--output", outputPath]);
     runner.arg(["--security-checks", "vuln,config,secret"])
