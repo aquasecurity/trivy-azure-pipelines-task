@@ -1,12 +1,20 @@
 import * as React from 'react';
-import {countReportMisconfigurations, countReportSecrets, countReportVulnerabilities, Report} from './trivy';
+import {
+    AssuranceReport,
+    countReportMisconfigurations,
+    countReportSecrets,
+    countReportVulnerabilities,
+    Report
+} from './trivy';
 import {SecretsTable} from "./SecretsTable";
 import {VulnerabilitiesTable} from "./VulnerabilitiesTable";
 import {MisconfigurationsTable} from "./MisconfigurationsTable";
 import {Tab, TabBar, TabSize} from "azure-devops-ui/Tabs";
+import {AssuranceTable} from "./AssuranceTable";
 
 interface BaseReportProps {
     report: Report
+    assurance: AssuranceReport | undefined
 }
 
 interface BaseReportState {
@@ -45,6 +53,10 @@ export class BaseReport extends React.Component<BaseReportProps, BaseReportState
                              badgeCount={countReportMisconfigurations(this.props.report)}/>
                         <Tab id="secrets" name="Secrets" key="secrets"
                              badgeCount={countReportSecrets(this.props.report)}/>
+                        {
+                            this.props.assurance !== undefined &&
+                            <Tab id="assurance" name="Assurance Issues" key="assurance" badgeCount={this.props.assurance.Results.length}/>
+                        }
                     </TabBar>
                 </div>
                 <div className="tab-content flex-row">
@@ -64,6 +76,12 @@ export class BaseReport extends React.Component<BaseReportProps, BaseReportState
                     this.state.selectedTabId === "secrets" &&
                     <div className="flex-grow">
                         <SecretsTable results={this.props.report.Results}/>
+                    </div>
+                }
+                {
+                    this.state.selectedTabId === "assurance" &&
+                    <div className="flex-grow">
+                        <AssuranceTable results={this.props.assurance.Results}/>
                     </div>
                 }
                 </div>
