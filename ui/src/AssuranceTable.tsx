@@ -145,16 +145,19 @@ export class AssuranceTable extends React.Component<AssuranceTableProps> {
                     imagePath={"images/trivy.png"}
                 />
                 :
-                <Table
-                    pageSize={this.results.length}
-                    selectableText={true}
-                    ariaLabel="Assurance Issues Table"
-                    role="table"
-                    behaviors={[sortingBehavior]}
-                    columns={fixedColumns}
-                    itemProvider={this.results}
-                    containerClassName="h-scroll-auto"
-                />
+                <React.Fragment>
+                    <p>Your repository failed the following assurance policy checks.</p>
+                    <Table
+                        pageSize={this.results.length}
+                        selectableText={true}
+                        ariaLabel="Assurance Issues Table"
+                        role="table"
+                        behaviors={[sortingBehavior]}
+                        columns={fixedColumns}
+                        itemProvider={this.results}
+                        containerClassName="h-scroll-auto"
+                    />
+                </React.Fragment>
         )
     }
 }
@@ -163,7 +166,7 @@ function convertAssuranceIssues(results: AssuranceResult[]): ListAssurance[] {
     const output: ListAssurance[] = []
     results.forEach(result => {
         result.PolicyResults.forEach(function (policyResult: PolicyResult) {
-            if(!Object.prototype.hasOwnProperty.call(policyResult, "Failed") || !policyResult.Failed) {
+            if (!Object.prototype.hasOwnProperty.call(policyResult, "Failed") || !policyResult.Failed) {
                 return
             }
             output.push({
@@ -176,3 +179,5 @@ function convertAssuranceIssues(results: AssuranceResult[]): ListAssurance[] {
     })
     return output
 }
+
+</React.Fragment>
