@@ -73,6 +73,14 @@
             "defaultValue": "",
             "required": false,
             "helpMarkDown": "The Aqua API Secret is used to upload scan results to your Aqua Security account."
+        },
+        {
+            "name": "devMode",
+            "type": "boolean",
+            "label": "Enable development mode (used for internal testing)",
+            "defaultValue": "false",
+            "required": false,
+            "helpMarkDown": "Not recommended."
         }
     ],
     "execution": {

@@ -57,6 +57,10 @@ async function run() {
     console.log("Done!");
 }
 
+function isDevMode(): boolean {
+    return task.getBoolInput("devMode", false)
+}
+
 function hasAquaAccount(): boolean {
     const credentials = getAquaAccount()
     return (credentials.key !== undefined && credentials.secret !== undefined)
@@ -104,6 +108,10 @@ async function createRunner(docker: boolean): Promise<ToolRunner> {
         runner.line("-e AQUA_SECRET")
         runner.line("-e OVERRIDE_REPOSITORY")
         runner.line("-e OVERRIDE_BRANCH")
+        if (isDevMode()) {
+            runner.line("-e AQUA_URL=https://api-dev.aquasec.com/v2/build")
+            runner.line("-e CSPM_URL=https://stage.api.cloudsploit.com/v2/tokens")
+        }
     }
     runner.line("aquasec/trivy:" + stripV(version))
     return runner
