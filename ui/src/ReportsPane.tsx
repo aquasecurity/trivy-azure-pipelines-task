@@ -35,6 +35,9 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
         if (props.reports === null) {
             props.reports = []
         }
+        if (props.assuranceReports === null) {
+            props.assuranceReports = []
+        }
         this.props = props
         this.state = {
             selectedTabId: "0"
@@ -46,11 +49,17 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
     };
 
     private getReport(): Report {
+        if(this.props.reports.length === 0) {
+            return null
+        }
         return this.props.reports[parseInt(this.state.selectedTabId)]
     }
 
     private getAssuranceReport(): AssuranceReport | undefined{
         const report = this.getReport()
+        if(report === null) {
+            return undefined
+        }
         let assuranceReport: AssuranceReport | undefined = undefined
         this.props.assuranceReports.forEach(match => {
             if (report.ArtifactType == match.Report.ArtifactType && report.ArtifactName == match.Report.ArtifactName) {
@@ -130,7 +139,7 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                             <div className="flex-grow">
                                 <div className="tab-content">
                                 {
-                                    this.props.reports[parseInt(this.state.selectedTabId)].ArtifactType == ArtifactType.Image ?
+                                    this.getReport().ArtifactType == ArtifactType.Image ?
                                         <ImageReport report={this.getReport()} assurance={this.getAssuranceReport()}/> :
                                         <FilesystemReport report={this.getReport()} assurance={this.getAssuranceReport()}/>
                                 }
