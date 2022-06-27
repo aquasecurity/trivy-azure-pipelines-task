@@ -102,8 +102,6 @@ async function createRunner(docker: boolean): Promise<ToolRunner> {
         runner.line("-e TRIVY_RUN_AS_PLUGIN=aqua")
         runner.line("-e AQUA_KEY")
         runner.line("-e AQUA_SECRET")
-        runner.line("-e AQUA_URL=https://api-dev.aquasec.com/v2/build")
-        runner.line("-e CSPM_URL=https://stage.api.cloudsploit.com/v2/tokens")
         runner.line("-e OVERRIDE_REPOSITORY")
         runner.line("-e OVERRIDE_BRANCH")
     }
