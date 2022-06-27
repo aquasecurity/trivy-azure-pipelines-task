@@ -23,6 +23,15 @@ async function run() {
         throw new Error("You must specify only one of the 'image' or 'path' options. Use multiple task definitions if you want to scan multiple targets.")
     }
 
+    if(hasAquaAccount()) {
+        const credentials = getAquaAccount()
+        process.env.AQUA_KEY = credentials.key
+        process.env.AQUA_SECRET = credentials.secret
+        process.env.TRIVY_RUN_AS_PLUGIN = "aqua"
+        process.env.OVERRIDE_REPOSITORY = task.getVariable("Build.Repository.Name")
+        process.env.OVERRIDE_BRANCH = task.getVariable("Build.SourceBranchName")
+    }
+
     const runner = await createRunner(task.getBoolInput("docker", false));
 
     if (task.getBoolInput("debug", false)) {
@@ -48,6 +57,29 @@ async function run() {
     console.log("Done!");
 }
 
+function isDevMode(): boolean {
+    return task.getBoolInput("devMode", false)
+}
+
+function hasAquaAccount(): boolean {
+    const credentials = getAquaAccount()
+    return (credentials.key !== undefined && credentials.secret !== undefined)
+}
+
+interface aquaCredentials {
+    key: string | undefined
+    secret: string | undefined
+}
+
+function getAquaAccount(): aquaCredentials {
+    const key = task.getInput("aquaKey", false)
+    const secret = task.getInput("aquaSecret", false)
+    return {
+        key: key,
+        secret: secret,
+    }
+}
+
 async function createRunner(docker: boolean): Promise<ToolRunner> {
     const version: string | undefined = task.getInput('version', true);
     if (version === undefined) {
@@ -66,10 +98,21 @@ async function createRunner(docker: boolean): Promise<ToolRunner> {
     const cwd = process.cwd()
 
     runner.line("run --rm")
-    runner.line("-v " + home + "/.docker/config.json:/root/.docker/config.json")
+    runner.line("-v " + home + "/.docker:/root/.docker")
     runner.line("-v /tmp:/tmp")
     runner.line("-v " + cwd + ":/src")
     runner.line("--workdir /src")
+    if(hasAquaAccount()) {
+        runner.line("-e TRIVY_RUN_AS_PLUGIN")
+        runner.line("-e AQUA_KEY")
+        runner.line("-e AQUA_SECRET")
+        runner.line("-e OVERRIDE_REPOSITORY")
+        runner.line("-e OVERRIDE_BRANCH")
+        if (isDevMode()) {
+            runner.line("-e AQUA_URL=https://api-dev.aquasec.com/v2/build")
+            runner.line("-e CSPM_URL=https://stage.api.cloudsploit.com/v2/tokens")
+        }
+    }
     runner.line("aquasec/trivy:" + stripV(version))
     return runner
 }

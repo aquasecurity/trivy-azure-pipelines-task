@@ -18,14 +18,16 @@ An Azure DevOps Pipelines Task for [Trivy](https://github.com/aquasecurity/trivy
 
 You can supply several inputs to customise the task.
 
-| Input      | Description                                                                                                                          |
-|------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `version`  | The version of Trivy to use. Currently defaults to `latest`.                                                                         |
-| `docker`   | Run Trivy using the aquasec/trivy docker image. Alternatively the Trivy binary will be run natively. Defaults to `true`.             |
-| `debug`    | Enable debug logging in the build output.                                                                                            |
-| `path`     | The path to scan relative to the root of the repository being scanned, if an `fs` scan is required. Cannot be set if `image` is set. |
-| `image`    | The image to scan if an `image` scan is required. Cannot be set if `path` is set.                                                    |
-| `exitCode` | The exit-code to use when Trivy detects issues. Set to `0` to prevent the build failing when Trivy finds issues. Defaults to `1`.    |
+| Input        | Description                                                                                                                          |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `version`    | The version of Trivy to use. Currently defaults to `latest`.                                                                         |
+| `docker`     | Run Trivy using the aquasec/trivy docker image. Alternatively the Trivy binary will be run natively. Defaults to `true`.             |
+| `debug`      | Enable debug logging in the build output.                                                                                            |
+| `path`       | The path to scan relative to the root of the repository being scanned, if an `fs` scan is required. Cannot be set if `image` is set. |
+| `image`      | The image to scan if an `image` scan is required. Cannot be set if `path` is set.                                                    |
+| `exitCode`   | The exit-code to use when Trivy detects issues. Set to `0` to prevent the build failing when Trivy finds issues. Defaults to `1`.    |
+| `aquaKey`    | The Aqua API Key to use to link scan results to your Aqua Security account.                                                          |
+| `aquaSecret` | The Aqua API Secret to use to link scan results to your Aqua Security account.                                                       |
 
 ### Example of scanning multiple targets
 
