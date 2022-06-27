@@ -99,7 +99,7 @@ async function createRunner(docker: boolean): Promise<ToolRunner> {
     runner.line("-v " + cwd + ":/src")
     runner.line("--workdir /src")
     if(hasAquaAccount()) {
-        runner.line("-e TRIVY_RUN_AS_PLUGIN=aqua")
+        runner.line("-e TRIVY_RUN_AS_PLUGIN")
         runner.line("-e AQUA_KEY")
         runner.line("-e AQUA_SECRET")
         runner.line("-e OVERRIDE_REPOSITORY")
