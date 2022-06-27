@@ -163,10 +163,13 @@ function convertAssuranceIssues(results: AssuranceResult[]): ListAssurance[] {
     const output: ListAssurance[] = []
     results.forEach(result => {
         result.PolicyResults.forEach(function (policyResult: PolicyResult) {
+            if(!Object.prototype.hasOwnProperty.call(policyResult, "Failed") || !policyResult.Failed) {
+                return
+            }
             output.push({
-                Policy: {text: policyResult.PolicyID},
+                Policy: {text: Object.prototype.hasOwnProperty.call(policyResult, "PolicyID") ? policyResult.PolicyID : ""},
+                Enforced: {text: Object.prototype.hasOwnProperty.call(policyResult, "Enforced") ? (policyResult.Enforced ? "Yes" : "No") : "No"},
                 AVDID: {text: result.AVDID},
-                Enforced: {text: policyResult.Enforced ? "Yes" : "No"},
                 Title: {text: result.Title},
             })
         })

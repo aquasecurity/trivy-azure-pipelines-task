@@ -79,18 +79,22 @@ export class App extends React.Component<AppProps, AppState> {
 
         attachments.forEach(function (attachment: Attachment) {
             recordIds.forEach(async function (recordId) {
-                const buffer = await this.buildClient.getAttachment(
-                    this.project.id,
-                    build.id,
-                    timeline.id,
-                    recordId,
-                    "JSON_RESULT",
-                    attachment.name,
-                )
-                const report = this.decodeReport(buffer)
-                this.setState(prevState => ({
-                    reports: [...prevState.reports, report]
-                }))
+                try {
+                    const buffer = await this.buildClient.getAttachment(
+                        this.project.id,
+                        build.id,
+                        timeline.id,
+                        recordId,
+                        "JSON_RESULT",
+                        attachment.name,
+                    )
+                    const report = this.decodeReport(buffer)
+                    this.setState(prevState => ({
+                        reports: [...prevState.reports, report]
+                    }))
+                }catch{
+                    console.log("Failed to decode results attachment")
+                }
             }.bind(this))
         }.bind(this))
 
@@ -99,18 +103,22 @@ export class App extends React.Component<AppProps, AppState> {
         if (assuranceAttachments.length > 0) {
             assuranceAttachments.forEach(function (attachment: Attachment) {
                 recordIds.forEach(async function (recordId) {
-                    const buffer = await this.buildClient.getAttachment(
-                        this.project.id,
-                        build.id,
-                        timeline.id,
-                        recordId,
-                        "ASSURANCE_RESULT",
-                        attachment.name,
-                    )
-                    const report = this.decodeAssuranceReport(buffer)
-                    this.setState(prevState => ({
-                        assuranceReports: [...prevState.reports, report]
-                    }))
+                    try {
+                        const buffer = await this.buildClient.getAttachment(
+                            this.project.id,
+                            build.id,
+                            timeline.id,
+                            recordId,
+                            "ASSURANCE_RESULT",
+                            attachment.name,
+                        )
+                        const report = this.decodeAssuranceReport(buffer)
+                        this.setState(prevState => ({
+                            assuranceReports: [...prevState.reports, report]
+                        }))
+                    }catch{
+                        console.log("Failed to decode assurance attachment")
+                    }
                 }.bind(this))
             }.bind(this))
         }
@@ -140,6 +148,16 @@ export class App extends React.Component<AppProps, AppState> {
     }
 
     decodeReport(buffer: ArrayBuffer): Report {
+        let output = '';
+        const arr = new Uint8Array(buffer);
+        const len = arr.byteLength;
+        for (let i = 0; i < len; i++) {
+            output += String.fromCharCode(arr[i]);
+        }
+        return JSON.parse(output);
+    }
+
+    decodeAssuranceReport(buffer: ArrayBuffer): AssuranceReport {
         let output = '';
         const arr = new Uint8Array(buffer);
         const len = arr.byteLength;
