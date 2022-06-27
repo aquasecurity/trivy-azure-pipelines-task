@@ -179,5 +179,3 @@ function convertAssuranceIssues(results: AssuranceResult[]): ListAssurance[] {
     })
     return output
 }
-
-</React.Fragment>
