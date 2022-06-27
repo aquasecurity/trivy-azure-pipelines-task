@@ -10,7 +10,7 @@ const tmpPath = "/tmp/"
 async function run() {
 
     console.log("Preparing output location...")
-    let outputPath = tmpPath + "trivy-results-" + Math.random() + ".json";
+    const outputPath = tmpPath + "trivy-results-" + Math.random() + ".json";
     task.rmRF(outputPath);
 
     let scanPath = task.getInput("path", false)
@@ -23,13 +23,18 @@ async function run() {
         throw new Error("You must specify only one of the 'image' or 'path' options. Use multiple task definitions if you want to scan multiple targets.")
     }
 
-    if(hasAquaAccount()) {
+    const hasAccount = hasAquaAccount()
+    const assurancePath = tmpPath + "trivy-assurance-" + Math.random() + ".json";
+
+    if(hasAccount) {
+        task.rmRF(assurancePath);
         const credentials = getAquaAccount()
         process.env.AQUA_KEY = credentials.key
         process.env.AQUA_SECRET = credentials.secret
         process.env.TRIVY_RUN_AS_PLUGIN = "aqua"
         process.env.OVERRIDE_REPOSITORY = task.getVariable("Build.Repository.Name")
         process.env.OVERRIDE_BRANCH = task.getVariable("Build.SourceBranchName")
+        process.env.AQUA_ASSURANCE_EXPORT = assurancePath
     }
 
     const runner = await createRunner(task.getBoolInput("docker", false));
@@ -52,8 +57,13 @@ async function run() {
         task.setResult(task.TaskResult.Failed, "Failed: Trivy detected problems.")
     }
 
+    if(hasAccount) {
+        console.log("Publishing JSON assurance results...")
+        task.addAttachment("ASSURANCE_RESULT", "trivy-assurance-" + Math.random() + ".json", assurancePath)
+    }
+
     console.log("Publishing JSON results...")
-    task.addAttachment("JSON_RESULT", "trivy-" +  Math.random() + ".json", outputPath)
+    task.addAttachment("JSON_RESULT", "trivy" +  Math.random() + ".json", outputPath)
     console.log("Done!");
 }
 
@@ -108,6 +118,7 @@ async function createRunner(docker: boolean): Promise<ToolRunner> {
         runner.line("-e AQUA_SECRET")
         runner.line("-e OVERRIDE_REPOSITORY")
         runner.line("-e OVERRIDE_BRANCH")
+        runner.line("-e AQUA_ASSURANCE_EXPORT")
         if (isDevMode()) {
             runner.line("-e AQUA_URL=https://api-dev.aquasec.com/v2/build")
             runner.line("-e CSPM_URL=https://stage.api.cloudsploit.com/v2/tokens")

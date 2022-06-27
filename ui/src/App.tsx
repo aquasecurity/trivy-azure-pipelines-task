@@ -10,7 +10,7 @@ import * as SDK from "azure-devops-extension-sdk";
 import * as API from "azure-devops-extension-api";
 import {CommonServiceIds, IProjectInfo, IProjectPageService} from "azure-devops-extension-api";
 import {Attachment, TimelineRecord} from "azure-devops-extension-api/Build/Build";
-import {Report} from './trivy'
+import {Report, AssuranceReport} from './trivy'
 import {Loading} from './Loading'
 import {ReportsPane} from './ReportsPane'
 import {Crash} from './Crash'
@@ -19,6 +19,7 @@ type AppState = {
     status: BuildStatus
     error: string
     reports: Report[]
+    assuranceReports: AssuranceReport[]
     sdkReady: boolean
 }
 
@@ -44,6 +45,7 @@ export class App extends React.Component<AppProps, AppState> {
             status: BuildStatus.None,
             error: "",
             reports: [],
+            assuranceReports: [],
         }
     }
 
@@ -91,6 +93,27 @@ export class App extends React.Component<AppProps, AppState> {
                 }))
             }.bind(this))
         }.bind(this))
+
+        // check if we have assurance results
+        const assuranceAttachments = await this.buildClient.getAttachments(this.project.id, build.id, "ASSURANCE_RESULT")
+        if (assuranceAttachments.length > 0) {
+            assuranceAttachments.forEach(function (attachment: Attachment) {
+                recordIds.forEach(async function (recordId) {
+                    const buffer = await this.buildClient.getAttachment(
+                        this.project.id,
+                        build.id,
+                        timeline.id,
+                        recordId,
+                        "ASSURANCE_RESULT",
+                        attachment.name,
+                    )
+                    const report = this.decodeAssuranceReport(buffer)
+                    this.setState(prevState => ({
+                        assuranceReports: [...prevState.reports, report]
+                    }))
+                }.bind(this))
+            }.bind(this))
+        }
     }
 
     setError(msg: string) {
@@ -129,7 +152,7 @@ export class App extends React.Component<AppProps, AppState> {
     render() {
         return (
             this.state.status == BuildStatus.Completed ?
-                <ReportsPane reports={this.state.reports}/>
+                <ReportsPane reports={this.state.reports} assuranceReports={this.state.assuranceReports}/>
                 :
                 (this.state.error !== "" ?
                         <Crash message={this.state.error}/>

@@ -116,6 +116,24 @@ export interface Report {
     Results: Result[]
 }
 
+export interface AssuranceReport {
+    Report: Report
+    Results: AssuranceResult[]
+}
+
+export interface AssuranceResult {
+    AVDID: string
+    Title: string
+    PolicyResults: PolicyResult[]
+}
+
+export interface PolicyResult {
+    PolicyID: string
+    Enforced: boolean
+    Failed: boolean
+    Reason: string
+}
+
 export function getReportTitle(report: Report): string {
     switch(report.ArtifactType){
         case ArtifactType.FileSystem:

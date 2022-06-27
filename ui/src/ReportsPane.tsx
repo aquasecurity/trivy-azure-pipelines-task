@@ -9,6 +9,7 @@ import {
     countReportIssues,
     Report,
     getReportTitle,
+    AssuranceReport,
 } from './trivy';
 import {ImageReport} from "./ImageReport";
 import {FilesystemReport} from "./FilesystemReport";
@@ -17,6 +18,7 @@ import {Card} from "azure-devops-ui/Card";
 
 interface ReportsPaneProps {
     reports: Report[]
+    assuranceReports: AssuranceReport[]
 }
 
 interface ReportsPaneState {
@@ -42,6 +44,21 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
     private onSelectedTabChanged = (newTabId: string) => {
         this.setState({selectedTabId: newTabId});
     };
+
+    private getReport(): Report {
+        return this.props.reports[parseInt(this.state.selectedTabId)]
+    }
+
+    private getAssuranceReport(): AssuranceReport | undefined{
+        const report = this.getReport()
+        let assuranceReport: AssuranceReport | undefined = undefined
+        this.props.assuranceReports.forEach(match => {
+            if (report.ArtifactType == match.Report.ArtifactType && report.ArtifactName == match.Report.ArtifactName) {
+                assuranceReport = match
+            }
+        })
+        return assuranceReport
+    }
 
     render() {
         const stats = [
@@ -114,9 +131,8 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                                 <div className="tab-content">
                                 {
                                     this.props.reports[parseInt(this.state.selectedTabId)].ArtifactType == ArtifactType.Image ?
-                                        <ImageReport report={this.props.reports[parseInt(this.state.selectedTabId)]}/> :
-                                        <FilesystemReport
-                                            report={this.props.reports[parseInt(this.state.selectedTabId)]}/>
+                                        <ImageReport report={this.getReport()} assurance={this.getAssuranceReport()}/> :
+                                        <FilesystemReport report={this.getReport()} assurance={this.getAssuranceReport()}/>
                                 }
                                 </div>
                             </div>
