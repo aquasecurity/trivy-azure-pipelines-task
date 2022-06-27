@@ -57,6 +57,22 @@
             "defaultValue": "1",
             "required": false,
             "helpMarkDown": "Set this to 0 to prevent the build failing when Trivy detects issues."
+        },
+        {
+            "name": "aquaKey",
+            "type": "string",
+            "label": "Aqua API Key",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The Aqua API Key is used to upload scan results to your Aqua Security account."
+        },
+        {
+            "name": "aquaSecret",
+            "type": "string",
+            "label": "Aqua API Secret",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The Aqua API Secret is used to upload scan results to your Aqua Security account."
         }
     ],
     "execution": {
