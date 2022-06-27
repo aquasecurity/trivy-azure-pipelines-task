@@ -114,7 +114,7 @@ export class App extends React.Component<AppProps, AppState> {
                         )
                         const report = this.decodeAssuranceReport(buffer)
                         this.setState(prevState => ({
-                            assuranceReports: [...prevState.reports, report]
+                            assuranceReports: [...prevState.assuranceReports, report]
                         }))
                     }catch{
                         console.log("Failed to decode assurance attachment")
