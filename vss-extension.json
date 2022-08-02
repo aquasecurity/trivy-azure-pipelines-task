@@ -94,7 +94,8 @@
             "targets": ["ms.vss-build-web.build-results-view"],
             "properties": {
                 "name": "Trivy",
-                "uri": "index.html"
+                "uri": "index.html",                
+                "supportsTasks": ["8f9cb13f-f551-439c-83e4-fac6801c3fab"]
             }
         }
     ],
