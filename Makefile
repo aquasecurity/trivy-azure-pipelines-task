@@ -25,6 +25,10 @@ build: clean build-task build-ui
 package: build
 	tfx extension create --manifest-globs vss-extension.json
 
+.PHONY: package-dev
+package-dev: build
+	tfx extension create --manifest-globs vss-extension.dev.json
+
 .PHONY: local
 local: build-task
 	cd trivy-task && INPUT_VERSION=v0.29.2 INPUT_PATH=. node index.js

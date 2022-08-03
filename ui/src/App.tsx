@@ -9,14 +9,14 @@ import {
 import * as SDK from "azure-devops-extension-sdk";
 import * as API from "azure-devops-extension-api";
 import {CommonServiceIds, IProjectInfo, IProjectPageService} from "azure-devops-extension-api";
-import {Attachment, TimelineRecord} from "azure-devops-extension-api/Build/Build";
+import {Attachment, TimelineRecord, TimelineRecordState} from "azure-devops-extension-api/Build/Build";
 import {Report, AssuranceReport} from './trivy'
 import {Loading} from './Loading'
 import {ReportsPane} from './ReportsPane'
 import {Crash} from './Crash'
 
 type AppState = {
-    status: BuildStatus
+    status: TimelineRecordState
     error: string
     reports: Report[]
     assuranceReports: AssuranceReport[]
@@ -42,7 +42,7 @@ export class App extends React.Component<AppProps, AppState> {
         this.props = props
         this.state = {
             sdkReady: false,
-            status: BuildStatus.None,
+            status: TimelineRecordState.Pending,
             error: "",
             reports: [],
             assuranceReports: [],
@@ -52,21 +52,35 @@ export class App extends React.Component<AppProps, AppState> {
     async check() {
 
         const build = await this.buildClient.getBuild(this.project.id, this.buildPageData.build.id)
-        if ((build.status & BuildStatus.Completed) === 0) {
-            this.setState({status: build.status})
+        // if the build isn't running/finished, try again shortly
+        if ((build.status & BuildStatus.Completed) === 0 && (build.status & BuildStatus.InProgress) === 0) {
+            this.setState({status: TimelineRecordState.Pending})
             setTimeout(this.check.bind(this), this.props.checkInterval)
             return
         }
 
         const timeline = await this.buildClient.getBuildTimeline(this.project.id, build.id)
         const recordIds: string[] = []
+        const recordStates: TimelineRecordState[] = []
         timeline.records.forEach(function (record: TimelineRecord) {
             if (record.type == "Task" && record.name == "trivy") {
                 recordIds.push(record.id)
+                recordStates.push(record.state)
             }
         })
         if (recordIds.length === 0) {
-            this.setState({error: "Timeline record(s) missing: cannot load results. Is Trivy configured to run on this build?"})
+            setTimeout(this.check.bind(this), this.props.checkInterval)
+            return
+        }
+        let worstState: TimelineRecordState = 999
+        recordStates.forEach(function (state: TimelineRecordState) {
+            if (state < worstState) {
+                worstState = state
+            }
+        })
+        if (worstState !== TimelineRecordState.Completed) {
+            this.setState({status: worstState})
+            setTimeout(this.check.bind(this), this.props.checkInterval)
             return
         }
         const attachments = await this.buildClient.getAttachments(this.project.id, build.id, "JSON_RESULT")
@@ -75,7 +89,7 @@ export class App extends React.Component<AppProps, AppState> {
             return
         }
 
-        this.setState({status: build.status})
+        this.setState({status: worstState})
 
         attachments.forEach(function (attachment: Attachment) {
             recordIds.forEach(async function (recordId) {
@@ -169,7 +183,7 @@ export class App extends React.Component<AppProps, AppState> {
 
     render() {
         return (
-            this.state.status == BuildStatus.Completed ?
+            this.state.status == TimelineRecordState.Completed ?
                 <ReportsPane reports={this.state.reports} assuranceReports={this.state.assuranceReports}/>
                 :
                 (this.state.error !== "" ?
