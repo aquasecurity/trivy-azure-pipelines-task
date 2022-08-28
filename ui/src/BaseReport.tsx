@@ -46,8 +46,8 @@ export class BaseReport extends React.Component<BaseReportProps, BaseReportState
             return 0
         }
         let total = 0
-        assurance.Results.forEach(result => {
-            result.PolicyResults.forEach(policyResult => {
+        assurance.Results?.forEach(result => {
+            result.PolicyResults?.forEach(policyResult => {
                 if (Object.prototype.hasOwnProperty.call(policyResult, "Failed")) {
                     total++
                 }
