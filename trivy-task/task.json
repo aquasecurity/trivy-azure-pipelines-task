@@ -51,6 +51,14 @@
             "helpMarkDown": "The specified image will be scanned using an 'image' scan type. If this option is used, the 'path' option cannot be set."
         },
         {
+            "name": "severity",
+            "type": "string",
+            "label": "Severity level of vulnerabilities to be displayed.",
+            "defaultValue": "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL",
+            "required": false,
+            "helpMarkDown": "Set the severity level for Trivy to display."
+        },
+        {
             "name": "exitCode",
             "type": "string",
             "label": "Exit code when Trivy detects issues.",
