@@ -43,6 +43,14 @@
             "helpMarkDown": "The specified path will be scanned using an 'fs' scan type. If this option is used, the 'image' option cannot be set."
         },
         {
+            "name": "loginDockerConfig",
+            "type": "boolean",
+            "label": "Use Docker login task DockerConfig",
+            "defaultValue": "false",
+            "required": false,
+            "helpMarkDown": "Use DOCKER_CONFIG ENV as DockerConfig (set by Docker login task)."
+        },
+        {
             "name": "image",
             "type": "string",
             "label": "The image to scan",

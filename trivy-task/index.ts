@@ -15,6 +15,7 @@ async function run() {
 
     let scanPath = task.getInput("path", false)
     let image = task.getInput("image", false)
+    let loginDockerConfig = task.getBoolInput("loginDockerConfig", false)
 
     if (scanPath === undefined && image === undefined) {
         throw new Error("You must specify something to scan. Use either the 'image' or 'path' option.")
@@ -37,7 +38,7 @@ async function run() {
         process.env.AQUA_ASSURANCE_EXPORT = assurancePath
     }
 
-    const runner = await createRunner(task.getBoolInput("docker", false));
+    const runner = await createRunner(task.getBoolInput("docker", false), loginDockerConfig);
 
     if (task.getBoolInput("debug", false)) {
         runner.arg("--debug")
@@ -90,7 +91,7 @@ function getAquaAccount(): aquaCredentials {
     }
 }
 
-async function createRunner(docker: boolean): Promise<ToolRunner> {
+async function createRunner(docker: boolean, loginDockerConfig: boolean): Promise<ToolRunner> {
     const version: string | undefined = task.getInput('version', true);
     if (version === undefined) {
         throw new Error("version is not defined")
@@ -108,7 +109,7 @@ async function createRunner(docker: boolean): Promise<ToolRunner> {
     const cwd = process.cwd()
 
     runner.line("run --rm")
-    runner.line("-v " + home + "/.docker:/root/.docker")
+    loginDockerConfig ? runner.line("-v " + task.getVariable("DOCKER_CONFIG") + ":/root/.docker") :  runner.line("-v " + home + "/.docker:/root/.docker")
     runner.line("-v /tmp:/tmp")
     runner.line("-v " + cwd + ":/src")
     runner.line("--workdir /src")
