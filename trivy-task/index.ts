@@ -16,6 +16,8 @@ async function run() {
     let scanPath = task.getInput("path", false)
     let image = task.getInput("image", false)
     let loginDockerConfig = task.getBoolInput("loginDockerConfig", false)
+    let ignoreUnfixed = task.getBoolInput("ignoreUnfixed", false)
+    let serverities = task.getInput("serverities", false) ?? 'CRITICAL,HIGH,MEDIUM,LOW'
 
     if (scanPath === undefined && image === undefined) {
         throw new Error("You must specify something to scan. Use either the 'image' or 'path' option.")
@@ -45,9 +47,9 @@ async function run() {
     }
 
     if (scanPath !== undefined) {
-        configureScan(runner, "fs", scanPath, outputPath)
+        configureScan(runner, "fs", scanPath, outputPath, serverities, ignoreUnfixed)
     } else if (image !== undefined) {
-        configureScan(runner, "image", image, outputPath)
+        configureScan(runner, "image", image, outputPath, serverities, ignoreUnfixed)
     }
 
     console.log("Running Trivy...")
@@ -129,7 +131,7 @@ async function createRunner(docker: boolean, loginDockerConfig: boolean): Promis
     return runner
 }
 
-function configureScan(runner: ToolRunner, type: string, target: string, outputPath: string) {
+function configureScan(runner: ToolRunner, type: string, target: string, outputPath: string, serverities: string, ignoreUnfixed: boolean) {
     console.log("Configuring options for image scan...")
     let exitCode = task.getInput("exitCode", false)
     if (exitCode === undefined) {
@@ -140,6 +142,11 @@ function configureScan(runner: ToolRunner, type: string, target: string, outputP
     runner.arg(["--format", "json"]);
     runner.arg(["--output", outputPath]);
     runner.arg(["--security-checks", "vuln,config,secret"])
+    runner.arg(["--severity", serverities]);
+    if (ignoreUnfixed) {
+        runner.arg(["--ignore-unfixed"]);
+    }
+
     runner.arg(target)
 }
 

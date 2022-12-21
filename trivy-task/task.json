@@ -59,6 +59,22 @@
             "helpMarkDown": "The specified image will be scanned using an 'image' scan type. If this option is used, the 'path' option cannot be set."
         },
         {
+            "name": "serverities",
+            "type": "string",
+            "label": "The serverities to include in the scan (comma sperated)",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The specified path or image will be scanned for the provided serverities."
+        },
+        {
+            "name": "ignoreUnfixed",
+            "type": "boolean",
+            "label": "Ignore unpatched/unfixed vulnerabilities",
+            "defaultValue": false,
+            "required": false,
+            "helpMarkDown": "This means you can't fix these vulnerabilities even if you update all packages."
+        },
+        {
             "name": "exitCode",
             "type": "string",
             "label": "Exit code when Trivy detects issues.",
