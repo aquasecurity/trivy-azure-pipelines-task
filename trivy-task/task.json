@@ -51,6 +51,30 @@
             "helpMarkDown": "The specified image will be scanned using an 'image' scan type. If this option is used, the 'path' option cannot be set."
         },
         {
+            "name": "DoVulnerabilityCheck",
+            "type": "boolean",
+            "label": "Weither to activate vulerability check or not",
+            "defaultValue": "true",
+            "required": false,
+            "helpMarkDown": "If set, Trivy will check for vulnerability"
+        },
+        {
+            "name": "DoConfigurationCheck",
+            "type": "boolean",
+            "label": "Weither to activate configuration check or not",
+            "defaultValue": "true",
+            "required": false,
+            "helpMarkDown": "If set, Trivy will check for misconfiguration"
+        },
+        {
+            "name": "DoSecretCheck",
+            "type": "boolean",
+            "label": "Weither to activate secret check or not",
+            "defaultValue": "true",
+            "required": false,
+            "helpMarkDown": "If set, Trivy will check for secret in code"
+        },
+        {
             "name": "exitCode",
             "type": "string",
             "label": "Exit code when Trivy detects issues.",
