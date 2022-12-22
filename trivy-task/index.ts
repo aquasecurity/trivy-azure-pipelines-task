@@ -139,6 +139,36 @@ function configureScan(runner: ToolRunner, type: string, target: string, outputP
     runner.arg(["--format", "json"]);
     runner.arg(["--output", outputPath]);
     runner.arg(["--security-checks", "vuln,config,secret"])
+    
+    if(task.getInput("DoVulnerabilityCheck", false)){
+        if(task.getInput("DoConfigurationCheck", false)){
+            if(task.getInput("DoSecretCheck", false)){
+                runner.arg(["--security-checks", "vuln,config,secret"])
+            } else {
+                runner.arg(["--security-checks", "vuln,config"])
+            }
+        } else {
+            if(task.getInput("DoSecretCheck", false)){
+                runner.arg(["--security-checks", "vuln,secret"])
+            } else {
+                runner.arg(["--security-checks", "vuln"])
+            }
+        }
+    } else {
+        if(task.getInput("DoConfigurationCheck", false)){
+            if(task.getInput("DoSecretCheck", false)){
+                runner.arg(["--security-checks", "config,secret"])
+            } else {
+                runner.arg(["--security-checks", "config"])
+            }
+        } else {
+            if(task.getInput("DoSecretCheck", false)){
+                runner.arg(["--security-checks", "secret"])
+            } else {
+                runner.arg(["--security-checks", ""])
+            }
+        }   
+    }
     runner.arg(target)
 }
 
