@@ -17,7 +17,7 @@ async function run() {
     let image = task.getInput("image", false)
     let loginDockerConfig = task.getBoolInput("loginDockerConfig", false)
     let ignoreUnfixed = task.getBoolInput("ignoreUnfixed", false)
-    let severities = task.getInput("severities", false) ?? 'CRITICAL,HIGH,MEDIUM,LOW'
+    let severities = task.getInput("severities", false)
 
     if (scanPath === undefined && image === undefined) {
         throw new Error("You must specify something to scan. Use either the 'image' or 'path' option.")
