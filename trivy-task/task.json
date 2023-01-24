@@ -59,10 +59,10 @@
             "helpMarkDown": "The specified image will be scanned using an 'image' scan type. If this option is used, the 'path' option cannot be set."
         },
         {
-            "name": "serverities",
+            "name": "severities",
             "type": "string",
-            "label": "The serverities to include in the scan (comma sperated)",
-            "defaultValue": "",
+            "label": "The severities (CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN) to include in the scan (comma sperated)",
+            "defaultValue": "CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN",
             "required": false,
             "helpMarkDown": "The specified path or image will be scanned for the provided serverities."
         },
