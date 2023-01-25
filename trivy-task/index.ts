@@ -142,7 +142,9 @@ function configureScan(runner: ToolRunner, type: string, target: string, outputP
     runner.arg(["--format", "json"]);
     runner.arg(["--output", outputPath]);
     runner.arg(["--security-checks", "vuln,config,secret"])
-    runner.arg(["--severity", severities]);
+    if (severities.length) {
+        runner.arg(["--severity", severities]);
+    }
     if (ignoreUnfixed) {
         runner.arg(["--ignore-unfixed"]);
     }
