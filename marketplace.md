@@ -22,8 +22,11 @@ You can supply several inputs to customise the task.
 |--------------|--------------------------------------------------------------------------------------------------------------------------------------|
 | `version`    | The version of Trivy to use. Currently defaults to `latest`.                                                                         |
 | `docker`     | Run Trivy using the aquasec/trivy docker image. Alternatively the Trivy binary will be run natively. Defaults to `true`.             |
+| `loginDockerConfig` | Set this to true if the `Docker login` task is used to access private repositories. Defaults to `false`.                      |
 | `debug`      | Enable debug logging in the build output.                                                                                            |
 | `path`       | The path to scan relative to the root of the repository being scanned, if an `fs` scan is required. Cannot be set if `image` is set. |
+| `severities` | The severities (`CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN`) to include in the scan (comma sperated). Defaults to `CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN`. |
+| `ignoreUnfixed` | When set to `true` all unfixed vulnerabilities will be skipped. Defaults to `false`.                                               |
 | `image`      | The image to scan if an `image` scan is required. Cannot be set if `path` is set.                                                    |
 | `exitCode`   | The exit-code to use when Trivy detects issues. Set to `0` to prevent the build failing when Trivy finds issues. Defaults to `1`.    |
 | `aquaKey`    | The Aqua API Key to use to link scan results to your Aqua Security account _(not required)_.                                         |
