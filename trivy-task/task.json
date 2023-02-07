@@ -43,6 +43,14 @@
             "helpMarkDown": "The specified path will be scanned using an 'fs' scan type. If this option is used, the 'image' option cannot be set."
         },
         {
+            "name": "loginDockerConfig",
+            "type": "boolean",
+            "label": "Use Docker login task DockerConfig",
+            "defaultValue": "false",
+            "required": false,
+            "helpMarkDown": "Use DOCKER_CONFIG ENV as DockerConfig (set by Docker login task)."
+        },
+        {
             "name": "image",
             "type": "string",
             "label": "The image to scan",
@@ -73,6 +81,22 @@
             "defaultValue": "true",
             "required": false,
             "helpMarkDown": "If set, Trivy will check for secret in code"
+        },
+        {
+            "name": "severities",
+            "type": "string",
+            "label": "The severities (CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN) to include in the scan (comma sperated)",
+            "defaultValue": "CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN",
+            "required": false,
+            "helpMarkDown": "The specified path or image will be scanned for the provided serverities."
+        },
+        {
+            "name": "ignoreUnfixed",
+            "type": "boolean",
+            "label": "Ignore unpatched/unfixed vulnerabilities",
+            "defaultValue": false,
+            "required": false,
+            "helpMarkDown": "This means you can't fix these vulnerabilities even if you update all packages."
         },
         {
             "name": "exitCode",

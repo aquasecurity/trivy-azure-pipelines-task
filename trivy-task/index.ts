@@ -15,6 +15,9 @@ async function run() {
 
     let scanPath = task.getInput("path", false)
     let image = task.getInput("image", false)
+    let loginDockerConfig = task.getBoolInput("loginDockerConfig", false)
+    let ignoreUnfixed = task.getBoolInput("ignoreUnfixed", false)
+    let severities = task.getInput("severities", false) ?? ""
 
     if (scanPath === undefined && image === undefined) {
         throw new Error("You must specify something to scan. Use either the 'image' or 'path' option.")
@@ -37,16 +40,16 @@ async function run() {
         process.env.AQUA_ASSURANCE_EXPORT = assurancePath
     }
 
-    const runner = await createRunner(task.getBoolInput("docker", false));
+    const runner = await createRunner(task.getBoolInput("docker", false), loginDockerConfig);
 
     if (task.getBoolInput("debug", false)) {
         runner.arg("--debug")
     }
 
     if (scanPath !== undefined) {
-        configureScan(runner, "fs", scanPath, outputPath)
+        configureScan(runner, "fs", scanPath, outputPath, severities, ignoreUnfixed)
     } else if (image !== undefined) {
-        configureScan(runner, "image", image, outputPath)
+        configureScan(runner, "image", image, outputPath, severities, ignoreUnfixed)
     }
 
     console.log("Running Trivy...")
@@ -90,7 +93,7 @@ function getAquaAccount(): aquaCredentials {
     }
 }
 
-async function createRunner(docker: boolean): Promise<ToolRunner> {
+async function createRunner(docker: boolean, loginDockerConfig: boolean): Promise<ToolRunner> {
     const version: string | undefined = task.getInput('version', true);
     if (version === undefined) {
         throw new Error("version is not defined")
@@ -108,7 +111,7 @@ async function createRunner(docker: boolean): Promise<ToolRunner> {
     const cwd = process.cwd()
 
     runner.line("run --rm")
-    runner.line("-v " + home + "/.docker:/root/.docker")
+    loginDockerConfig ? runner.line("-v " + task.getVariable("DOCKER_CONFIG") + ":/root/.docker") :  runner.line("-v " + home + "/.docker:/root/.docker")
     runner.line("-v /tmp:/tmp")
     runner.line("-v " + cwd + ":/src")
     runner.line("--workdir /src")
@@ -128,7 +131,7 @@ async function createRunner(docker: boolean): Promise<ToolRunner> {
     return runner
 }
 
-function configureScan(runner: ToolRunner, type: string, target: string, outputPath: string) {
+function configureScan(runner: ToolRunner, type: string, target: string, outputPath: string, severities: string, ignoreUnfixed: boolean) {
     console.log("Configuring options for image scan...")
     let exitCode = task.getInput("exitCode", false)
     if (exitCode === undefined) {
@@ -169,6 +172,14 @@ function configureScan(runner: ToolRunner, type: string, target: string, outputP
             }
         }   
     }
+
+    if (severities.length) {
+        runner.arg(["--severity", severities]);
+    }
+    if (ignoreUnfixed) {
+        runner.arg(["--ignore-unfixed"]);
+    }
+
     runner.arg(target)
 }
 
