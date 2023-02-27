@@ -105,6 +105,14 @@
             "defaultValue": "false",
             "required": false,
             "helpMarkDown": "Not recommended."
+        },
+        {
+            "name": "options",
+            "type": "string",
+            "label": "Additional Options",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "Additional options to add to Trivy command line."
         }
     ],
     "execution": {
