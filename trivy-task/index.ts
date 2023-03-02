@@ -150,7 +150,7 @@ function configureScan(runner: ToolRunner, type: string, target: string, outputP
         runner.arg(["--ignore-unfixed"]);
     }
     if (options.length) {
-        runner.arg(options)
+        runner.line(options)
     }
 
     runner.arg(target)
