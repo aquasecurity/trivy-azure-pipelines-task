@@ -112,7 +112,7 @@
             "label": "Additional Options",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "Additional options to add to Trivy command line."
+            "helpMarkDown": "Additional flags to pass to Trivy command line."
         }
     ],
     "execution": {
