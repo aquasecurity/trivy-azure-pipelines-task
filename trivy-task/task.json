@@ -62,7 +62,7 @@
             "name": "severities",
             "type": "string",
             "label": "The severities (CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN) to include in the scan (comma sperated)",
-            "defaultValue": "CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN",
+            "defaultValue": "",
             "required": false,
             "helpMarkDown": "The specified path or image will be scanned for the provided serverities."
         },
