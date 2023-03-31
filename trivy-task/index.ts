@@ -18,6 +18,7 @@ async function run() {
     let loginDockerConfig = task.getBoolInput("loginDockerConfig", false)
     let ignoreUnfixed = task.getBoolInput("ignoreUnfixed", false)
     let severities = task.getInput("severities", false) ?? ""
+    let options = task.getInput("options", false) ?? ""
 
     if (scanPath === undefined && image === undefined) {
         throw new Error("You must specify something to scan. Use either the 'image' or 'path' option.")
@@ -47,9 +48,9 @@ async function run() {
     }
 
     if (scanPath !== undefined) {
-        configureScan(runner, "fs", scanPath, outputPath, severities, ignoreUnfixed)
+        configureScan(runner, "fs", scanPath, outputPath, severities, ignoreUnfixed, options)
     } else if (image !== undefined) {
-        configureScan(runner, "image", image, outputPath, severities, ignoreUnfixed)
+        configureScan(runner, "image", image, outputPath, severities, ignoreUnfixed, options)
     }
 
     console.log("Running Trivy...")
@@ -131,7 +132,7 @@ async function createRunner(docker: boolean, loginDockerConfig: boolean): Promis
     return runner
 }
 
-function configureScan(runner: ToolRunner, type: string, target: string, outputPath: string, severities: string, ignoreUnfixed: boolean) {
+function configureScan(runner: ToolRunner, type: string, target: string, outputPath: string, severities: string, ignoreUnfixed: boolean, options: string) {
     console.log("Configuring options for image scan...")
     let exitCode = task.getInput("exitCode", false)
     if (exitCode === undefined) {
@@ -147,6 +148,9 @@ function configureScan(runner: ToolRunner, type: string, target: string, outputP
     }
     if (ignoreUnfixed) {
         runner.arg(["--ignore-unfixed"]);
+    }
+    if (options.length) {
+        runner.line(options)
     }
 
     runner.arg(target)
