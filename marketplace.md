@@ -68,5 +68,7 @@ steps:
     containerRegistry: dockerRegistryServiceConnection1
 - task: trivy@1
   inputs:
-    image: my.registry/org/my-image:latest
+    image: my.private.registry/org/my-image:latest
+    # Needed to access private repo 
+    loginDockerConfig: true
 ```
