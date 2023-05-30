@@ -63,7 +63,7 @@ export class App extends React.Component<AppProps, AppState> {
         const recordIds: string[] = []
         const recordStates: TimelineRecordState[] = []
         timeline.records.forEach(function (record: TimelineRecord) {
-            if (record.type == "Task" && record.task !== null && record.task.name == "trivy") {
+            if (record.type == "Task" && record.task !== null && record.name == "trivy") {
                 recordIds.push(record.id)
                 recordStates.push(record.state)
             }
