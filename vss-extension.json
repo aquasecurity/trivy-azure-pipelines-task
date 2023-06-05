@@ -2,14 +2,14 @@
     "manifestVersion": 1,
     "id": "trivy-infotrack",
     "publisher": "InfoTrack",
-    "version": "VERSION_PLACEHOLDER",
+    "version": "1.0.0",
     "name": "trivy",
     "description": "InfoTrackTrivy is the world’s most popular open source vulnerability and misconfiguration scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.",
     "repository": {
         "type": "git",
         "uri": "https://github.com/InfoTrackGlobal/trivy-azure-pipelines-task"
     },
-    "public": true,
+    "public": false,
     "categories": [
         "Azure Pipelines"
     ],
@@ -88,14 +88,14 @@
             }
         },
         {
-            "id": "trivy-tab",
+            "id": "infotrack-security-tab",
             "type": "ms.vss-build-web.build-results-tab",
             "description": "Results for trivy scan(s)",
             "targets": ["ms.vss-build-web.build-results-view"],
             "properties": {
-                "name": "Trivy",
+                "name": "Security",
                 "uri": "index.html",                
-                "supportsTasks": ["8f9cb13f-f551-439c-83e4-fac6801c3fab"]
+                "supportsTasks": ["8f9c1233-f551-439c-83e4-fac6801c1234"]
             }
         }
     ],

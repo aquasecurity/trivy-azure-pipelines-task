@@ -88,14 +88,14 @@
             }
         },
         {
-            "id": "trivy-tab",
+            "id": "infotrack-security-tab",
             "type": "ms.vss-build-web.build-results-tab",
             "description": "Results for trivy scan(s)",
             "targets": ["ms.vss-build-web.build-results-view"],
             "properties": {
-                "name": "Trivy",
+                "name": "Security",
                 "uri": "index.html",                
-                "supportsTasks": ["8f9cb13f-f551-439c-83e4-fac6801c3fab"]
+                "supportsTasks": ["8f9c1233-f551-439c-83e4-fac6801c1234"]
             }
         }
     ],
