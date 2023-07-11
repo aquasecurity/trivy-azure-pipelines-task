@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
-    "id": "8f9c1233-f551-439c-83e4-fac6801c1234",
+    "id": "8f9c1233-f551-439c-83e4-fac6801c1235",
     "name": "trivy",
     "friendlyName": "InfoTrack Trivy: Take control of your application security",
     "description": "InfoTrack Trivy is the world’s most popular open source vulnerability and misconfiguration scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.",

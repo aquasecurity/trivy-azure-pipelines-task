@@ -2,6 +2,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "react-scripts build",
+    "start": "set HTTPS=true&&set PORT=44300&&react-scripts start",
     "lint": "eslint --ignore-path .eslintignore --ext .js,.ts,.tsx src/"
   },
   "homepage": "./",

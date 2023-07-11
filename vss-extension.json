@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "trivy-infotrack",
     "publisher": "InfoTrack",
-    "version": "1.0.0",
+    "version": "VERSION_PLACEHOLDER",
     "name": "trivy",
     "description": "InfoTrackTrivy is the world’s most popular open source vulnerability and misconfiguration scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.",
     "repository": {
@@ -88,14 +88,13 @@
             }
         },
         {
-            "id": "infotrack-security-tab",
+            "id": "trivy-tab",
             "type": "ms.vss-build-web.build-results-tab",
             "description": "Results for trivy scan(s)",
             "targets": ["ms.vss-build-web.build-results-view"],
             "properties": {
-                "name": "Security",
-                "uri": "index.html",                
-                "supportsTasks": ["8f9c1233-f551-439c-83e4-fac6801c1234"]
+                "name": "Trivy",
+                "uri": "index.html"
             }
         }
     ],
