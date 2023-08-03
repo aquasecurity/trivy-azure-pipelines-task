@@ -21,12 +21,16 @@ build-task: clean
 .PHONY: build
 build: clean build-task build-ui
 
+.PHONY: install-deps
+install-deps:
+	npm install -g tfx-cli
+
 .PHONY: package
-package: build
+package: build install-deps
 	tfx extension create --manifest-globs vss-extension.json
 
 .PHONY: package-dev
-package-dev: build
+package-dev: build install-deps
 	tfx extension create --manifest-globs vss-extension.dev.json
 
 .PHONY: local

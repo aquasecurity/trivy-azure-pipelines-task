@@ -116,7 +116,7 @@ export class ReportsPane extends React.Component<ReportsPaneProps, ReportsPaneSt
                                     </div>
                                 </Card>
                             </div>
-                            <div className="flex-row">
+                            <div className="flex-row" style={{overflow: "auto"}}>
                                 <TabBar
                                     onSelectedTabChanged={this.onSelectedTabChanged}
                                     selectedTabId={this.state.selectedTabId}
