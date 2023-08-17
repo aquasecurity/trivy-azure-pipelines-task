@@ -116,6 +116,17 @@ export interface Report {
     Results: Result[]
 }
 
+export interface SummaryEntry {
+    repository: string
+    owner: string
+    secretsCount: number
+}
+
+export interface Summary {
+    id: string
+    results: SummaryEntry[]
+}
+
 export interface AssuranceReport {
     Report: Report
     Results: AssuranceResult[]

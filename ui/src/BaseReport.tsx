@@ -21,7 +21,6 @@ interface BaseReportState {
     selectedTabId: string
 }
 
-
 export class BaseReport extends React.Component<BaseReportProps, BaseReportState> {
 
     public props: BaseReportProps
@@ -30,7 +29,7 @@ export class BaseReport extends React.Component<BaseReportProps, BaseReportState
         super(props)
         this.props = props
         this.state = {
-            selectedTabId: "vulnerabilities"
+            selectedTabId: "secrets"
         }
     }
 
@@ -65,12 +64,12 @@ export class BaseReport extends React.Component<BaseReportProps, BaseReportState
                         selectedTabId={this.state.selectedTabId}
                         tabSize={TabSize.Tall}
                     >
+                        <Tab id="secrets" name="Secrets" key="secrets"
+                             badgeCount={countReportSecrets(this.props.report)}/>
                         <Tab id="vulnerabilities" name="Vulnerabilities" key="vulnerabilities"
                              badgeCount={countReportVulnerabilities(this.props.report)}/>
                         <Tab id="misconfigurations" name="Misconfigurations" key="misconfigurations"
                              badgeCount={countReportMisconfigurations(this.props.report)}/>
-                        <Tab id="secrets" name="Secrets" key="secrets"
-                             badgeCount={countReportSecrets(this.props.report)}/>
                         {
                             this.props.assurance !== undefined &&
                             <Tab id="assurance" name="Assurance Issues" key="assurance" badgeCount={this.countAssuranceIssues(this.props.assurance)}/>
@@ -78,6 +77,12 @@ export class BaseReport extends React.Component<BaseReportProps, BaseReportState
                     </TabBar>
                 </div>
                 <div className="tab-content flex-row">
+                {
+                    this.state.selectedTabId === "secrets" &&
+                    <div className="flex-grow">
+                        <SecretsTable results={this.props.report.Results}/>
+                    </div>
+                }
                 {
                     this.state.selectedTabId === "vulnerabilities" &&
                     <div className="flex-grow">
@@ -88,12 +93,6 @@ export class BaseReport extends React.Component<BaseReportProps, BaseReportState
                     this.state.selectedTabId === "misconfigurations" &&
                     <div className="flex-grow">
                         <MisconfigurationsTable results={this.props.report.Results}/>
-                    </div>
-                }
-                {
-                    this.state.selectedTabId === "secrets" &&
-                    <div className="flex-grow">
-                        <SecretsTable results={this.props.report.Results}/>
                     </div>
                 }
                 {

@@ -21,7 +21,7 @@ export class FilesystemReport extends React.Component<FilesystemReportProps> {
         return (
             <div className="flex-grow">
                 <h2>{getReportTitle(this.props.report)}</h2>
-                <div className="flex-row">
+                <div className="flex-row" style={{paddingBottom: "5px"}}>
                     <ReportStats report={this.props.report}/>
                 </div>
                 <div className="flex-row">
