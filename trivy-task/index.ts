@@ -4,7 +4,7 @@ import * as tool from 'azure-pipelines-tool-lib';
 import {ToolRunner} from 'azure-pipelines-task-lib/toolrunner';
 import task = require('azure-pipelines-task-lib/task');
 
-const latestTrivyVersion = "v0.38.2"
+const latestTrivyVersion = "v0.44.1"
 const tmpPath = "/tmp/"
 
 async function run() {
