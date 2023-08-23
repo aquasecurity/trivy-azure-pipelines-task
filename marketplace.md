@@ -31,6 +31,7 @@ You can supply several inputs to customise the task.
 | `exitCode`   | The exit-code to use when Trivy detects issues. Set to `0` to prevent the build failing when Trivy finds issues. Defaults to `1`.    |
 | `aquaKey`    | The Aqua API Key to use to link scan results to your Aqua Security account _(not required)_.                                         |
 | `aquaSecret` | The Aqua API Secret to use to link scan results to your Aqua Security account _(not required)_.                                      |
+| `options`    | Additional flags to pass to trivy. Example: `--timeout 10m0s` _(not required)_.                                                      |
 
 ### Example of scanning multiple targets
 

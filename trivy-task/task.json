@@ -62,7 +62,7 @@
             "name": "severities",
             "type": "string",
             "label": "The severities (CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN) to include in the scan (comma sperated)",
-            "defaultValue": "CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN",
+            "defaultValue": "",
             "required": false,
             "helpMarkDown": "The specified path or image will be scanned for the provided serverities."
         },
@@ -105,6 +105,14 @@
             "defaultValue": "false",
             "required": false,
             "helpMarkDown": "Not recommended."
+        },
+        {
+            "name": "options",
+            "type": "string",
+            "label": "Additional Options",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "Additional flags to pass to Trivy command line."
         }
     ],
     "execution": {
