@@ -17,6 +17,7 @@ import {ITableColumn} from "azure-devops-ui/Components/Table/Table.Props";
 
 interface SecretsTableProps {
     results: Result[]
+    artifactName: string
 }
 
 interface ListSecret extends ISimpleTableCell {
@@ -24,7 +25,7 @@ interface ListSecret extends ISimpleTableCell {
     Category: ISimpleListCell
     RuleID: ISimpleListCell
     Title: ISimpleListCell
-    Location: ISimpleListCell
+    Location: ISimpleListCell    
     Match: ISimpleListCell
 }
 
@@ -135,7 +136,8 @@ export class SecretsTable extends React.Component<SecretsTableProps> {
     constructor(props: SecretsTableProps) {
         super(props)
 
-        this.results = new ObservableArray<ListSecret>(convertSecrets(props.results))
+        this.results = new ObservableArray<ListSecret>(convertSecrets(props.results, props.artifactName))
+        
         // sort by severity desc by default
         this.results.splice(
             0,
@@ -159,7 +161,7 @@ export class SecretsTable extends React.Component<SecretsTableProps> {
                 SortOrder.descending,
                 sortFunctions,
                 fixedColumns,
-                convertSecrets(this.props.results)
+                convertSecrets(this.props.results, this.props.artifactName)
             ))
     }
 
@@ -208,17 +210,23 @@ export class SecretsTable extends React.Component<SecretsTableProps> {
     }
 }
 
-function convertLocation(result: Result, secret: Secret): ISimpleListCell {
+function convertLocation(result: Result, secret: Secret, artifactName: string): ISimpleListCell {
     let combined = result.Target + ":" + secret.StartLine
+
+    //https://github.com/{OrgName}/{repoName}/blob/{branch}/{target}#L{StartLine}
+    let location = "https://github.com/InfoTrackGlobal/" + artifactName + "/blob/main/" + result.Target + "#L" + secret.StartLine
+   
     if (secret.StartLine > secret.EndLine) {
         combined += "-" + secret.EndLine
     }
     return {
         text: combined,
+        href: location,
+        hrefTarget: "_blank"
     }
 }
 
-function convertSecrets(results: Result[]): ListSecret[] {
+function convertSecrets(results: Result[], artifactName: string): ListSecret[] {
     const output: ListSecret[] = []
     results?.forEach(result => {
         if (Object.prototype.hasOwnProperty.call(result, "Secrets") && result.Secrets !== null) {
@@ -230,7 +238,7 @@ function convertSecrets(results: Result[]): ListSecret[] {
                     },
                     RuleID: { text: secret.RuleID },
                     Title: { text: secret.Title },
-                    Location: convertLocation(result, secret),
+                    Location: convertLocation(result, secret, artifactName),
                     Match: { text: secret.Match },
                 })
             })

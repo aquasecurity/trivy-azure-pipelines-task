@@ -113,7 +113,8 @@ export interface Report {
     ArtifactName: string
     ArtifactType: ArtifactType
     Metadata: Metadata
-    Results: Result[]
+    Results: Result[]    
+    DefaultBranch: string
 }
 
 export interface SummaryEntry {

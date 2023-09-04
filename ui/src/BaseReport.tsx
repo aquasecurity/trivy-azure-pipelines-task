@@ -80,7 +80,7 @@ export class BaseReport extends React.Component<BaseReportProps, BaseReportState
                 {
                     this.state.selectedTabId === "secrets" &&
                     <div className="flex-grow">
-                        <SecretsTable results={this.props.report.Results}/>
+                        <SecretsTable results={this.props.report.Results} artifactName={this.props.report.ArtifactName}/>
                     </div>
                 }
                 {
