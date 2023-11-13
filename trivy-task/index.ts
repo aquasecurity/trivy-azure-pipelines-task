@@ -4,7 +4,7 @@ import * as tool from 'azure-pipelines-tool-lib';
 import {ToolRunner} from 'azure-pipelines-task-lib/toolrunner';
 import task = require('azure-pipelines-task-lib/task');
 
-const latestTrivyVersion = "v0.38.2"
+const latestTrivyVersion = "v0.47.0"
 const tmpPath = "/tmp/"
 
 async function run() {
@@ -217,7 +217,7 @@ async function getArtifactURL(version: string): Promise<string> {
     }
     // e.g. trivy_0.29.1_Linux-ARM.tar.gz
     let artifact: string = util.format("trivy_%s_Linux-%s.tar.gz", stripV(version), arch);
-    return util.format("https://github.com/aquasecurity/trivy/releases/download/%s/%s", version, artifact);
+    return util.format("https://github.com/aquasecurity/trivy/releases/download/v%s/%s", version, artifact);
 }
 
 run().catch((err: Error) => {
