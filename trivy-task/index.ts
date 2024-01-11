@@ -114,6 +114,7 @@ async function createRunner(docker: boolean, loginDockerConfig: boolean): Promis
     runner.line("run --rm")
     loginDockerConfig ? runner.line("-v " + task.getVariable("DOCKER_CONFIG") + ":/root/.docker") :  runner.line("-v " + home + "/.docker:/root/.docker")
     runner.line("-v /tmp:/tmp")
+    runner.line("-v /var/run/docker.sock:/var/run/docker.sock")
     runner.line("-v " + cwd + ":/src")
     runner.line("--workdir /src")
     if(hasAquaAccount()) {
