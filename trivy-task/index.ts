@@ -142,7 +142,6 @@ function configureScan(runner: ToolRunner, type: string, target: string, outputP
     runner.arg(["--exit-code", exitCode]);
     runner.arg(["--format", "json"]);
     runner.arg(["--output", outputPath]);
-    runner.arg(["--security-checks", "vuln,config,secret"])
     if (severities.length) {
         runner.arg(["--severity", severities]);
     }
@@ -151,6 +150,8 @@ function configureScan(runner: ToolRunner, type: string, target: string, outputP
     }
     if (options.length) {
         runner.line(options)
+    } else {
+        runner.arg(["--scanner", "vuln,misconfig,secret"])
     }
 
     runner.arg(target)
