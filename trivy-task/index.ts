@@ -152,7 +152,7 @@ function configureScan(runner: ToolRunner, type: string, target: string, outputP
     if (options.length) {
         runner.line(options)
     } else {
-        runner.arg(["--scanner", "vuln,misconfig,secret"])
+        runner.arg(["--scanners", "vuln,misconfig,secret"])
     }
 
     runner.arg(target)
