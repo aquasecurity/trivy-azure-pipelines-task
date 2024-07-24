@@ -167,24 +167,35 @@ async function installTrivy(version: string): Promise<string> {
     }
     if (os.platform() != "linux") {
         throw new Error("Only Linux is currently supported")
-    }
+    }  
 
-    let url = await getArtifactURL(version)
+    const bin = "trivy"
 
-    let bin = "trivy"
-
-    let localPath = tmpPath + bin;
-    task.rmRF(localPath);
-
-    console.log("Downloading Trivy...")
-    let downloadPath = await tool.downloadTool(url, localPath);
-
-    console.log("Extracting Trivy...")
-    await tool.extractTar(downloadPath, tmpPath)
+    const localPath = tmpPath + bin
+    
     const binPath = tmpPath + bin
 
-    console.log("Setting permissions...")
-    await task.exec('chmod', ["+x", binPath]);
+    const artifact = getArtifactName(version)
+    
+    const installedAlready = task.exist(localPath + "/" + artifact)
+
+    if (installedAlready) {        
+        console.log("Trivy Already Installed.")
+    } else {
+        const url = getArtifactURL(version, artifact)
+
+        task.rmRF(localPath);
+    
+        console.log("Downloading Trivy...")
+        const downloadPath = await tool.downloadTool(url, localPath);
+    
+        console.log("Extracting Trivy...")
+        await tool.extractTar(downloadPath, tmpPath)
+    
+        console.log("Setting permissions...")
+        await task.exec('chmod', ["+x", binPath]);
+    }
+   
     return binPath
 }
 
@@ -195,7 +206,14 @@ function stripV(version: string): string {
     return version
 }
 
-async function getArtifactURL(version: string): Promise<string> {
+function getArtifactURL(version: string, artifact: string): string {
+    if(version === "latest") {
+        version = latestTrivyVersion
+    }
+    return util.format("https://github.com/aquasecurity/trivy/releases/download/%s/%s", version, artifact);
+}
+
+function getArtifactName(version: string): string {
     if(version === "latest") {
         version = latestTrivyVersion
     }
@@ -219,7 +237,7 @@ async function getArtifactURL(version: string): Promise<string> {
     }
     // e.g. trivy_0.29.1_Linux-ARM.tar.gz
     let artifact: string = util.format("trivy_%s_Linux-%s.tar.gz", stripV(version), arch);
-    return util.format("https://github.com/aquasecurity/trivy/releases/download/%s/%s", version, artifact);
+    return artifact;
 }
 
 run().catch((err: Error) => {
