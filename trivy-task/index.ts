@@ -95,10 +95,7 @@ function getAquaAccount(): aquaCredentials {
 }
 
 async function createRunner(docker: boolean, loginDockerConfig: boolean): Promise<ToolRunner> {
-    const version: string | undefined = task.getInput('version', true);
-    if (version === undefined) {
-        throw new Error("version is not defined")
-    }
+    const version = getVersion();
 
     if (!docker) {
         console.log("Run requested using local Trivy binary...")
@@ -152,10 +149,28 @@ function configureScan(runner: ToolRunner, type: string, target: string, outputP
     if (options.length) {
         runner.line(options)
     } else {
-        runner.arg(["--scanners", "vuln,misconfig,secret"])
+		const version = stripV(getVersion());
+		if(version < "0.40.0") {
+			runner.arg(["--security-checks", "vuln,config,secret"])
+		} else if(version < "0.48.0") {
+			runner.arg(["--scanners", "vuln,config,secret"])
+		} else {
+			runner.arg(["--scanners", "vuln,misconfig,secret"])
+		}
     }
 
     runner.arg(target)
+}
+
+function getVersion() {
+	const version: string | undefined = task.getInput('version', true);
+    if (version === undefined) {
+        throw new Error("version is not defined")
+    }
+	if (version === "latest") {
+		version = latestTrivyVersion
+	}
+	return version;
 }
 
 async function installTrivy(version: string): Promise<string> {
@@ -196,9 +211,6 @@ function stripV(version: string): string {
 }
 
 async function getArtifactURL(version: string): Promise<string> {
-    if(version === "latest") {
-        version = latestTrivyVersion
-    }
     console.log("Required Trivy version is " + version)
     let arch = ""
     switch (os.arch()) {
