@@ -96,14 +96,27 @@ function getAquaAccount(): aquaCredentials {
 
 async function createRunner(docker: boolean, loginDockerConfig: boolean): Promise<ToolRunner> {
     const version: string | undefined = task.getInput('version', true);
+    const useSystemInstallation: boolean = task.getBoolInput("useSystemInstallation", false)
     if (version === undefined) {
         throw new Error("version is not defined")
     }
 
     if (!docker) {
-        console.log("Run requested using local Trivy binary...")
-        const trivyPath = await installTrivy(version)
-        return task.tool(trivyPath);
+        if (!useSystemInstallation) {
+            console.log("Run requested using local Trivy binary...")
+            const trivyPath = await installTrivy(version)
+            return task.tool(trivyPath);
+        }
+        else {
+            try {
+                console.log("Run requested using system Trivy binary...")
+                const trivyPath = task.which("trivy", true)
+                return task.tool(trivyPath);
+            }
+            catch (err) {
+                throw new Error("Failed to find trivy tool in system paths.");
+            }
+        }
     }
 
     console.log("Run requested using docker...")

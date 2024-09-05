@@ -113,6 +113,14 @@
             "defaultValue": "",
             "required": false,
             "helpMarkDown": "Additional flags to pass to Trivy command line."
+        },
+        {
+            "name": "useSystemInstallation",
+            "type": "boolean",
+            "label": "Run Trivy using from the system PATH.",
+            "defaultValue": "false",
+            "required": false,
+            "helpMarkDown": "Use Trivy executable pre-installed as system package. If this option is used, the 'version' option is ignored."
         }
     ],
     "execution": {
