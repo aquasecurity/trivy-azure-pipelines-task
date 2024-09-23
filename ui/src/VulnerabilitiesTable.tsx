@@ -25,6 +25,7 @@ interface ListVulnerability extends ISimpleTableCell {
     PkgName: ISimpleListCell
     Title: ISimpleListCell
     FixAvailable: ISimpleListCell
+    FixedVersion: ISimpleListCell
 }
 
 function renderVulnerabilitySeverity(rowIndex: number, columnIndex: number, tableColumn: ITableColumn<ListVulnerability>, tableItem: ListVulnerability): JSX.Element {
@@ -84,6 +85,18 @@ const fixedColumns = [
         columnLayout: TableColumnLayout.singleLine,
         id: "FixAvailable",
         name: "Fix Available",
+        readonly: true,
+        renderCell: renderSimpleCell,
+        width: new ObservableValue(-5),
+        sortProps: {
+            ariaLabelAscending: "Sorted A to Z",
+            ariaLabelDescending: "Sorted Z to A",
+        },
+    },
+    {
+        columnLayout: TableColumnLayout.singleLine,
+        id: "FixedVersion",
+        name: "Fixed Version",
         readonly: true,
         renderCell: renderSimpleCell,
         width: new ObservableValue(-5),
@@ -203,7 +216,7 @@ function convertVulnerabilities(results: Result[]): ListVulnerability[] {
                     PkgName: {text: vulnerability.PkgName},
                     Title: {text: vulnerability.Title},
                     FixAvailable: {text: vulnerability.FixedVersion ? "Yes" : "No"},
-
+                    FixedVersion: {text: vulnerability.FixedVersion ?? "N/A"},
                 })
             })
         }
