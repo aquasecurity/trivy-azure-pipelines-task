@@ -3,8 +3,9 @@ import * as util from 'util';
 import * as tool from 'azure-pipelines-tool-lib';
 import {ToolRunner} from 'azure-pipelines-task-lib/toolrunner';
 import task = require('azure-pipelines-task-lib/task');
+import { homedir } from 'os';
 
-const latestTrivyVersion = "v0.53.0"
+const latestTrivyVersion = "v0.59.1"
 const tmpPath = "/tmp/"
 
 async function run() {
@@ -13,12 +14,12 @@ async function run() {
     const outputPath = tmpPath + "trivy-results-" + Math.random() + ".json";
     task.rmRF(outputPath);
 
-    let scanPath = task.getInput("path", false)
-    let image = task.getInput("image", false)
-    let loginDockerConfig = task.getBoolInput("loginDockerConfig", false)
-    let ignoreUnfixed = task.getBoolInput("ignoreUnfixed", false)
-    let severities = task.getInput("severities", false) ?? ""
-    let options = task.getInput("options", false) ?? ""
+    const scanPath = task.getInput("path", false)
+    const image = task.getInput("image", false)
+    const loginDockerConfig = task.getBoolInput("loginDockerConfig", false)
+    const ignoreUnfixed = task.getBoolInput("ignoreUnfixed", false)
+    const severities = task.getInput("severities", false) ?? ""
+    const options = task.getInput("options", false) ?? ""
 
     if (scanPath === undefined && image === undefined) {
         throw new Error("You must specify something to scan. Use either the 'image' or 'path' option.")
@@ -54,7 +55,7 @@ async function run() {
     }
 
     console.log("Running Trivy...")
-    let result = runner.execSync();
+    const result = runner.execSync();
     if (result.code === 0) {
         task.setResult(task.TaskResult.Succeeded, "No problems found.")
     } else {
@@ -108,7 +109,7 @@ async function createRunner(docker: boolean, loginDockerConfig: boolean): Promis
 
     console.log("Run requested using docker...")
     const runner = task.tool("docker");
-    const home = require('os').homedir();
+    const home = homedir();
     const cwd = process.cwd()
 
     runner.line("run --rm")
@@ -169,15 +170,15 @@ async function installTrivy(version: string): Promise<string> {
         throw new Error("Only Linux is currently supported")
     }
 
-    let url = await getArtifactURL(version)
+    const url = await getArtifactURL(version)
 
-    let bin = "trivy"
+    const bin = "trivy"
 
-    let localPath = tmpPath + bin;
+    const localPath = tmpPath + bin;
     task.rmRF(localPath);
 
     console.log("Downloading Trivy...")
-    let downloadPath = await tool.downloadTool(url, localPath);
+    const downloadPath = await tool.downloadTool(url, localPath);
 
     console.log("Extracting Trivy...")
     await tool.extractTar(downloadPath, tmpPath)
@@ -218,7 +219,7 @@ async function getArtifactURL(version: string): Promise<string> {
             throw new Error("unsupported architecture: " + os.arch())
     }
     // e.g. trivy_0.29.1_Linux-ARM.tar.gz
-    let artifact: string = util.format("trivy_%s_Linux-%s.tar.gz", stripV(version), arch);
+    const artifact: string = util.format("trivy_%s_Linux-%s.tar.gz", stripV(version), arch);
     return util.format("https://github.com/aquasecurity/trivy/releases/download/%s/%s", version, artifact);
 }
 
