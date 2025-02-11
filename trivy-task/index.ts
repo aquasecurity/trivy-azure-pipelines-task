@@ -198,16 +198,17 @@ function stripV(version: string): string {
 
 async function getArtifactURL(version: string): Promise<string> {
     if (version === "latest") {
-      let latestTrivyVersion = "";
-
+        let latestTrivyVersion: string | undefined;
       try {
         latestTrivyVersion = await fetch(
-          new Request("https://api.github.com/repos/aquasecurity/trivy/releases/latest")
+          new Request("https://github.com/aquasecurity/trivy/releases/latest")
         ).then(response => {
-          if (response.status === 200) {
-            return response.json().then(data => {
-              return data.name;
-            });
+          if (response.headers.has("location")) {
+            const location = response.headers.get("location");
+            const parts = location?.split("/");
+            if (parts) {
+              return parts[parts.length - 1];
+            }
           }
           else {
             throw new Error("Unable to Retrieve Latest Version information from GitHub")
@@ -215,12 +216,12 @@ async function getArtifactURL(version: string): Promise<string> {
         });
       } catch {
         console.log(
-          "Unable to Retrieve Latest Version information from GitHub, falling back to " +
-            fallbackTrivyVersion
+          `Unable to Retrieve Latest Version information from GitHub, falling back to ${fallbackTrivyVersion}`
         );
       }
             
       if (latestTrivyVersion) {
+        console.log(`Latest Trivy version is ${latestTrivyVersion}`);
         version = latestTrivyVersion
       }
       else {
