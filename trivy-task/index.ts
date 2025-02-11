@@ -5,7 +5,7 @@ import {ToolRunner} from 'azure-pipelines-task-lib/toolrunner';
 import task = require('azure-pipelines-task-lib/task');
 import { homedir } from 'os';
 
-const latestTrivyVersion = "v0.59.1"
+const fallbackTrivyVersion = "v0.59.1"
 const tmpPath = "/tmp/"
 
 async function run() {
@@ -197,9 +197,38 @@ function stripV(version: string): string {
 }
 
 async function getArtifactURL(version: string): Promise<string> {
-    if(version === "latest") {
+    if (version === "latest") {
+        let latestTrivyVersion: string | undefined;
+      try {
+        latestTrivyVersion = await fetch(
+          new Request("https://github.com/aquasecurity/trivy/releases/latest")
+        ).then(response => {
+          if (response.headers.has("location")) {
+            const location = response.headers.get("location");
+            const parts = location?.split("/");
+            if (parts) {
+              return parts[parts.length - 1];
+            }
+          }
+          else {
+            throw new Error("Unable to Retrieve Latest Version information from GitHub")
+          }
+        });
+      } catch {
+        console.log(
+          `Unable to Retrieve Latest Version information from GitHub, falling back to ${fallbackTrivyVersion}`
+        );
+      }
+            
+      if (latestTrivyVersion) {
+        console.log(`Latest Trivy version is ${latestTrivyVersion}`);
         version = latestTrivyVersion
+      }
+      else {
+        version = fallbackTrivyVersion
+      }
     }
+
     console.log("Required Trivy version is " + version)
     let arch = ""
     switch (os.arch()) {
