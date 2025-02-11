@@ -1,3 +1,4 @@
 *.vsix
 node_modules
 .idea
+**/tsconfig.tsbuildinfo

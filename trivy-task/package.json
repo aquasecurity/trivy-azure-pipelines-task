@@ -1,13 +1,15 @@
 {
   "dependencies": {
-    "azure-pipelines-task-lib": "^5.0.0",
+    "azure-pipelines-task-lib": "^4.17.3",
     "azure-pipelines-tool-lib": "^2.0.8",
     "vss-web-extension-sdk": "^5.141.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b tsconfig.json",
-    "lint": "eslint --ignore-path .eslintignore --ext .js,.ts,.tsx"
+    "lint": "eslint --ignore-path .eslintignore --ext .js,.ts,.tsx",
+    "lint:fix": "eslint --ignore-path .eslintignore --ext .js,.ts,.tsx --fix",
+    "format": "prettier --config .prettierrc '*.ts' --write"
   },
   "devDependencies": {
     "@types/node": "^22.13.1",
