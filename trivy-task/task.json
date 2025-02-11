@@ -7,7 +7,7 @@
     "helpMarkDown": "[Learn more about this task](https://github.com/aquasecurity/trivy-azure-pipelines-task)",
     "category": "Test",
     "author": "Aqua Security",
-    "version": { VERSION_PLACEHOLDER },
+    "version": "{ VERSION_PLACEHOLDER }",
     "instanceNameFormat": "Echo trivy $(version)",
     "inputs": [
         {
@@ -116,7 +116,7 @@
         }
     ],
     "execution": {
-        "Node10": {
+        "Node20_1": {
             "target": "index.js"
         }
     }

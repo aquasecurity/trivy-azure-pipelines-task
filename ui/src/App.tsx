@@ -30,8 +30,8 @@ interface AppProps {
 export class App extends React.Component<AppProps, AppState> {
 
     private buildClient: BuildRestClient;
-    private project: IProjectInfo;
-    private buildPageData: IBuildPageData;
+    private project: IProjectInfo |     undefined;
+    private buildPageData: IBuildPageData | undefined;
     public props: AppProps;
 
     constructor(props) {
@@ -51,6 +51,10 @@ export class App extends React.Component<AppProps, AppState> {
 
     async check() {
 
+        if (!this.buildClient || !this.project || !this.buildPageData || !this.buildPageData.build) {
+            this.setError("Build client, project, or build page data is not initialized.");
+            return;
+        }
         const build = await this.buildClient.getBuild(this.project.id, this.buildPageData.build.id)
         // if the build isn't running/finished, try again shortly
         if ((build.status & BuildStatus.Completed) === 0 && (build.status & BuildStatus.InProgress) === 0) {
@@ -72,7 +76,7 @@ export class App extends React.Component<AppProps, AppState> {
             setTimeout(this.check.bind(this), this.props.checkInterval)
             return
         }
-        let worstState: TimelineRecordState = 999
+        let worstState: TimelineRecordState = 2
         recordStates.forEach(function (state: TimelineRecordState) {
             if (state < worstState) {
                 worstState = state
@@ -152,6 +156,11 @@ export class App extends React.Component<AppProps, AppState> {
             SDK.ready().then(async () => {
                 this.setState({sdkReady: true})
                 const buildPageService: IBuildPageDataService = await SDK.getService(BuildServiceIds.BuildPageDataService);
+                if (!buildPageService) {
+                    this.setError("Failed to get build page data service.")
+                    return
+                }
+
                 this.buildPageData = await buildPageService.getBuildPageData();
                 const projectService = await SDK.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
                 this.project = await projectService.getProject();
