@@ -62,6 +62,8 @@ async function run() {
         task.setResult(task.TaskResult.Failed, "Failed: Trivy detected problems.")
     }
 
+    task.setVariable("TrivyResultsFile", outputPath);
+    
     if(hasAccount) {
         console.log("Publishing JSON assurance results...")
         task.addAttachment("ASSURANCE_RESULT", "trivy-assurance-" + Math.random() + ".json", assurancePath)
