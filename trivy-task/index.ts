@@ -16,7 +16,7 @@ async function run() {
 
     const scanPath = task.getInput("path", false)
     const image = task.getInput("image", false)
-    const loginDockerConfig = task.getBoolInput("loginDockerConfig", false)
+
     const ignoreUnfixed = task.getBoolInput("ignoreUnfixed", false)
     const severities = task.getInput("severities", false) ?? ""
     const options = task.getInput("options", false) ?? ""
@@ -42,7 +42,7 @@ async function run() {
         process.env.AQUA_ASSURANCE_EXPORT = assurancePath
     }
 
-    const runner = await createRunner(task.getBoolInput("docker", false), loginDockerConfig);
+    const runner = await createRunner();
 
     if (task.getBoolInput("debug", false)) {
         runner.arg("--debug")
@@ -95,7 +95,9 @@ function getAquaAccount(): aquaCredentials {
     }
 }
 
-async function createRunner(docker: boolean, loginDockerConfig: boolean): Promise<ToolRunner> {
+async function createRunner(): Promise<ToolRunner> {
+    const docker = task.getBoolInput("docker", false)
+
     const version: string | undefined = task.getInput('version', true);
     const useSystemInstallation: boolean = task.getBoolInput("useSystemInstallation", false)
     if (version === undefined) {
@@ -118,10 +120,12 @@ async function createRunner(docker: boolean, loginDockerConfig: boolean): Promis
                 throw new Error("Failed to find trivy tool in system paths.");
             }
         }
-    }
+    } 
 
+    
     console.log("Run requested using docker...")
     const runner = task.tool("docker");
+    const loginDockerConfig = task.getBoolInput("loginDockerConfig", false)
     const home = homedir();
     const cwd = process.cwd()
 
