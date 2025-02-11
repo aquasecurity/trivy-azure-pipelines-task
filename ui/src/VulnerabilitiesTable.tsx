@@ -29,6 +29,7 @@ interface ListVulnerability extends ISimpleTableCell {
   PkgName: ISimpleListCell;
   Title: ISimpleListCell;
   FixAvailable: ISimpleListCell;
+  FixedVersion: ISimpleListCell;
 }
 
 function renderVulnerabilitySeverity(
@@ -106,6 +107,18 @@ const fixedColumns = [
       ariaLabelDescending: 'Sorted Z to A',
     },
   },
+  {
+    columnLayout: TableColumnLayout.singleLine,
+    id: "FixedVersion",
+    name: "Fixed Version",
+    readonly: true,
+    renderCell: renderSimpleCell,
+    width: new ObservableValue(-5),
+    sortProps: {
+        ariaLabelAscending: "Sorted A to Z",
+        ariaLabelDescending: "Sorted Z to A",
+    },
+},
 ];
 
 const sortFunctions = [
@@ -117,18 +130,18 @@ const sortFunctions = [
   (item1: ListVulnerability, item2: ListVulnerability): number => {
     const value1: ISimpleListCell = item1.ID;
     const value2: ISimpleListCell = item2.ID;
-    return value1.text?.localeCompare(value2.text||'') || 0;
+    return value1.text?.localeCompare(value2.text ?? '') || 0;
   },
   (item1: ListVulnerability, item2: ListVulnerability): number => {
     const value1: ISimpleListCell = item1.PkgName;
     const value2: ISimpleListCell = item2.PkgName;
-    return value1.text?.localeCompare(value2.text||'') || 0;
+    return value1.text?.localeCompare(value2.text ?? '') || 0;
   },
   null,
   (item1: ListVulnerability, item2: ListVulnerability): number => {
     const value1: ISimpleListCell = item1.FixAvailable;
     const value2: ISimpleListCell = item2.FixAvailable;
-    return value1.text?.localeCompare(value2.text||'') || 0;
+    return value1.text?.localeCompare(value2.text ?? '') || 0;
   },
 ];
 
@@ -189,7 +202,7 @@ export class VulnerabilitiesTable extends React.Component<VulnerabilitiesTablePr
         role="table"
         behaviors={[sortingBehavior]}
         columns={fixedColumns}
-        itemProvider={new ArrayItemProvider(this.results.value)}
+        itemProvider = { new ArrayItemProvider(this.results.value)}
         containerClassName="h-scroll-auto"
       />
     );
@@ -219,6 +232,7 @@ function convertVulnerabilities(results: Result[]): ListVulnerability[] {
           PkgName: { text: vulnerability.PkgName },
           Title: { text: vulnerability.Title },
           FixAvailable: { text: vulnerability.FixedVersion ? 'Yes' : 'No' },
+          FixedVersion: {text: vulnerability.FixedVersion ?? "N/A"},
         });
       });
     }

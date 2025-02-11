@@ -122,13 +122,13 @@ const sortFunctions = [
   (item1: ListMisconfiguration, item2: ListMisconfiguration): number => {
     const value1: ISimpleListCell = item1.ID;
     const value2: ISimpleListCell = item2.ID;
-    return value1.text?.localeCompare(value2.text || '') || 0;
+    return value1.text?.localeCompare(value2.text ?? '') || 0;
   },
   null,
   (item1: ListMisconfiguration, item2: ListMisconfiguration): number => {
     const value1: ISimpleListCell = item1.Location;
     const value2: ISimpleListCell = item2.Location;
-    return value1.text?.localeCompare(value2.text || '') || 0;
+    return value1.text?.localeCompare(value2.text ?? '') || 0;
   },
 ];
 
@@ -189,7 +189,7 @@ export class MisconfigurationsTable extends React.Component<MisconfigurationsTab
         role="table"
         behaviors={[sortingBehavior]}
         columns={fixedColumns}
-        itemProvider={new ArrayItemProvider(this.results.value)}
+itemProvider = { new ArrayItemProvider(this.results.value)}
         containerClassName="h-scroll-auto"
       />
     );

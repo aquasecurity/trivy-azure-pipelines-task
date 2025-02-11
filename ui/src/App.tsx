@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import * as React from 'react';
 import {
   BuildRestClient,
@@ -224,12 +223,15 @@ export class App extends React.Component<AppProps, AppState> {
           })
           .catch((e) =>
             this.setError.bind(this)(
-              'Azure DevOps SDK failed to enter a ready state: ' + e
+              'Azure DevOps SDK failed to enter a ready state: ' +
+                JSON.stringify(e)
             )
           );
       })
       .catch((e) =>
-        this.setError.bind(this)('Azure DevOps SDK failed to initialise: ' + e)
+        this.setError.bind(this)(
+          'Azure DevOps SDK failed to initialise: ' + JSON.stringify(e)
+        )
       );
   }
 

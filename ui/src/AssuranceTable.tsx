@@ -85,12 +85,12 @@ const sortFunctions = [
   (item1: ListAssurance, item2: ListAssurance): number => {
     const value1: ISimpleListCell = item1.AVDID;
     const value2: ISimpleListCell = item2.AVDID;
-    return value1.text?.localeCompare(value2.text?.toString()||'') || 0;
+    return value1.text?.localeCompare(value2.text ?? '') || 0;
   },
   (item1: ListAssurance, item2: ListAssurance): number => {
     const value1: ISimpleListCell = item1.Enforced;
     const value2: ISimpleListCell = item2.Enforced;
-    return value1.text?.localeCompare(value2.text?.toString()||'') || 0;
+    return value1.text?.localeCompare(value2.text ?? '') || 0;
   },
   null,
 ];
@@ -154,7 +154,7 @@ export class AssuranceTable extends React.Component<AssuranceTableProps> {
           role="table"
           behaviors={[sortingBehavior]}
           columns={fixedColumns}
-          itemProvider={new ArrayItemProvider(this.results.value)}
+          itemProvider = { new ArrayItemProvider(this.results.value)}
           containerClassName="h-scroll-auto"
         />
       </React.Fragment>

@@ -7,7 +7,7 @@
     "helpMarkDown": "[Learn more about this task](https://github.com/aquasecurity/trivy-azure-pipelines-task)",
     "category": "Test",
     "author": "Aqua Security",
-    "version": { "Major":1,"Minor":6,"Patch":2 },
+    "version": { "Major":1,"Minor":7,"Patch":10 },
     "instanceNameFormat": "Echo trivy $(version)",
     "inputs": [
         {

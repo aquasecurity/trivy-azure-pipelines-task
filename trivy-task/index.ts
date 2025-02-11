@@ -4,16 +4,17 @@ import * as tool from 'azure-pipelines-tool-lib';
 import {ToolRunner} from 'azure-pipelines-task-lib/toolrunner';
 import task = require('azure-pipelines-task-lib/task');
 import { homedir } from 'os';
+import axios from "axios";
+
 
 const fallbackTrivyVersion = "v0.59.1"
 const tmpPath = "/tmp/"
 
 async function run() {
 
-    console.log("Preparing output location...")
+    task.debug("Starting Trivy task...")
     const outputPath = tmpPath + "trivy-results-" + Math.random() + ".json";
     task.rmRF(outputPath);
-
     const scanPath = task.getInput("path", false)
     const image = task.getInput("image", false)
 
@@ -54,7 +55,7 @@ async function run() {
         configureScan(runner, "image", image, outputPath, severities, ignoreUnfixed, options)
     }
 
-    console.log("Running Trivy...")
+    task.debug("Running Trivy...")
     const result = runner.execSync();
     if (result.code === 0) {
         task.setResult(task.TaskResult.Succeeded, "No problems found.")
@@ -69,7 +70,7 @@ async function run() {
         task.addAttachment("ASSURANCE_RESULT", "trivy-assurance-" + Math.random() + ".json", assurancePath)
     }
 
-    console.log("Publishing JSON results...")
+    task.debug("Publishing JSON results...")
     task.addAttachment("JSON_RESULT", "trivy" +  Math.random() + ".json", outputPath)
     console.log("Done!");
 }
@@ -219,23 +220,23 @@ async function getArtifactURL(version: string): Promise<string> {
     if (version === "latest") {
         let latestTrivyVersion: string | undefined;
       try {
-        latestTrivyVersion = await fetch(
-          new Request("https://github.com/aquasecurity/trivy/releases/latest")
-        ).then(response => {
-          if (response.headers.has("location")) {
-            const location = response.headers.get("location");
-            const parts = location?.split("/");
-            if (parts) {
-              return parts[parts.length - 1];
+        console.log("Fetching latest Trivy version from GitHub...")
+        const response = await axios.head("https://github.com/aquasecurity/trivy/releases/latest", {
+            beforeRedirect: (options) => {
+                if (options.Headers) {
+                    console.log("Request Headers: " + JSON.stringify(options.Headers))
+                    const location = response.headers['location']
+                    console.log("Location: " + location)
+                    const parts = location?.split("/");
+                    if (parts) {
+                      latestTrivyVersion = parts[parts.length - 1]
+                    }
+                }
             }
-          }
-          else {
-            throw new Error("Unable to Retrieve Latest Version information from GitHub")
-          }
         });
       } catch {
         console.log(
-          `Unable to Retrieve Latest Version information from GitHub, falling back to ${fallbackTrivyVersion}`
+          `Unable to Retrieve Latest Version information from GitHub, falling back to ${fallbackTrivyVersion}}`
         );
       }
             
@@ -244,6 +245,7 @@ async function getArtifactURL(version: string): Promise<string> {
         version = latestTrivyVersion
       }
       else {
+        console.log(`Falling back to ${fallbackTrivyVersion}}`)
         version = fallbackTrivyVersion
       }
     }
