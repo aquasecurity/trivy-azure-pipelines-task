@@ -25,7 +25,7 @@
         "scanner"
     ],
     "icons": {
-        "default": "images/extension-icon.png"
+        "default": "icon.png"
     },
     "files": [
         {

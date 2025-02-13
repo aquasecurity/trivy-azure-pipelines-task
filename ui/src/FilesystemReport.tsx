@@ -2,6 +2,7 @@ import * as React from 'react';
 import { AssuranceReport, getReportTitle, Report } from './trivy';
 import { BaseReport } from './BaseReport';
 import { ReportStats } from './ReportStats';
+import { ReportDownload } from './ReportDownload';
 
 interface FilesystemReportProps {
   report: Report;
@@ -19,7 +20,10 @@ export class FilesystemReport extends React.Component<FilesystemReportProps> {
   render() {
     return (
       <div className="flex-grow">
-        <h2>{getReportTitle(this.props.report)}</h2>
+        <div className="flex-row">
+          <h2>{getReportTitle(this.props.report)}</h2>
+          <ReportDownload report={this.props.report} />
+        </div>
         <div className="flex-row">
           <ReportStats report={this.props.report} />
         </div>

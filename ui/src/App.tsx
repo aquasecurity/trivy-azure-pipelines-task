@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import * as React from 'react';
 import {
   BuildRestClient,
@@ -88,26 +87,24 @@ export class App extends React.Component<AppProps, AppState> {
       this.project.id,
       build.id
     );
-    const recordIds: string[] = [];
-    const recordStates: TimelineRecordState[] = [];
+    const records: TimelineRecord[] = [];
     timeline.records.forEach(function (record: TimelineRecord) {
       if (
         record.type == 'Task' &&
         record.task !== null &&
         record.task.name == 'trivy'
       ) {
-        recordIds.push(record.id);
-        recordStates.push(record.state);
+        records.push(record);
       }
     });
-    if (recordIds.length === 0) {
+    if (records.length === 0) {
       setTimeout(this.check.bind(this), this.props.checkInterval);
       return;
     }
     let worstState: TimelineRecordState = 2;
-    recordStates.forEach(function (state: TimelineRecordState) {
-      if (state < worstState) {
-        worstState = state;
+    records.forEach(function (record: TimelineRecord) {
+      if (record.state < worstState) {
+        worstState = record.state;
       }
     });
     if (worstState !== TimelineRecordState.Completed) {
@@ -130,25 +127,57 @@ export class App extends React.Component<AppProps, AppState> {
 
     this.setState({ status: worstState });
 
+    const artifacts = await this.buildClient.getArtifacts(
+      this.project.id,
+      build.id
+    );
+
+    console.log(JSON.stringify(artifacts));
+
     attachments.forEach(
       function (attachment: Attachment) {
-        recordIds.forEach(
-          async function (recordId: string) {
+        records.forEach(
+          async function (record: TimelineRecord) {
             try {
               const buffer = await this.buildClient.getAttachment(
                 this.project.id,
                 build.id,
                 timeline.id,
-                recordId,
+                record.id,
                 'JSON_RESULT',
                 attachment.name
               );
-              const report = this.decodeReport(buffer);
+              const report = this.decodeReport(buffer) as Report;
+              if (!report.DownloadReports) {
+                report.DownloadReports = [];
+              }
+
+              try {
+                console.log(
+                  'Checking for artifacts for record ' + JSON.stringify(record)
+                );
+                artifacts
+                  .filter((artifact) => artifact.source === record.parentId)
+                  .forEach((artifact) => {
+                    console.log('Artifact: ' + JSON.stringify(artifact));
+                    report.DownloadReports.push({
+                      // the name of the report has the task as a prefix so that needs
+                      // to be stripped
+                      Name: artifact.name.replace(artifact.source, ''),
+                      Url: artifact.resource.downloadUrl,
+                    });
+                  });
+              } catch {
+                console.log('Failed to decode report artifact');
+              }
+
               this.setState((prevState: any) => ({
                 reports: [...prevState.reports, report],
               }));
-            } catch {
-              console.log('Failed to decode results attachment');
+            } catch (e) {
+              console.log(
+                'Failed to decode results attachment ' + JSON.stringify(e)
+              );
             }
           }.bind(this)
         );
@@ -164,14 +193,14 @@ export class App extends React.Component<AppProps, AppState> {
     if (assuranceAttachments.length > 0) {
       assuranceAttachments.forEach(
         function (attachment: Attachment) {
-          recordIds.forEach(
-            async function (recordId: string) {
+          records.forEach(
+            async function (record: TimelineRecord) {
               try {
                 const buffer = await this.buildClient.getAttachment(
                   this.project.id,
                   build.id,
                   timeline.id,
-                  recordId,
+                  record.id,
                   'ASSURANCE_RESULT',
                   attachment.name
                 );
@@ -218,18 +247,22 @@ export class App extends React.Component<AppProps, AppState> {
             const projectService = await SDK.getService<IProjectPageService>(
               CommonServiceIds.ProjectPageService
             );
+
             this.project = await projectService.getProject();
             this.buildClient = API.getClient(BuildRestClient);
             await this.check();
           })
           .catch((e) =>
             this.setError.bind(this)(
-              'Azure DevOps SDK failed to enter a ready state: ' + e
+              'Azure DevOps SDK failed to enter a ready state: ' +
+                JSON.stringify(e)
             )
           );
       })
       .catch((e) =>
-        this.setError.bind(this)('Azure DevOps SDK failed to initialise: ' + e)
+        this.setError.bind(this)(
+          'Azure DevOps SDK failed to initialise: ' + JSON.stringify(e)
+        )
       );
   }
 
@@ -240,7 +273,7 @@ export class App extends React.Component<AppProps, AppState> {
     for (let i = 0; i < len; i++) {
       output += String.fromCharCode(arr[i]);
     }
-    return JSON.parse(output);
+    return JSON.parse(output) as Report;
   }
 
   decodeAssuranceReport(buffer: ArrayBuffer): AssuranceReport {

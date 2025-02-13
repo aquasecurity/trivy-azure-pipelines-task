@@ -1,0 +1,18 @@
+.dropdown {
+  align-self: center;
+  margin-right: 5px;
+  min-width: 200px;
+  width: auto;
+}
+
+.button {
+  align-self: center;
+}
+
+.vss-Dropdown--no-icon .bolt-dropdown-item .icon-container {
+  display: none !important;
+}
+
+.vss-Dropdown--no-icon .bolt-dropdown-item .text-container {
+  margin-left: 0 !important;
+}

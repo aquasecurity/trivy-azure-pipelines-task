@@ -71,7 +71,27 @@ export class ReportsPane extends React.Component<
     return assuranceReport;
   }
 
+  private sortReports() {
+ // sort the reports for consistency
+ this.props.reports.sort((a, b) => {
+  if (a.ArtifactType < b.ArtifactType) {
+    return -1;
+  }
+  if (a.ArtifactType > b.ArtifactType) {
+    return 1;
+  }
+  if (a.ArtifactName < b.ArtifactName) {
+    return -1;
+  }
+  if (a.ArtifactName > b.ArtifactName) {
+    return 1;
+  }
+  return 0;
+});
+  }
+
   render() {
+   this.sortReports();
     const stats = [
       {
         name: 'Total Scans',

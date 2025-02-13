@@ -144,18 +144,18 @@ const sortFunctions = [
   (item1: ListSecret, item2: ListSecret): number => {
     const value1: ISimpleListCell = item1.Category;
     const value2: ISimpleListCell = item2.Category;
-    return value1.text?.localeCompare(value2.text || '') || 0;
+    return value1.text?.localeCompare(value2.text ?? '') || 0;
   },
   (item1: ListSecret, item2: ListSecret): number => {
     const value1: ISimpleListCell = item1.RuleID;
     const value2: ISimpleListCell = item2.RuleID;
-    return value1.text?.localeCompare(value2.text || '') || 0;
+    return value1.text?.localeCompare(value2.text ?? '') || 0;
   },
   null,
   (item1: ListSecret, item2: ListSecret): number => {
     const value1: ISimpleListCell = item1.Location;
     const value2: ISimpleListCell = item2.Location;
-    return value1.text?.localeCompare(value2.text || '') || 0;
+    return value1.text?.localeCompare(value2.text ?? '') || 0;
   },
   null,
 ];
@@ -215,7 +215,7 @@ export class SecretsTable extends React.Component<SecretsTableProps> {
         role="table"
         behaviors={[sortingBehavior]}
         columns={fixedColumns}
-        itemProvider={new ArrayItemProvider( this.results.value)}
+        itemProvider={new ArrayItemProvider(this.results.value)}
         containerClassName="h-scroll-auto"
       />
     );

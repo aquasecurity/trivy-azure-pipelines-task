@@ -1,276 +1,149 @@
-import * as os from 'os';
-import * as util from 'util';
-import * as tool from 'azure-pipelines-tool-lib';
-import {ToolRunner} from 'azure-pipelines-task-lib/toolrunner';
+import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner';
 import task = require('azure-pipelines-task-lib/task');
-import { homedir } from 'os';
 
-const fallbackTrivyVersion = "v0.59.1"
-const tmpPath = "/tmp/"
+import { createRunner, tmpPath } from './trivyLoader';
+import { getAquaAccount, hasAquaAccount } from './utils';
+import { generateAdditionalReports } from './additionalReporting';
 
 async function run() {
+  task.debug('Starting Trivy task...');
+  const outputPath = tmpPath + 'trivy-results-' + Math.random() + '.json';
+  task.rmRF(outputPath);
+  const scanPath = task.getInput('path', false);
+  const image = task.getInput('image', false);
+  const scanners = task.getInput('scanners', false) ?? '';
+  const ignoreUnfixed = task.getBoolInput('ignoreUnfixed', false);
+  const severities = task.getInput('severities', false) ?? '';
+  const options = task.getInput('options', false) ?? '';
 
-    console.log("Preparing output location...")
-    const outputPath = tmpPath + "trivy-results-" + Math.random() + ".json";
-    task.rmRF(outputPath);
+  if (scanPath === undefined && image === undefined) {
+    throw new Error(
+      "You must specify something to scan. Use either the 'image' or 'path' option."
+    );
+  }
+  if (scanPath !== undefined && image !== undefined) {
+    throw new Error(
+      "You must specify only one of the 'image' or 'path' options. Use multiple task definitions if you want to scan multiple targets."
+    );
+  }
 
-    const scanPath = task.getInput("path", false)
-    const image = task.getInput("image", false)
+  const hasAccount = hasAquaAccount();
+  const assurancePath = tmpPath + 'trivy-assurance-' + Math.random() + '.json';
 
-    const ignoreUnfixed = task.getBoolInput("ignoreUnfixed", false)
-    const severities = task.getInput("severities", false) ?? ""
-    const options = task.getInput("options", false) ?? ""
+  if (hasAccount) {
+    task.rmRF(assurancePath);
+    const credentials = getAquaAccount();
+    process.env.AQUA_KEY = credentials.key;
+    process.env.AQUA_SECRET = credentials.secret;
+    process.env.TRIVY_RUN_AS_PLUGIN = 'aqua';
+    process.env.OVERRIDE_REPOSITORY = task.getVariable('Build.Repository.Name');
+    process.env.OVERRIDE_BRANCH = task.getVariable('Build.SourceBranchName');
+    process.env.AQUA_ASSURANCE_EXPORT = assurancePath;
+  }
 
-    if (scanPath === undefined && image === undefined) {
-        throw new Error("You must specify something to scan. Use either the 'image' or 'path' option.")
-    }
-    if (scanPath !== undefined && image !== undefined) {
-        throw new Error("You must specify only one of the 'image' or 'path' options. Use multiple task definitions if you want to scan multiple targets.")
-    }
+  const runner = await createRunner();
 
-    const hasAccount = hasAquaAccount()
-    const assurancePath = tmpPath + "trivy-assurance-" + Math.random() + ".json";
+  if (task.getBoolInput('debug', false)) {
+    runner.arg('--debug');
+  }
 
-    if(hasAccount) {
-        task.rmRF(assurancePath);
-        const credentials = getAquaAccount()
-        process.env.AQUA_KEY = credentials.key
-        process.env.AQUA_SECRET = credentials.secret
-        process.env.TRIVY_RUN_AS_PLUGIN = "aqua"
-        process.env.OVERRIDE_REPOSITORY = task.getVariable("Build.Repository.Name")
-        process.env.OVERRIDE_BRANCH = task.getVariable("Build.SourceBranchName")
-        process.env.AQUA_ASSURANCE_EXPORT = assurancePath
-    }
+  if (scanPath !== undefined) {
+    configureScan(
+      runner,
+      'fs',
+      scanPath,
+      outputPath,
+      severities,
+      scanners,
+      ignoreUnfixed,
+      options
+    );
+  } else if (image !== undefined) {
+    configureScan(
+      runner,
+      'image',
+      image,
+      outputPath,
+      severities,
+      scanners,
+      ignoreUnfixed,
+      options
+    );
+  }
 
-    const runner = await createRunner();
+  task.debug('Running Trivy...');
+  const result = runner.execSync();
+  if (result.code === 0) {
+    task.setResult(task.TaskResult.Succeeded, 'No problems found.');
+  } else {
+    task.setResult(task.TaskResult.Failed, 'Failed: Trivy detected problems.');
+  }
 
-    if (task.getBoolInput("debug", false)) {
-        runner.arg("--debug")
-    }
+  if (hasAccount) {
+    console.log('Publishing JSON assurance results...');
+    task.addAttachment(
+      'ASSURANCE_RESULT',
+      'trivy-assurance-' + Math.random() + '.json',
+      assurancePath
+    );
+  }
 
-    if (scanPath !== undefined) {
-        configureScan(runner, "fs", scanPath, outputPath, severities, ignoreUnfixed, options)
-    } else if (image !== undefined) {
-        configureScan(runner, "image", image, outputPath, severities, ignoreUnfixed, options)
-    }
+  task.debug('Publishing JSON results...');
+  task.addAttachment(
+    'JSON_RESULT',
+    'trivy' + Math.random() + '.json',
+    outputPath
+  );
 
-    console.log("Running Trivy...")
-    const result = runner.execSync();
-    if (result.code === 0) {
-        task.setResult(task.TaskResult.Succeeded, "No problems found.")
-    } else {
-        task.setResult(task.TaskResult.Failed, "Failed: Trivy detected problems.")
-    }
+  if (hasAccount) {
+    console.log('Publishing JSON assurance results...');
+    task.addAttachment(
+      'ASSURANCE_RESULT',
+      'trivy-assurance-' + Math.random() + '.json',
+      assurancePath
+    );
+  }
 
-    task.setVariable("TrivyResultsFile", outputPath);
-    
-    if(hasAccount) {
-        console.log("Publishing JSON assurance results...")
-        task.addAttachment("ASSURANCE_RESULT", "trivy-assurance-" + Math.random() + ".json", assurancePath)
-    }
+  task.debug('Generating additional reports...');
+  generateAdditionalReports(outputPath);
 
-    console.log("Publishing JSON results...")
-    task.addAttachment("JSON_RESULT", "trivy" +  Math.random() + ".json", outputPath)
-    console.log("Done!");
+  console.log('Done!');
 }
 
-function isDevMode(): boolean {
-    return task.getBoolInput("devMode", false)
-}
+function configureScan(
+  runner: ToolRunner,
+  type: string,
+  target: string,
+  outputPath: string,
+  severities: string,
+  scanners: string,
+  ignoreUnfixed: boolean,
+  options: string
+) {
+  console.log('Configuring options for image scan...');
+  let exitCode = task.getInput('exitCode', false);
+  if (exitCode === undefined) {
+    exitCode = '1';
+  }
+  runner.arg([type]);
+  runner.arg(['--exit-code', exitCode]);
+  runner.arg(['--format', 'json']);
+  runner.arg(['--output', outputPath]);
+  if (severities.length) {
+    runner.arg(['--severity', severities]);
+  }
+  if (ignoreUnfixed) {
+    runner.arg(['--ignore-unfixed']);
+  }
+  if (options.length) {
+    runner.line(options);
+  } else {
+    runner.arg(['--scanners', scanners]);
+  }
 
-function hasAquaAccount(): boolean {
-    const credentials = getAquaAccount()
-    return (credentials.key !== undefined && credentials.secret !== undefined)
-}
-
-interface aquaCredentials {
-    key: string | undefined
-    secret: string | undefined
-}
-
-function getAquaAccount(): aquaCredentials {
-    const key = task.getInput("aquaKey", false)
-    const secret = task.getInput("aquaSecret", false)
-    return {
-        key: key,
-        secret: secret,
-    }
-}
-
-async function createRunner(): Promise<ToolRunner> {
-    const docker = task.getBoolInput("docker", false)
-
-    const version: string | undefined = task.getInput('version', true);
-    const useSystemInstallation: boolean = task.getBoolInput("useSystemInstallation", false)
-    if (version === undefined) {
-        throw new Error("version is not defined")
-    }
-
-    if (!docker) {
-        if (!useSystemInstallation) {
-            console.log("Run requested using local Trivy binary...")
-            const trivyPath = await installTrivy(version)
-            return task.tool(trivyPath);
-        }
-        else {
-            try {
-                console.log("Run requested using system Trivy binary...")
-                const trivyPath = task.which("trivy", true)
-                return task.tool(trivyPath);
-            }
-            catch (err) {
-                throw new Error("Failed to find trivy tool in system paths.");
-            }
-        }
-    } 
-
-    
-    console.log("Run requested using docker...")
-    const runner = task.tool("docker");
-    const loginDockerConfig = task.getBoolInput("loginDockerConfig", false)
-    const home = homedir();
-    const cwd = process.cwd()
-
-    runner.line("run --rm")
-    loginDockerConfig ? runner.line("-v " + task.getVariable("DOCKER_CONFIG") + ":/root/.docker") :  runner.line("-v " + home + "/.docker:/root/.docker")
-    runner.line("-v /tmp:/tmp")
-    runner.line("-v /var/run/docker.sock:/var/run/docker.sock")
-    runner.line("-v " + cwd + ":/src")
-    runner.line("--workdir /src")
-    if(hasAquaAccount()) {
-        runner.line("-e TRIVY_RUN_AS_PLUGIN")
-        runner.line("-e AQUA_KEY")
-        runner.line("-e AQUA_SECRET")
-        runner.line("-e OVERRIDE_REPOSITORY")
-        runner.line("-e OVERRIDE_BRANCH")
-        runner.line("-e AQUA_ASSURANCE_EXPORT")
-        if (isDevMode()) {
-            runner.line("-e AQUA_URL=https://api-dev.aquasec.com/v2/build")
-            runner.line("-e CSPM_URL=https://stage.api.cloudsploit.com/v2/tokens")
-        }
-    }
-    runner.line("aquasec/trivy:" + stripV(version))
-    return runner
-}
-
-function configureScan(runner: ToolRunner, type: string, target: string, outputPath: string, severities: string, ignoreUnfixed: boolean, options: string) {
-    console.log("Configuring options for image scan...")
-    let exitCode = task.getInput("exitCode", false)
-    if (exitCode === undefined) {
-        exitCode = "1"
-    }
-    runner.arg([type]);
-    runner.arg(["--exit-code", exitCode]);
-    runner.arg(["--format", "json"]);
-    runner.arg(["--output", outputPath]);
-    if (severities.length) {
-        runner.arg(["--severity", severities]);
-    }
-    if (ignoreUnfixed) {
-        runner.arg(["--ignore-unfixed"]);
-    }
-    if (options.length) {
-        runner.line(options)
-    } else {
-        runner.arg(["--scanners", "vuln,misconfig,secret"])
-    }
-
-    runner.arg(target)
-}
-
-async function installTrivy(version: string): Promise<string> {
-
-    console.log("Finding correct Trivy version to install...")
-
-    if (os.platform() == "win32") {
-        throw new Error("Windows is not currently supported")
-    }
-    if (os.platform() != "linux") {
-        throw new Error("Only Linux is currently supported")
-    }
-
-    const url = await getArtifactURL(version)
-
-    const bin = "trivy"
-
-    const localPath = tmpPath + bin;
-    task.rmRF(localPath);
-
-    console.log("Downloading Trivy...")
-    const downloadPath = await tool.downloadTool(url, localPath);
-
-    console.log("Extracting Trivy...")
-    await tool.extractTar(downloadPath, tmpPath)
-    const binPath = tmpPath + bin
-
-    console.log("Setting permissions...")
-    await task.exec('chmod', ["+x", binPath]);
-    return binPath
-}
-
-function stripV(version: string): string {
-    if (version.length > 0 && version[0] === 'v') {
-        version = version?.substring(1)
-    }
-    return version
-}
-
-async function getArtifactURL(version: string): Promise<string> {
-    if (version === "latest") {
-        let latestTrivyVersion: string | undefined;
-      try {
-        latestTrivyVersion = await fetch(
-          new Request("https://github.com/aquasecurity/trivy/releases/latest")
-        ).then(response => {
-          if (response.headers.has("location")) {
-            const location = response.headers.get("location");
-            const parts = location?.split("/");
-            if (parts) {
-              return parts[parts.length - 1];
-            }
-          }
-          else {
-            throw new Error("Unable to Retrieve Latest Version information from GitHub")
-          }
-        });
-      } catch {
-        console.log(
-          `Unable to Retrieve Latest Version information from GitHub, falling back to ${fallbackTrivyVersion}`
-        );
-      }
-            
-      if (latestTrivyVersion) {
-        console.log(`Latest Trivy version is ${latestTrivyVersion}`);
-        version = latestTrivyVersion
-      }
-      else {
-        version = fallbackTrivyVersion
-      }
-    }
-
-    console.log("Required Trivy version is " + version)
-    let arch = ""
-    switch (os.arch()) {
-        case "arm":
-            arch = "ARM"
-            break
-        case "arm64":
-            arch = "ARM64"
-            break
-        case "x32":
-            arch = "32bit"
-            break
-        case "x64":
-            arch = "64bit"
-            break
-        default:
-            throw new Error("unsupported architecture: " + os.arch())
-    }
-    // e.g. trivy_0.29.1_Linux-ARM.tar.gz
-    const artifact: string = util.format("trivy_%s_Linux-%s.tar.gz", stripV(version), arch);
-    return util.format("https://github.com/aquasecurity/trivy/releases/download/%s/%s", version, artifact);
+  runner.arg(target);
 }
 
 run().catch((err: Error) => {
-    task.setResult(task.TaskResult.Failed, err.message);
-})
+  task.setResult(task.TaskResult.Failed, err.message);
+});

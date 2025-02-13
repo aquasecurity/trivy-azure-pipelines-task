@@ -3,12 +3,12 @@ default: build
 .PHONY: clean
 clean:
 	rm *.vsix || true
-	rm trivy-task/index.js || true
+	rm trivy-task/*.js || true
 
 .PHONY: lint
 lint:
-	cd ui && npm install -f && npm run lint:fix
-	cd trivy-task && npm install -f && npm run lint:fix
+	cd ui && npm install -f && npm run lint
+	cd trivy-task && npm install -f && npm run lint
 
 .PHONY: format
 format:

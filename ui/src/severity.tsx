@@ -64,11 +64,14 @@ export function compareSeverity(a?: string, b?: string): number {
   if (!a && !b) {
     return 0;
   }
+
   if (!a) {
-    return -1;
-  }
-  if (!b) {
     return 1;
   }
+
+  if (!b) {
+    return -1;
+  }
+
   return severityToInt(a) - severityToInt(b);
 }
