@@ -3,7 +3,7 @@ default: build
 .PHONY: clean
 clean:
 	rm *.vsix || true
-	rm trivy-task/index.js || true
+	rm trivy-task/*.js || true
 
 .PHONY: lint
 lint:

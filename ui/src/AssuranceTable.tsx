@@ -154,7 +154,7 @@ export class AssuranceTable extends React.Component<AssuranceTableProps> {
           role="table"
           behaviors={[sortingBehavior]}
           columns={fixedColumns}
-          itemProvider = { new ArrayItemProvider(this.results.value)}
+          itemProvider={new ArrayItemProvider(this.results.value)}
           containerClassName="h-scroll-auto"
         />
       </React.Fragment>

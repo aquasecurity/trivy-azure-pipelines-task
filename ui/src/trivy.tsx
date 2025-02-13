@@ -108,11 +108,17 @@ interface OSMetadata {
   Name: string;
 }
 
+export interface DownloadReports {
+  Name: string;
+  Url: string;
+}
+
 export interface Report {
   ArtifactName: string;
   ArtifactType: ArtifactType;
   Metadata: Metadata;
   Results: Result[];
+  DownloadReports: DownloadReports[];
 }
 
 export interface AssuranceReport {

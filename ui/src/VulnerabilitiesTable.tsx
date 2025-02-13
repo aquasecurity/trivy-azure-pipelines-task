@@ -109,16 +109,16 @@ const fixedColumns = [
   },
   {
     columnLayout: TableColumnLayout.singleLine,
-    id: "FixedVersion",
-    name: "Fixed Version",
+    id: 'FixedVersion',
+    name: 'Fixed Version',
     readonly: true,
     renderCell: renderSimpleCell,
     width: new ObservableValue(-5),
     sortProps: {
-        ariaLabelAscending: "Sorted A to Z",
-        ariaLabelDescending: "Sorted Z to A",
+      ariaLabelAscending: 'Sorted A to Z',
+      ariaLabelDescending: 'Sorted Z to A',
     },
-},
+  },
 ];
 
 const sortFunctions = [
@@ -202,7 +202,7 @@ export class VulnerabilitiesTable extends React.Component<VulnerabilitiesTablePr
         role="table"
         behaviors={[sortingBehavior]}
         columns={fixedColumns}
-        itemProvider = { new ArrayItemProvider(this.results.value)}
+        itemProvider={new ArrayItemProvider(this.results.value)}
         containerClassName="h-scroll-auto"
       />
     );
@@ -232,7 +232,7 @@ function convertVulnerabilities(results: Result[]): ListVulnerability[] {
           PkgName: { text: vulnerability.PkgName },
           Title: { text: vulnerability.Title },
           FixAvailable: { text: vulnerability.FixedVersion ? 'Yes' : 'No' },
-          FixedVersion: {text: vulnerability.FixedVersion ?? "N/A"},
+          FixedVersion: { text: vulnerability.FixedVersion ?? 'N/A' },
         });
       });
     }

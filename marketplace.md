@@ -1,4 +1,4 @@
-# trivy
+# Trivy
 
 An Azure DevOps Pipelines Task for [Trivy](https://github.com/aquasecurity/trivy), with an integrated UI.
 

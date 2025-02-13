@@ -215,7 +215,7 @@ export class SecretsTable extends React.Component<SecretsTableProps> {
         role="table"
         behaviors={[sortingBehavior]}
         columns={fixedColumns}
-        itemProvider = { new ArrayItemProvider(this.results.value)}
+        itemProvider={new ArrayItemProvider(this.results.value)}
         containerClassName="h-scroll-auto"
       />
     );

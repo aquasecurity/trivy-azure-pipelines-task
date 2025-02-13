@@ -189,7 +189,7 @@ export class MisconfigurationsTable extends React.Component<MisconfigurationsTab
         role="table"
         behaviors={[sortingBehavior]}
         columns={fixedColumns}
-itemProvider = { new ArrayItemProvider(this.results.value)}
+        itemProvider={new ArrayItemProvider(this.results.value)}
         containerClassName="h-scroll-auto"
       />
     );

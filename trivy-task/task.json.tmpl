@@ -1,131 +1,292 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
-    "id": "8f9cb13f-f551-439c-83e4-fac6801c3fab",
-    "name": "trivy",
-    "friendlyName": "Trivy",
-    "description": "Trivy is the world’s most popular open source vulnerability and misconfiguration scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.",
-    "helpMarkDown": "[Learn more about this task](https://github.com/aquasecurity/trivy-azure-pipelines-task)",
-    "category": "Test",
-    "author": "Aqua Security",
-    "version": { VERSION_PLACEHOLDER },
-    "instanceNameFormat": "Echo trivy $(version)",
-    "inputs": [
-        {
-            "name": "version",
-            "type": "string",
-            "label": "Trivy Version",
-            "defaultValue": "latest",
-            "required": false,
-            "helpMarkDown": "The version of Trivy to use"
-        },
-        {
-            "name": "docker",
-            "type": "boolean",
-            "label": "Run Trivy using the aquasec/trivy docker image",
-            "defaultValue": "true",
-            "required": false,
-            "helpMarkDown": "This can be useful when being rate limited by dockerhub etc."
-        },
-        {
-            "name": "debug",
-            "type": "boolean",
-            "label": "Enable Debug",
-            "defaultValue": "false",
-            "required": false,
-            "helpMarkDown": "Enable debug logging in build output"
-        },
-        {
-            "name": "path",
-            "type": "string",
-            "label": "The path to scan",
-            "defaultValue": "",
-            "required": false,
-            "helpMarkDown": "The specified path will be scanned using an 'fs' scan type. If this option is used, the 'image' option cannot be set."
-        },
-        {
-            "name": "loginDockerConfig",
-            "type": "boolean",
-            "label": "Use Docker login task DockerConfig",
-            "defaultValue": "false",
-            "required": false,
-            "helpMarkDown": "Use DOCKER_CONFIG ENV as DockerConfig (set by Docker login task)."
-        },
-        {
-            "name": "image",
-            "type": "string",
-            "label": "The image to scan",
-            "defaultValue": "",
-            "required": false,
-            "helpMarkDown": "The specified image will be scanned using an 'image' scan type. If this option is used, the 'path' option cannot be set."
-        },
-        {
-            "name": "severities",
-            "type": "string",
-            "label": "The severities (CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN) to include in the scan (comma sperated)",
-            "defaultValue": "",
-            "required": false,
-            "helpMarkDown": "The specified path or image will be scanned for the provided serverities."
-        },
-        {
-            "name": "ignoreUnfixed",
-            "type": "boolean",
-            "label": "Ignore unpatched/unfixed vulnerabilities",
-            "defaultValue": false,
-            "required": false,
-            "helpMarkDown": "This means you can't fix these vulnerabilities even if you update all packages."
-        },
-        {
-            "name": "exitCode",
-            "type": "string",
-            "label": "Exit code when Trivy detects issues.",
-            "defaultValue": "1",
-            "required": false,
-            "helpMarkDown": "Set this to 0 to prevent the build failing when Trivy detects issues."
-        },
-        {
-            "name": "aquaKey",
-            "type": "string",
-            "label": "Aqua API Key",
-            "defaultValue": "",
-            "required": false,
-            "helpMarkDown": "The Aqua API Key is used to upload scan results to your Aqua Security account."
-        },
-        {
-            "name": "aquaSecret",
-            "type": "string",
-            "label": "Aqua API Secret",
-            "defaultValue": "",
-            "required": false,
-            "helpMarkDown": "The Aqua API Secret is used to upload scan results to your Aqua Security account."
-        },
-        {
-            "name": "devMode",
-            "type": "boolean",
-            "label": "Enable development mode (used for internal testing)",
-            "defaultValue": "false",
-            "required": false,
-            "helpMarkDown": "Not recommended."
-        },
-        {
-            "name": "options",
-            "type": "string",
-            "label": "Additional Options",
-            "defaultValue": "",
-            "required": false,
-            "helpMarkDown": "Additional flags to pass to Trivy command line."
-        },
-        {
-            "name": "useSystemInstallation",
-            "type": "boolean",
-            "label": "Run Trivy using from the system PATH.",
-            "defaultValue": "false",
-            "required": false,
-            "helpMarkDown": "Use Trivy executable pre-installed as system package. If this option is used, the 'version' option is ignored."
-        }
-    ],
-    "execution": {
-        "Node20_1": {
-            "target": "index.js"
-        }
+  "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+  "id": "8f9cb13f-f551-439c-83e4-fac6801c3fab",
+  "name": "trivy",
+  "friendlyName": "Trivy",
+  "description": "Trivy is the world’s most popular open source vulnerability and misconfiguration scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.",
+  "helpMarkDown": "[Learn more about this task](https://github.com/aquasecurity/trivy-azure-pipelines-task)",
+  "helpUrl": "https://github.com/aquasecurity/trivy-azure-pipelines-task",
+  "category": "Test",
+  "author": "Aqua Security",
+  "version": { VERSION_PLACEHOLDER },
+  "instanceNameFormat": "Echo trivy $(version)",
+  
+  "groups": [
+    {
+      "name": "trivyRunner",
+      "displayName": "Trivy Runner",
+      "isExpanded": true
+    },
+    {
+      "name": "scanning",
+      "displayName": "Scanning Options",
+      "isExpanded": true
+    },
+    {
+      "name": "output",
+      "displayName": "Additional Output",
+      "isExpanded": false
+    },
+    {
+      "name": "commercial",
+      "displayName": "Aqua Platform Integration",
+      "isExpanded": false
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "isExpanded": false
+    },
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
     }
+  ],
+  "inputs": [
+    {
+      "name": "docker",
+      "type": "boolean",
+      "label": "Run Trivy as a Docker container",
+      "defaultValue": "true",
+      "required": false,
+      "helpMarkDown": "This can be useful when being rate limited by dockerhub etc.",
+      "groupName": "trivyRunner"
+    },
+    {
+      "name": "loginDockerConfig",
+      "type": "boolean",
+      "label": "Use Docker login task DockerConfig",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "Use DOCKER_CONFIG ENV as DockerConfig (set by Docker login task).",
+      "groupName": "trivyRunner",
+      "visibleRule": "docker = true"
+    },
+    {
+      "name": "useSystemInstallation",
+      "type": "boolean",
+      "label": "Use Trivy from system PATH.",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "Use Trivy executable pre-installed as system package. If this option is used, the 'version' option is ignored.",
+      "groupName": "trivyRunner",
+      "visibleRule": "docker = false"
+    },
+    {
+      "name": "version",
+      "type": "string",
+      "label": "Trivy Version",
+      "defaultValue": "latest",
+      "required": false,
+      "helpMarkDown": "The version of Trivy to use",
+      "groupName": "trivyRunner",
+      "visibleRule": "useSystemInstallation = false || docker = true"
+    },
+    {
+      "name": "exitCode",
+      "type": "string",
+      "label": "Override exit code",
+      "defaultValue": "1",
+      "required": false,
+      "helpMarkDown": "Set this to 0 to prevent the build failing when Trivy detects issues.",
+      "groupName": "trivyRunner"
+    },
+    {
+      "name": "debug",
+      "type": "boolean",
+      "label": "Enable Debug",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "Enable debug logging in build output",
+      "groupName": "debug"
+    },
+    {
+      "name": "devMode",
+      "type": "boolean",
+      "label": "Enable development mode (used for internal testing)",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "Not recommended.",
+      "groupName": "debug"
+    },
+    {
+      "name": "type",
+      "type": "pickList",
+      "label": "Scan Type",
+      "defaultValue": "image",
+      "required": false,
+      "options": {
+        "image": "Image",
+        "path": "Filesystem"
+      },
+      "helpMarkDown": "The type of scan to perform, can be a filesystem scan or an image scan.",
+      "groupName": "scanning"
+    },
+    {
+      "name": "path",
+      "type": "string",
+      "label": "Path to scan",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The specified path will be scanned using an 'fs' scan type. If this option is used, the 'image' option cannot be set.",
+      "groupName": "scanning",
+      "visibleRule": "type = path"
+    },
+    {
+      "name": "image",
+      "type": "string",
+      "label": "Image to scan",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The specified image will be scanned using an 'image' scan type. If this option is used, the 'path' option cannot be set.",
+      "groupName": "scanning",
+      "visibleRule": "type = image"
+    },
+    {
+      "name": "scanners",
+      "type": "string",
+      "label": "Override scanners, comma separated",
+      "defaultValue": "vuln,misconfig,secret",
+      "required": false,
+      "helpMarkDown": "Choose which scanners to run (vuln, misconfig, secret).",
+      "groupName": "scanning"
+    },
+    {
+      "name": "severities",
+      "type": "string",
+      "label": "Override severities, comma separated",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The severities (CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN) to include in the scan (comma separated)",
+      "groupName": "scanning"
+    },
+    {
+      "name": "ignoreUnfixed",
+      "type": "boolean",
+      "label": "Fixed Only",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "This means you can't fix these vulnerabilities even if you update all packages.",
+      "groupName": "scanning"
+    },
+    {
+      "name": "aquaKey",
+      "type": "string",
+      "label": "Aqua API Key",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The Aqua API Key is used to upload scan results to your Aqua Security account.",
+      "groupName": "commercial"
+    },
+    {
+      "name": "aquaSecret",
+      "type": "string",
+      "label": "Aqua API Secret",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "The Aqua API Secret is used to upload scan results to your Aqua Security account.",
+      "groupName": "commercial"
+    },
+    {
+      "name": "cosignOutput",
+      "type": "boolean",
+      "label": "Generate Cosign Vuln report",
+      "defaultValue": "false",
+      "required": false,
+      "groupName": "output"
+    },
+    {
+      "name": "cyclonedxOutput",
+      "type": "boolean",
+      "label": "Generate CycloneDX report",
+      "defaultValue": "false",
+      "required": false,
+      "groupName": "output"
+    },
+    {
+      "name": "jsonOutput",
+      "type": "boolean",
+      "label": "Generate JSON report",
+      "defaultValue": "false",
+      "required": false,
+      "groupName": "output"
+    },
+    {
+      "name": "sarifOutput",
+      "type": "boolean",
+      "label": "Generate SARIF report",
+      "defaultValue": "false",
+      "required": false,
+      "groupName": "output"
+    },
+    {
+      "name": "spdxOutput",
+      "type": "boolean",
+      "label": "Generate SPDX report",
+      "defaultValue": "false",
+      "required": false,
+      "groupName": "output"
+    },
+    {
+      "name": "spdxjsonOutput",
+      "type": "boolean",
+      "label": "Generate SPDX JSON report",
+      "defaultValue": "false",
+      "required": false,
+      "groupName": "output"
+    },
+    {
+      "name": "tableOutput",
+      "type": "boolean",
+      "label": "Generate Table report",
+      "defaultValue": "false",
+      "required": false,
+      "groupName": "output"
+    },
+    {
+      "name": "options",
+      "type": "string",
+      "label": "Additional Options",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Additional flags to pass to Trivy command line.",
+      "groupName": "advanced"
+    }
+  ],
+  "outputVariables": [
+    {
+      "name": "tableReport",
+      "description": "Table report output file path"
+    },
+    {
+      "name": "jsonReport",
+      "description": "JSON report output file path"
+    },
+    {
+      "name": "sarifReport",
+      "description": "SARIF report output file path"
+    },
+    {
+      "name": "cyclonedxReport",
+      "description": "CycloneDX report output file path"
+    },
+    {
+      "name": "spdxReport",
+      "description": "SPDX report output file path"
+    },
+    {
+      "name": "spdxjsonReport",
+      "description": "SPDX JSON report output file path"
+    },
+    {
+      "name": "cosignReport",
+      "description": "Cosign Vuln report output file path"
+    }
+  ],
+  "execution": {
+    "Node20_1": {
+      "target": "index.js"
+    }
+  }
 }
