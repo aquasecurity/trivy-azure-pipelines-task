@@ -1,5 +1,6 @@
 import task = require('azure-pipelines-task-lib/task');
 import { createRunner } from './trivyLoader';
+import { randomSuffix } from './utils';
 
 const reportTypes = {
   sarif: { DisplayName: 'SARIF', Extension: '.json' },
@@ -20,6 +21,19 @@ export async function generateAdditionalReports(filename: string) {
     const inputKey = `${key}Output`;
     const outputKey = `${key}Report`;
     if (task.getBoolInput(inputKey, false)) {
+      if (key === 'json') {
+        // don't need to convert json to json
+        task.setVariable(outputKey, filename);
+        task.debug(`Uploading ${key} report...`);
+        const artifactKey = `${key}-${smallJobId}-${randomSuffix(8)}`;
+        task.uploadArtifact(
+          artifactKey,
+          filename,
+          `${jobId}${value.DisplayName}`
+        );
+        continue;
+      }
+
       console.log(`Generating ${key} report...`);
       const format = getReportFormat(key);
       const output = `${filename.replace(/json$/, format)}${value.Extension}`;
@@ -65,13 +79,4 @@ function getReportFormat(key: string): string {
     default:
       return key;
   }
-}
-
-function randomSuffix(length: number): string {
-  const characters = '0123456789abcdef';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += characters[Math.floor(Math.random() * characters.length)];
-  }
-  return result;
 }
