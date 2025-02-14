@@ -116,6 +116,7 @@ jobs:
   - job: Scan the local project
     steps:
       - task: trivy@1
+        version: v0.59.0
         inputs:
           path: .
   - job: Scan the ubuntu image
