@@ -8,8 +8,9 @@
   "helpUrl": "https://github.com/aquasecurity/trivy-azure-pipelines-task",
   "category": "Test",
   "author": "Aqua Security",
+  "version": { "Major":1,"Minor":11,"Patch":10 },
   "instanceNameFormat": "Echo trivy $(version)",
-  "version": { "Major":1,"Minor":10,"Patch":81 },
+  
   "groups": [
     {
       "name": "trivyRunner",
@@ -117,7 +118,7 @@
       "required": false,
       "options": {
         "image": "Image",
-        "path": "Filesystem"
+        "filesystem": "Filesystem"
       },
       "helpMarkDown": "The type of scan to perform, can be a filesystem scan or an image scan.",
       "groupName": "scanning"
@@ -130,7 +131,7 @@
       "required": false,
       "helpMarkDown": "The specified path will be scanned using an 'fs' scan type. If this option is used, the 'image' option cannot be set.",
       "groupName": "scanning",
-      "visibleRule": "type = path"
+      "visibleRule": "type = filesystem"
     },
     {
       "name": "image",

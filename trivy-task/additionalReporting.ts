@@ -36,13 +36,17 @@ export async function generateAdditionalReports(filename: string) {
           `${jobId}${value.DisplayName}`
         );
       } catch (error) {
-       task.error(`Failed to generate ${key} report: ${error}`);
+        task.error(`Failed to generate ${key} report: ${error}`);
       }
     }
   }
 }
 
-async function generateReport(format: string, output: string, filename: string): Promise<void> {
+async function generateReport(
+  format: string,
+  output: string,
+  filename: string
+): Promise<void> {
   const runner = await createRunner();
   runner.arg(['convert', '--format', format, '--output', output, filename]);
   const result = runner.execSync();
