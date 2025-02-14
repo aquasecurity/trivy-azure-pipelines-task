@@ -82,31 +82,31 @@ async function installTrivy(version: string): Promise<string> {
     throw new Error('Only Linux is currently supported');
   }
 
-  const url = await getArtifactURL(version);
-
-  const bin = 'trivy';
-
-  const localPath = tmpPath + bin;
-  task.rmRF(localPath);
-
-  console.log('Downloading Trivy...');
-  const downloadPath = await tool.downloadTool(url, localPath);
-
-  console.log('Extracting Trivy...');
-  await tool.extractTar(downloadPath, tmpPath);
-  const binPath = tmpPath + bin;
-
-  console.log('Setting permissions...');
-  await task.exec('chmod', ['+x', binPath]);
-  return binPath;
-}
-
-async function getArtifactURL(version: string): Promise<string> {
   if (version === 'latest') {
     task.debug('version set to latest, fetching latest version from GitHub');
     version = await getLatestTrivyVersion();
   }
+  const bin = `trivy_${stripV(version).replaceAll('.', '_')}`;
+  const binPath = tmpPath + bin;
 
+  if (task.exist(binPath)) {
+    console.log('Trivy already installed, skipping installation');
+    return binPath;
+  }
+
+  const url = await getArtifactURL(version);
+  console.log('Downloading Trivy...');
+  const downloadPath = await tool.downloadTool(url);
+
+  console.log('Extracting Trivy...');
+  await tool.extractTar(downloadPath, tmpPath);
+  console.log('Setting permissions...');
+  task.mv(tmpPath + 'trivy', binPath);
+  task.execSync('chmod', ['+x', binPath]);
+  return binPath;
+}
+
+async function getArtifactURL(version: string): Promise<string> {
   const arch = getArchitecture();
   const artifact = `trivy_${stripV(version)}_Linux-${arch}.tar.gz`;
   return `https://github.com/aquasecurity/trivy/releases/download/${version}/${artifact}`;
@@ -122,18 +122,25 @@ async function getLatestTrivyVersion(): Promise<string> {
         validateStatus: (status) => status >= 300 && status < 400,
       }
     );
-    task.debug(`Response: ${JSON.stringify(response)}`);
+    task.debug(`Response: ${JSON.stringify(response.headers)}`);
     const location = response.headers['location'];
+    if (!location) {
+      throw new Error(
+        'Failed to retrieve latest version information from GitHub'
+      );
+    }
+
     const parts = location?.split('/');
     if (parts) {
-      return parts[parts.length - 1];
+      const latestVersion = parts[parts.length - 1];
+      console.log(`Latest Trivy version is ${latestVersion}`);
     }
   } catch (error) {
     console.log(
       `Unable to Retrieve Latest Version information from GitHub, falling back to ${fallbackTrivyVersion}`
     );
     if (error) {
-      console.error(JSON.stringify(error));
+      console.log(`Error: ${error}`);
     }
   }
   return fallbackTrivyVersion;
