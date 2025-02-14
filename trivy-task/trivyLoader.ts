@@ -103,12 +103,13 @@ async function installTrivy(version: string): Promise<string> {
 
 async function getArtifactURL(version: string): Promise<string> {
   if (version === 'latest') {
+    task.debug('version set to latest, fetching latest version from GitHub');
     version = await getLatestTrivyVersion();
   }
 
   const arch = getArchitecture();
-  const artifact = `trivy_${stripV(version)}_Linux-${arch}.tar.gz`
-  return `https://github.com/aquasecurity/trivy/releases/download/${version}/${artifact}`
+  const artifact = `trivy_${stripV(version)}_Linux-${arch}.tar.gz`;
+  return `https://github.com/aquasecurity/trivy/releases/download/${version}/${artifact}`;
 }
 
 async function getLatestTrivyVersion(): Promise<string> {
@@ -121,16 +122,19 @@ async function getLatestTrivyVersion(): Promise<string> {
         validateStatus: (status) => status >= 300 && status < 400,
       }
     );
-
+    task.debug(`Response: ${JSON.stringify(response)}`);
     const location = response.headers['location'];
     const parts = location?.split('/');
     if (parts) {
       return parts[parts.length - 1];
     }
-  } catch {
+  } catch (error) {
     console.log(
       `Unable to Retrieve Latest Version information from GitHub, falling back to ${fallbackTrivyVersion}`
     );
+    if (error) {
+      console.error(JSON.stringify(error));
+    }
   }
   return fallbackTrivyVersion;
 }
