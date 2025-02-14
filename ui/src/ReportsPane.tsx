@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Tab, TabBar, TabSize } from 'azure-devops-ui/Tabs';
 import {
   ArtifactType,
   countAllReportsIssues,
@@ -16,7 +15,7 @@ import { FilesystemReport } from './FilesystemReport';
 import { MessageCard, MessageCardSeverity } from 'azure-devops-ui/MessageCard';
 import { Card } from 'azure-devops-ui/Card';
 import { Dropdown } from 'azure-devops-ui/Dropdown';
-import { DropdownSelection } from "azure-devops-ui/Utilities/DropdownSelection";
+import { DropdownSelection } from 'azure-devops-ui/Utilities/DropdownSelection';
 import './css/styles.css';
 
 interface ReportsPaneProps {
@@ -51,7 +50,6 @@ export class ReportsPane extends React.Component<
     };
 
     this.selection.select(0);
-
   }
 
   private onSelectedTabChanged = (newTabId: string) => {
@@ -151,8 +149,9 @@ export class ReportsPane extends React.Component<
               </Card>
             </div>
             <div className="flex-row">
-              <span className="task-label" >Select a job:</span>
-              <Dropdown className="task-dropdown"
+              <span className="task-label">Select a job:</span>
+              <Dropdown
+                className="task-dropdown"
                 selection={this.selection}
                 ariaLabel="Select Report"
                 onSelect={(event, item) => {
@@ -167,8 +166,7 @@ export class ReportsPane extends React.Component<
                     text: `${getReportTitle(r)} (${countReportIssues(r)})`,
                   };
                 })}
-  
-               />
+              />
             </div>
             <div className="flex-grow">
               <div className="tab-content">
