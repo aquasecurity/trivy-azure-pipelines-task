@@ -5,6 +5,18 @@
   width: auto;
 }
 
+.task-label{
+  align-self: center;
+  padding: 10px;
+}
+
+.task-dropdown {
+  align-self: center;
+  margin-right: 5px;
+  min-width: 500px;
+  width: auto;
+}
+
 .button {
   align-self: center;
 }
@@ -15,4 +27,9 @@
 
 .vss-Dropdown--no-icon .bolt-dropdown-item .text-container {
   margin-left: 0 !important;
+}
+
+.bolt-dropdown-list-box-container ul
+{
+  padding-left: 2px !important;
 }

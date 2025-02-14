@@ -15,6 +15,9 @@ import { ImageReport } from './ImageReport';
 import { FilesystemReport } from './FilesystemReport';
 import { MessageCard, MessageCardSeverity } from 'azure-devops-ui/MessageCard';
 import { Card } from 'azure-devops-ui/Card';
+import { Dropdown } from 'azure-devops-ui/Dropdown';
+import { DropdownSelection } from "azure-devops-ui/Utilities/DropdownSelection";
+import './css/styles.css';
 
 interface ReportsPaneProps {
   reports: Report[];
@@ -32,6 +35,8 @@ export class ReportsPane extends React.Component<
   public props: ReportsPaneProps;
   public state: ReportsPaneState;
 
+  selection = new DropdownSelection();
+
   constructor(props: ReportsPaneProps) {
     super(props);
     if (props.reports === null) {
@@ -44,6 +49,9 @@ export class ReportsPane extends React.Component<
     this.state = {
       selectedTabId: '0',
     };
+
+    this.selection.select(0);
+
   }
 
   private onSelectedTabChanged = (newTabId: string) => {
@@ -143,25 +151,24 @@ export class ReportsPane extends React.Component<
               </Card>
             </div>
             <div className="flex-row">
-              <TabBar
-                onSelectedTabChanged={this.onSelectedTabChanged}
-                selectedTabId={this.state.selectedTabId}
-                tabSize={TabSize.Tall}
-              >
-                {this.props.reports.map(function (
-                  report: Report,
-                  index: number
-                ) {
-                  return (
-                    <Tab
-                      key={index}
-                      id={index + ''}
-                      name={getReportTitle(report)}
-                      badgeCount={countReportIssues(report)}
-                    />
-                  );
+              <span className="task-label" >Select a job:</span>
+              <Dropdown className="task-dropdown"
+                selection={this.selection}
+                ariaLabel="Select Report"
+                onSelect={(event, item) => {
+                  if (item.id) {
+                    this.setState({ selectedTabId: item.id });
+                    this.onSelectedTabChanged(item.id);
+                  }
+                }}
+                items={this.props.reports.map((r, index) => {
+                  return {
+                    id: index + '',
+                    text: `${getReportTitle(r)} (${countReportIssues(r)})`,
+                  };
                 })}
-              </TabBar>
+  
+               />
             </div>
             <div className="flex-grow">
               <div className="tab-content">
