@@ -9,7 +9,8 @@ import { homedir } from 'os';
 
 const fallbackTrivyVersion = 'v0.59.1';
 let trivyPath: string | undefined = undefined;
-export const tmpPath = '/tmp/';
+export const tmpPath = task.getVariable('Agent.TempDirectory') + '/';
+const toolsDirectory = task.getVariable('Agent.ToolsDirectory') + '/';
 
 export async function createRunner(): Promise<ToolRunner> {
   const docker = task.getBoolInput('docker', false);
@@ -26,6 +27,8 @@ export async function createRunner(): Promise<ToolRunner> {
   if (!docker) {
     if (!useSystemInstallation) {
       console.log('Run requested using local Trivy binary...');
+      // ensure that the path is created
+      task.mkdirP(tmpPath);
       if (!trivyPath) {
         trivyPath = await installTrivy(version);
       }
@@ -87,7 +90,7 @@ async function installTrivy(version: string): Promise<string> {
     version = await getLatestTrivyVersion();
   }
   const bin = `trivy_${stripV(version).replaceAll('.', '_')}`;
-  const binPath = tmpPath + bin;
+  const binPath = toolsDirectory + bin;
 
   if (task.exist(binPath)) {
     console.log('Trivy already installed, skipping installation');
