@@ -105,8 +105,11 @@ async function run() {
   }
 
   task.debug('Generating additional reports...');
-  generateAdditionalReports(outputPath);
-
+  if (task.exist(outputPath)) {
+    generateAdditionalReports(outputPath);
+  } else {
+    task.error('Trivy seems to have failed so no output path to generate reports from.');
+  }
   console.log('Done!');
 }
 
