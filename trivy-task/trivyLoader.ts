@@ -49,14 +49,18 @@ export async function createRunner(): Promise<ToolRunner> {
   const loginDockerConfig = task.getBoolInput('loginDockerConfig', false);
   const home = homedir();
   const cwd = process.cwd();
+  const dockerHome = home + '/.docker';
+
+  // ensure the docker home dir is created
+  task.mkdirP(dockerHome);
 
   runner.line('run --rm');
   loginDockerConfig
-    ? runner.line('-v ' + task.getVariable('DOCKER_CONFIG') + ':/root/.docker')
-    : runner.line('-v ' + home + '/.docker:/root/.docker');
-  runner.line('-v /tmp:/tmp');
+    ? runner.line('-v ' + `task.getVariable('DOCKER_CONFIG') + :/root/.docker`)
+    : runner.line('-v ' + `${dockerHome}:/root/.docker`);
+  runner.line(`-v ${tmpPath}:/tmp`);
   runner.line('-v /var/run/docker.sock:/var/run/docker.sock');
-  runner.line('-v ' + cwd + ':/src');
+  runner.line(`-v ${cwd}:/src`);
   runner.line('--workdir /src');
 
   if (hasAquaAccount()) {
