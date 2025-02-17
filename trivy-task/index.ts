@@ -108,7 +108,9 @@ async function run() {
   if (task.exist(outputPath)) {
     generateAdditionalReports(outputPath);
   } else {
-    task.error('Trivy seems to have failed so no output path to generate reports from.');
+    task.error(
+      'Trivy seems to have failed so no output path to generate reports from.'
+    );
   }
   console.log('Done!');
 }

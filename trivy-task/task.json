@@ -8,7 +8,7 @@
   "helpUrl": "https://github.com/aquasecurity/trivy-azure-pipelines-task",
   "category": "Test",
   "author": "Aqua Security",
-  "version": { "Major":1,"Minor":11,"Patch":28 },
+  "version": { "Major":1,"Minor":11,"Patch":32 },
   "instanceNameFormat": "Echo trivy $(version)",
   
   "groups": [
@@ -286,6 +286,9 @@
   ],
   "execution": {
     "Node20_1": {
+      "target": "index.js"
+    },
+    "Node10": {
       "target": "index.js"
     }
   }
