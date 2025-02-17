@@ -12,7 +12,11 @@ const reportTypes = {
   table: { DisplayName: 'Table', Extension: '.md' },
 };
 
-export async function generateAdditionalReports(filename: string) {
+export async function generateAdditionalReports(
+  localFilename: string,
+  filename: string,
+  isDocker: boolean
+) {
   const jobId = task.getVariable('System.JobId') || '';
   const smallJobId = jobId.substring(0, 8);
 
@@ -37,16 +41,17 @@ export async function generateAdditionalReports(filename: string) {
       console.log(`Generating ${key} report...`);
       const format = getReportFormat(key);
       const output = `${filename.replace(/json$/, format)}${value.Extension}`;
+      const localOutput = `${localFilename.replace(/json$/, format)}${value.Extension}`;
 
       try {
         await generateReport(format, output, filename);
         console.log(`Generated ${key} report at ${output}`);
-        task.setVariable(outputKey, output);
+        task.setVariable(outputKey, localOutput);
         task.debug(`Uploading ${key} report...`);
         const artifactKey = `${key}-${smallJobId}-${randomSuffix(8)}`;
         task.uploadArtifact(
           artifactKey,
-          output,
+          localOutput,
           `${jobId}${value.DisplayName}`
         );
       } catch (error) {
