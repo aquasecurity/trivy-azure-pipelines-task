@@ -56,7 +56,7 @@ export async function createRunner(): Promise<ToolRunner> {
 
   runner.line('run --rm');
   loginDockerConfig
-    ? runner.line('-v ' + `task.getVariable('DOCKER_CONFIG') + :/root/.docker`)
+    ? runner.line('-v ' + `${task.getVariable('DOCKER_CONFIG')}:/root/.docker`)
     : runner.line('-v ' + `${dockerHome}:/root/.docker`);
   runner.line(`-v ${tmpPath}:/tmp`);
   runner.line('-v /var/run/docker.sock:/var/run/docker.sock');
