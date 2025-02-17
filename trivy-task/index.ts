@@ -7,8 +7,12 @@ import { generateAdditionalReports } from './additionalReporting';
 
 async function run() {
   task.debug('Starting Trivy task...');
-  const outputPath = tmpPath + 'trivy-results-' + Math.random() + '.json';
-  task.rmRF(outputPath);
+  const resultsFile = `trivy-results-${Math.random()}.json`;
+  const localOutputPath = `${tmpPath}/${resultsFile}`;
+  const outputPath = task.getBoolInput('docker', false)
+    ? `/tmp/${resultsFile}`
+    : localOutputPath;
+  task.rmRF(localOutputPath);
   const scanPath = task.getInput('path', false);
   const image = task.getInput('image', false);
   const scanners = task.getInput('scanners', false) ?? '';
@@ -89,11 +93,7 @@ async function run() {
   }
 
   task.debug('Publishing JSON results...');
-  task.addAttachment(
-    'JSON_RESULT',
-    'trivy' + Math.random() + '.json',
-    outputPath
-  );
+  task.addAttachment('JSON_RESULT', resultsFile, localOutputPath);
 
   if (hasAccount) {
     console.log('Publishing JSON assurance results...');
@@ -105,8 +105,8 @@ async function run() {
   }
 
   task.debug('Generating additional reports...');
-  if (task.exist(outputPath)) {
-    generateAdditionalReports(outputPath);
+  if (task.exist(localOutputPath)) {
+    generateAdditionalReports(localOutputPath);
   } else {
     task.error(
       'Trivy seems to have failed so no output path to generate reports from.'

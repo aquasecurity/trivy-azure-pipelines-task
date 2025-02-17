@@ -10,10 +10,19 @@ lint:
 	cd ui && npm install -f && npm run lint
 	cd trivy-task && npm install -f && npm run lint
 
+.PHONY: lint-fix
+lint-fix:
+	cd ui && npm install -f && npm run lint:fix
+	cd trivy-task && npm install -f && npm run lint:fix
+
 .PHONY: format
 format:
 	cd ui && npm install -f && npm run format
 	cd trivy-task && npm install -f && npm run format
+
+
+.PHONY: tidy
+tidy: lint-fix format
 
 .PHONY: build-ui
 build-ui: clean
