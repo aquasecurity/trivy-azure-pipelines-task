@@ -7,12 +7,12 @@ import { generateAdditionalReports } from './additionalReporting';
 
 async function run() {
   task.debug('Starting Trivy task...');
+  const isDocker = task.getBoolInput('docker', false);
   const resultsFile = `trivy-results-${Math.random()}.json`;
-  const localOutputPath = `${tmpPath}/${resultsFile}`;
-  const outputPath = task.getBoolInput('docker', false)
-    ? `/tmp/${resultsFile}`
-    : localOutputPath;
+  const localOutputPath = `${tmpPath}${resultsFile}`;
+  const outputPath = isDocker ? `/tmp/${resultsFile}` : localOutputPath;
   task.rmRF(localOutputPath);
+
   const scanPath = task.getInput('path', false);
   const image = task.getInput('image', false);
   const scanners = task.getInput('scanners', false) ?? '';
@@ -32,7 +32,11 @@ async function run() {
   }
 
   const hasAccount = hasAquaAccount();
-  const assurancePath = tmpPath + 'trivy-assurance-' + Math.random() + '.json';
+  const assuranceResultsFile = `trivy-assurance-${Math.random()}.json`;
+  const localAssurancePath = `${tmpPath}${assuranceResultsFile}`;
+  const assurancePath = isDocker
+    ? `/tmp/{assuranceResultsFile}`
+    : localAssurancePath;
 
   if (hasAccount) {
     task.rmRF(assurancePath);
@@ -87,26 +91,17 @@ async function run() {
     console.log('Publishing JSON assurance results...');
     task.addAttachment(
       'ASSURANCE_RESULT',
-      'trivy-assurance-' + Math.random() + '.json',
-      assurancePath
+      assuranceResultsFile,
+      localAssurancePath
     );
   }
 
   task.debug('Publishing JSON results...');
   task.addAttachment('JSON_RESULT', resultsFile, localOutputPath);
 
-  if (hasAccount) {
-    console.log('Publishing JSON assurance results...');
-    task.addAttachment(
-      'ASSURANCE_RESULT',
-      'trivy-assurance-' + Math.random() + '.json',
-      assurancePath
-    );
-  }
-
   task.debug('Generating additional reports...');
   if (task.exist(localOutputPath)) {
-    generateAdditionalReports(localOutputPath);
+    generateAdditionalReports(localOutputPath, outputPath, isDocker);
   } else {
     task.error(
       'Trivy seems to have failed so no output path to generate reports from.'

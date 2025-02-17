@@ -119,6 +119,7 @@ export interface Report {
   Metadata: Metadata;
   Results: Result[];
   DownloadReports: DownloadReports[];
+  DisplayName: string;
 }
 
 export interface AssuranceReport {
@@ -140,6 +141,9 @@ export interface PolicyResult {
 }
 
 export function getReportTitle(report: Report): string {
+  if (report.DisplayName && report.DisplayName !== 'trivy') {
+    return report.DisplayName;
+  }
   switch (report.ArtifactType) {
     case ArtifactType.FileSystem:
       if (report.ArtifactName === '.') {

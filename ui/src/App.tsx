@@ -152,6 +152,10 @@ export class App extends React.Component<AppProps, AppState> {
                 report.DownloadReports = [];
               }
 
+              if (record.name) {
+                report.DisplayName = record.name;
+              }
+
               try {
                 console.log(
                   'Checking for artifacts for record ' + JSON.stringify(record)
