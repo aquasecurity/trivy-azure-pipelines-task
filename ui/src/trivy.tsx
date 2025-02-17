@@ -141,7 +141,7 @@ export interface PolicyResult {
 }
 
 export function getReportTitle(report: Report): string {
-  if (report.DisplayName) {
+  if (report.DisplayName && report.DisplayName !== 'trivy') {
     return report.DisplayName;
   }
   switch (report.ArtifactType) {

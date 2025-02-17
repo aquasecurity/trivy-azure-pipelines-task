@@ -2,7 +2,7 @@
   "manifestVersion": 1,
   "id": "trivy-official-dev",
   "publisher": "AquaSecurityOfficial",
-  "version": "1.11.39",
+  "version": "1.11.40",
   "name": "trivy-dev",
   "description": "Trivy is the world’s most popular open source vulnerability and misconfiguration scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.",
   "repository": {
