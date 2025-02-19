@@ -19,7 +19,14 @@ async function run() {
   const ignoreUnfixed = task.getBoolInput('ignoreUnfixed', false);
   const severities = task.getInput('severities', false) ?? '';
   const options = task.getInput('options', false) ?? '';
+  const version = task.getInput('version', false);
+  const dockerImage = task.getInput('dockerImage', false);
 
+  if (dockerImage && version !== 'latest') {
+    throw new Error(
+      'You can not specify version when you you override the docker image.'
+    );
+  }
   if (scanPath === undefined && image === undefined) {
     throw new Error(
       "You must specify something to scan. Use either the 'image' or 'path' option."

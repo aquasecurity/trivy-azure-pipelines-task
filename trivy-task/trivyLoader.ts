@@ -75,7 +75,13 @@ export async function createRunner(): Promise<ToolRunner> {
       runner.line('-e CSPM_URL=https://stage.api.cloudsploit.com/v2/tokens');
     }
   }
-  runner.line('aquasec/trivy:' + stripV(version));
+  const dockerImage = task.getInput('dockerImage', false);
+  if (dockerImage) {
+    runner.line(dockerImage);
+  } else {
+    runner.line('aquasec/trivy:' + stripV(version));
+  }
+
   return runner;
 }
 
