@@ -75,7 +75,13 @@ export async function createRunner(): Promise<ToolRunner> {
       runner.line('-e CSPM_URL=https://stage.api.cloudsploit.com/v2/tokens');
     }
   }
-  runner.line('aquasec/trivy:' + stripV(version));
+  let trivyImage = task.getInput('trivyImage', false) || 'aquasec/trivy';
+  if (trivyImage === 'aquasec/trivy') {
+    trivyImage = `${trivyImage}:${stripV(version)}`;
+  }
+  console.log(`Using Trivy image: ${trivyImage}`);
+  runner.line(trivyImage);
+
   return runner;
 }
 

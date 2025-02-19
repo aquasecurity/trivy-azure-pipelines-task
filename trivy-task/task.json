@@ -8,7 +8,7 @@
   "helpUrl": "https://github.com/aquasecurity/trivy-azure-pipelines-task",
   "category": "Test",
   "author": "Aqua Security",
-  "version": { "Major":1,"Minor":11,"Patch":40 },
+  "version": { "Major":1,"Minor":11,"Patch":56 },
   "instanceNameFormat": "Echo trivy $(version)",
   
   "groups": [
@@ -64,6 +64,16 @@
       "visibleRule": "docker = true"
     },
     {
+    "name": "trivyImage",
+    "type": "string",
+    "label": "Image override with tag",
+    "defaultValue": "",
+    "required": false,
+    "helpMarkDown": "Override the default Trivy docker image. If this option is used, the 'version' option is ignored.",
+    "groupName": "trivyRunner",
+    "visibleRule": "docker = true"
+    },
+    {
       "name": "useSystemInstallation",
       "type": "boolean",
       "label": "Use Trivy from system PATH.",
@@ -79,7 +89,7 @@
       "label": "Trivy Version",
       "defaultValue": "latest",
       "required": false,
-      "helpMarkDown": "The version of Trivy to use",
+      "helpMarkDown": "The version of Trivy to use. Ignored when custom Trivy image is specified",
       "groupName": "trivyRunner",
       "visibleRule": "useSystemInstallation = false || docker = true"
     },
