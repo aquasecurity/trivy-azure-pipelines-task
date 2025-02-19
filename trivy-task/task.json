@@ -8,7 +8,7 @@
   "helpUrl": "https://github.com/aquasecurity/trivy-azure-pipelines-task",
   "category": "Test",
   "author": "Aqua Security",
-  "version": { "Major":1,"Minor":11,"Patch":53 },
+  "version": { "Major":1,"Minor":11,"Patch":56 },
   "instanceNameFormat": "Echo trivy $(version)",
   
   "groups": [
@@ -64,7 +64,7 @@
       "visibleRule": "docker = true"
     },
     {
-    "name": "dockerImage",
+    "name": "trivyImage",
     "type": "string",
     "label": "Image override with tag",
     "defaultValue": "",
