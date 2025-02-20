@@ -72,8 +72,8 @@ export async function createRunner(): Promise<ToolRunner> {
     runner.line('-e OVERRIDE_BRANCH');
     runner.line('-e AQUA_ASSURANCE_EXPORT');
     if (isDevMode()) {
-      runner.line('-e AQUA_URL=https://api-dev.aquasec.com/v2/build');
-      runner.line('-e CSPM_URL=https://stage.api.cloudsploit.com/v2/tokens');
+      runner.line('-e AQUA_URL=https://api.dev.supply-chain.cloud.aquasec.com');
+      runner.line('-e CSPM_URL=https://stage.api.cloudsploit.com');
     }
   }
   let trivyImage = task.getInput('trivyImage', false) || 'aquasec/trivy';

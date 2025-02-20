@@ -27,12 +27,12 @@ export async function generateAdditionalReports(
     if (task.getBoolInput(inputKey, false)) {
       if (key === 'json') {
         // don't need to convert json to json
-        task.setVariable(outputKey, filename);
+        task.setVariable(outputKey, localFilename);
         task.debug(`Uploading ${key} report...`);
         const artifactKey = `${key}-${smallJobId}-${randomSuffix(8)}`;
         task.uploadArtifact(
           artifactKey,
-          filename,
+          localFilename,
           `${jobId}${value.DisplayName}`
         );
         continue;

@@ -40,6 +40,16 @@ export interface Secret {
   Match: string;
 }
 
+export interface License {
+  PkgName: string;
+  Category: string;
+  Severity: Severity;
+  Name: string;
+  FilePath: string;
+  Confidence: number;
+  Link: string;
+}
+
 interface CauseMetadata {
   StartLine: number;
   EndLine: number;
@@ -64,6 +74,7 @@ export interface Result {
   Vulnerabilities: Vulnerability[];
   Secrets: Secret[];
   Misconfigurations: Misconfiguration[];
+  Licenses: License[];
 }
 
 interface RootFS {
@@ -159,7 +170,8 @@ export function countReportIssues(report: Report): number {
   return (
     countReportMisconfigurations(report) +
     countReportVulnerabilities(report) +
-    countReportSecrets(report)
+    countReportSecrets(report) +
+    countReportLicenses(report)
   );
 }
 
@@ -178,6 +190,7 @@ export function countAllReportsVulnerabilities(reports: Report[]): number {
   });
   return total;
 }
+
 export function countAllReportsMisconfigurations(reports: Report[]): number {
   let total = 0;
   reports?.forEach(function (report: Report) {
@@ -185,10 +198,19 @@ export function countAllReportsMisconfigurations(reports: Report[]): number {
   });
   return total;
 }
+
 export function countAllReportsSecrets(reports: Report[]): number {
   let total = 0;
   reports?.forEach(function (report: Report) {
     total += countReportSecrets(report);
+  });
+  return total;
+}
+
+export function countAllReportLicenses(reports: Report[]): number {
+  let total = 0;
+  reports?.forEach(function (report: Report) {
+    total += countReportLicenses(report);
   });
   return total;
 }
@@ -227,6 +249,19 @@ export function countReportSecrets(report: Report): number {
       result.Secrets !== null
     ) {
       total += result.Secrets.length;
+    }
+  });
+  return total;
+}
+
+export function countReportLicenses(report: Report): number {
+  let total = 0;
+  report.Results?.forEach(function (result: Result) {
+    if (
+      Object.prototype.hasOwnProperty.call(result, 'Licenses') &&
+      result.Licenses !== null
+    ) {
+      total += result.Licenses.length;
     }
   });
   return total;

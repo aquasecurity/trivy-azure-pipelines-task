@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {
   AssuranceReport,
+  countReportLicenses,
   countReportMisconfigurations,
   countReportSecrets,
   countReportVulnerabilities,
@@ -9,6 +10,7 @@ import {
 import { SecretsTable } from './SecretsTable';
 import { VulnerabilitiesTable } from './VulnerabilitiesTable';
 import { MisconfigurationsTable } from './MisconfigurationsTable';
+import { LicensesTable } from './LicenseTable';
 import { Tab, TabBar, TabSize } from 'azure-devops-ui/Tabs';
 import { AssuranceTable } from './AssuranceTable';
 
@@ -58,6 +60,11 @@ export class BaseReport extends React.Component<
   }
 
   render() {
+    const vulnCount = countReportVulnerabilities(this.props.report);
+    const misconfigCount = countReportMisconfigurations(this.props.report);
+    const secretsCount = countReportSecrets(this.props.report);
+    const licensesCount = countReportLicenses(this.props.report);
+
     return (
       <div className="flex-grow">
         <div className="flex-grow">
@@ -66,24 +73,38 @@ export class BaseReport extends React.Component<
             selectedTabId={this.state.selectedTabId}
             tabSize={TabSize.Tall}
           >
-            <Tab
-              id="vulnerabilities"
-              name="Vulnerabilities"
-              key="vulnerabilities"
-              badgeCount={countReportVulnerabilities(this.props.report)}
-            />
-            <Tab
-              id="misconfigurations"
-              name="Misconfigurations"
-              key="misconfigurations"
-              badgeCount={countReportMisconfigurations(this.props.report)}
-            />
-            <Tab
-              id="secrets"
-              name="Secrets"
-              key="secrets"
-              badgeCount={countReportSecrets(this.props.report)}
-            />
+            {vulnCount > 0 && (
+              <Tab
+                id="vulnerabilities"
+                name="Vulnerabilities"
+                key="vulnerabilities"
+                badgeCount={vulnCount}
+              />
+            )}
+            {misconfigCount > 0 && (
+              <Tab
+                id="misconfigurations"
+                name="Misconfigurations"
+                key="misconfigurations"
+                badgeCount={misconfigCount}
+              />
+            )}
+            {secretsCount > 0 && (
+              <Tab
+                id="secrets"
+                name="Secrets"
+                key="secrets"
+                badgeCount={secretsCount}
+              />
+            )}
+            {licensesCount > 0 && (
+              <Tab
+                id="licenses"
+                name="Licenses"
+                key="licenses"
+                badgeCount={licensesCount}
+              />
+            )}
             {this.props.assurance !== undefined && (
               <Tab
                 id="assurance"
@@ -108,6 +129,11 @@ export class BaseReport extends React.Component<
           {this.state.selectedTabId === 'secrets' && (
             <div className="flex-grow">
               <SecretsTable results={this.props.report.Results} />
+            </div>
+          )}
+          {this.state.selectedTabId === 'licenses' && (
+            <div className="flex-grow">
+              <LicensesTable results={this.props.report.Results} />
             </div>
           )}
           {this.state.selectedTabId === 'assurance' && (

@@ -200,9 +200,15 @@ function convertLocation(
   result: Result,
   misconfiguration: Misconfiguration
 ): ISimpleListCell {
-  let combined = result.Target + ':' + misconfiguration.CauseMetadata.StartLine;
+  if (!misconfiguration.CauseMetadata.StartLine) {
+    return {
+      text: result.Target,
+    };
+  }
+  let combined =
+    result.Target + ' L' + misconfiguration.CauseMetadata.StartLine;
   if (
-    misconfiguration.CauseMetadata.StartLine >
+    misconfiguration.CauseMetadata.StartLine <
     misconfiguration.CauseMetadata.EndLine
   ) {
     combined += '-' + misconfiguration.CauseMetadata.EndLine;

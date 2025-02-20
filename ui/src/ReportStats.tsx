@@ -1,12 +1,14 @@
 import * as React from 'react';
 import {
   countReportIssues,
+  countReportLicenses,
   countReportMisconfigurations,
   countReportSecrets,
   countReportVulnerabilities,
   Report,
 } from './trivy';
 import { Card } from 'azure-devops-ui/Card';
+import './css/styles.css';
 
 interface ReportStatsProps {
   report: Report;
@@ -46,18 +48,27 @@ export class ReportStats extends React.Component<ReportStatsProps> {
         name: 'Secrets',
         value: countReportSecrets(this.props.report),
       },
+      {
+        name: 'Licenses',
+        value: countReportLicenses(this.props.report),
+      },
     ];
     return (
       <Card className="flex-grow">
-        <div className="flex-row" style={{ flexWrap: 'wrap' }}>
+        <div className="flex-row justify-start" style={{ flexWrap: 'wrap' }}>
           {stats.map((items, index) => (
             <div
-              className="flex-column"
-              style={{ minWidth: '120px' }}
+              className={
+                items.name === 'Type'
+                  ? 'flex-column'
+                  : 'flex-column statistic-item'
+              }
               key={index}
             >
-              <div className="body-m secondary-text">{items.name}</div>
-              <div className="body-m primary-text">{items.value}</div>
+              <div className="body-m primary-text">{items.name}</div>
+              <div className="body-m secondary-text statistic-count">
+                {items.value}
+              </div>
             </div>
           ))}
         </div>
