@@ -33,3 +33,12 @@
 {
   padding-left: 2px !important;
 }
+
+.statistic-item {
+  align-items: center;
+  margin-left: 1.3rem
+}
+
+.statistic-count {
+  padding-top: 0.9rem;
+}

@@ -9,6 +9,7 @@ import {
   Report,
   getReportTitle,
   AssuranceReport,
+  countAllReportLicenses,
 } from './trivy';
 import { ImageReport } from './ImageReport';
 import { FilesystemReport } from './FilesystemReport';
@@ -52,7 +53,7 @@ export class ReportsPane extends React.Component<
     this.selection.select(0);
   }
 
-  private onSelectedTabChanged = (newTabId: string) => {
+  private onSelectionChanged = (newTabId: string) => {
     this.setState({ selectedTabId: newTabId });
   };
 
@@ -119,6 +120,10 @@ export class ReportsPane extends React.Component<
         name: 'Secrets',
         value: countAllReportsSecrets(this.props.reports),
       },
+      {
+        name: 'Licenses',
+        value: countAllReportLicenses(this.props.reports),
+      },
     ];
     return (
       <div className="flex-column">
@@ -136,13 +141,11 @@ export class ReportsPane extends React.Component<
               <Card className="flex-grow">
                 <div className="flex-row" style={{ flexWrap: 'wrap' }}>
                   {stats.map((items, index) => (
-                    <div
-                      className="flex-column"
-                      style={{ minWidth: '120px' }}
-                      key={index}
-                    >
-                      <div className="body-m secondary-text">{items.name}</div>
-                      <div className="body-m primary-text">{items.value}</div>
+                    <div className="flex-column statistic-item" key={index}>
+                      <div className="body-m primary-text">{items.name}</div>
+                      <div className="body-m secondary-text statistic-count">
+                        {items.value}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -157,7 +160,7 @@ export class ReportsPane extends React.Component<
                 onSelect={(event, item) => {
                   if (item.id) {
                     this.setState({ selectedTabId: item.id });
-                    this.onSelectedTabChanged(item.id);
+                    this.onSelectionChanged(item.id);
                   }
                 }}
                 items={this.props.reports.map((r, index) => {

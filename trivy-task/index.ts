@@ -20,6 +20,19 @@ async function run() {
   const severities = task.getInput('severities', false) ?? '';
   const options = task.getInput('options', false) ?? '';
 
+  // check scanners only has valid values
+  const validScanners = ['vuln', 'misconfig', 'secret', 'license'];
+  const scannerList = scanners.split(',');
+  scannerList.forEach((scanner) => {
+    if (!validScanners.includes(scanner.trim())) {
+      throw new Error(
+        `Invalid scanner value '${scanner}' in 'scanners'. Valid values are: ${validScanners.join(
+          ', '
+        )}`
+      );
+    }
+  });
+
   if (scanPath === undefined && image === undefined) {
     throw new Error(
       "You must specify something to scan. Use either the 'image' or 'path' option."
@@ -38,15 +51,22 @@ async function run() {
     ? `/tmp/{assuranceResultsFile}`
     : localAssurancePath;
 
+  // copy the process env and add the aqua credentials
+  const env = { ...process.env };
+
   if (hasAccount) {
     task.rmRF(assurancePath);
     const credentials = getAquaAccount();
-    process.env.AQUA_KEY = credentials.key;
-    process.env.AQUA_SECRET = credentials.secret;
-    process.env.TRIVY_RUN_AS_PLUGIN = 'aqua';
-    process.env.OVERRIDE_REPOSITORY = task.getVariable('Build.Repository.Name');
-    process.env.OVERRIDE_BRANCH = task.getVariable('Build.SourceBranchName');
-    process.env.AQUA_ASSURANCE_EXPORT = assurancePath;
+    env.AQUA_KEY = credentials.key;
+    env.AQUA_SECRET = credentials.secret;
+    env.TRIVY_RUN_AS_PLUGIN = 'aqua';
+    env.OVERRIDE_REPOSITORY = task.getVariable('Build.Repository.Name');
+    env.OVERRIDE_BRANCH = task.getVariable('Build.SourceBranchName');
+    env.AQUA_ASSURANCE_EXPORT = assurancePath;
+    if (task.getBoolInput('devMode', false)) {
+      env.AQUA_URL = 'https://api.dev.supply-chain.cloud.aquasec.com';
+      env.CSPM_URL = 'https://stage.api.cloudsploit.com';
+    }
   }
 
   const runner = await createRunner();
@@ -80,7 +100,7 @@ async function run() {
   }
 
   task.debug('Running Trivy...');
-  const result = runner.execSync();
+  const result = runner.execSync({ env });
   if (result.code === 0) {
     task.setResult(task.TaskResult.Succeeded, 'No problems found.');
   } else {
@@ -89,19 +109,23 @@ async function run() {
 
   if (hasAccount) {
     console.log('Publishing JSON assurance results...');
-    task.addAttachment(
-      'ASSURANCE_RESULT',
-      assuranceResultsFile,
-      localAssurancePath
-    );
+    if (task.exist(localAssurancePath)) {
+      task.addAttachment(
+        'ASSURANCE_RESULT',
+        assuranceResultsFile,
+        localAssurancePath
+      );
+    }
   }
 
   task.debug('Publishing JSON results...');
-  task.addAttachment('JSON_RESULT', resultsFile, localOutputPath);
+  if (task.exist(localOutputPath)) {
+    task.addAttachment('JSON_RESULT', resultsFile, localOutputPath);
+  }
 
   task.debug('Generating additional reports...');
   if (task.exist(localOutputPath)) {
-    generateAdditionalReports(localOutputPath, outputPath, isDocker);
+    generateAdditionalReports(localOutputPath, outputPath);
   } else {
     task.error(
       'Trivy seems to have failed so no output path to generate reports from.'
@@ -136,8 +160,14 @@ function configureScan(
     runner.arg(['--ignore-unfixed']);
   }
   if (options.length) {
-    runner.line(options);
-  } else {
+    runner.arg(options.split(' '));
+  }
+
+  // if scanners haven't been set in the options, add them here
+  if (
+    !options.includes('--scanners') &&
+    !options.includes('--security-checks')
+  ) {
     runner.arg(['--scanners', scanners]);
   }
 

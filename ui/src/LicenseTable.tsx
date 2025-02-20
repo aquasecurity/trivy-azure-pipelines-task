@@ -12,31 +12,32 @@ import {
   Table,
   TableColumnLayout,
 } from 'azure-devops-ui/Table';
-import { Result, Severity, Vulnerability } from './trivy';
+import { Result, License, Severity } from './trivy';
 import { ISimpleListCell } from 'azure-devops-ui/List';
 import { ZeroData } from 'azure-devops-ui/ZeroData';
 import { compareSeverity, renderSeverity } from './severity';
 import { ITableColumn } from 'azure-devops-ui/Components/Table/Table.Props';
 import { ArrayItemProvider } from 'azure-devops-ui/Utilities/Provider';
 
-interface VulnerabilitiesTableProps {
+interface LicenseTableProps {
   results: Result[];
 }
 
-interface ListVulnerability extends ISimpleTableCell {
+interface ListLicense extends ISimpleTableCell {
   Severity: ISimpleListCell;
-  ID: ISimpleListCell; // with link
+  Category: ISimpleListCell;
   PkgName: ISimpleListCell;
-  Title: ISimpleListCell;
-  FixAvailable: ISimpleListCell;
-  FixedVersion: ISimpleListCell;
+  Name: ISimpleListCell;
+  FilePath: ISimpleListCell;
+  Confidence: ISimpleListCell;
+  Link: ISimpleListCell;
 }
 
-function renderVulnerabilitySeverity(
+function renderLicenseSeverity(
   rowIndex: number,
   columnIndex: number,
-  tableColumn: ITableColumn<ListVulnerability>,
-  tableItem: ListVulnerability
+  tableColumn: ITableColumn<ListLicense>,
+  tableItem: ListLicense
 ): JSX.Element {
   return renderSeverity(
     rowIndex,
@@ -52,7 +53,7 @@ const fixedColumns = [
     id: 'Severity',
     name: 'Severity',
     readonly: true,
-    renderCell: renderVulnerabilitySeverity,
+    renderCell: renderLicenseSeverity,
     width: 120,
     sortProps: {
       ariaLabelAscending: 'Sorted by severity ascending',
@@ -61,8 +62,8 @@ const fixedColumns = [
   },
   {
     columnLayout: TableColumnLayout.singleLine,
-    id: 'ID',
-    name: 'ID',
+    id: 'Category',
+    name: 'Category',
     readonly: true,
     renderCell: renderSimpleCell,
     width: new ObservableValue(-10),
@@ -74,7 +75,7 @@ const fixedColumns = [
   {
     columnLayout: TableColumnLayout.singleLine,
     id: 'PkgName',
-    name: 'Package',
+    name: 'PkgName',
     readonly: true,
     renderCell: renderSimpleCell,
     width: new ObservableValue(-10),
@@ -85,11 +86,11 @@ const fixedColumns = [
   },
   {
     columnLayout: TableColumnLayout.singleLine,
-    id: 'Title',
-    name: 'Title',
+    id: 'Name',
+    name: 'License',
     readonly: true,
     renderCell: renderSimpleCell,
-    width: new ObservableValue(-50),
+    width: new ObservableValue(-20),
     sortProps: {
       ariaLabelAscending: 'Sorted A to Z',
       ariaLabelDescending: 'Sorted Z to A',
@@ -97,11 +98,11 @@ const fixedColumns = [
   },
   {
     columnLayout: TableColumnLayout.singleLine,
-    id: 'FixAvailable',
-    name: 'Fix Available',
+    id: 'FilePath',
+    name: 'Location',
     readonly: true,
     renderCell: renderSimpleCell,
-    width: new ObservableValue(-5),
+    width: new ObservableValue(-35),
     sortProps: {
       ariaLabelAscending: 'Sorted A to Z',
       ariaLabelDescending: 'Sorted Z to A',
@@ -109,56 +110,53 @@ const fixedColumns = [
   },
   {
     columnLayout: TableColumnLayout.singleLine,
-    id: 'FixedVersion',
-    name: 'Fixed Version',
+    id: 'Link',
+    name: 'Link',
     readonly: true,
     renderCell: renderSimpleCell,
-    width: new ObservableValue(-5),
-    sortProps: {
-      ariaLabelAscending: 'Sorted A to Z',
-      ariaLabelDescending: 'Sorted Z to A',
-    },
+    width: new ObservableValue(-25),
   },
 ];
 
 const sortFunctions = [
-  (item1: ListVulnerability, item2: ListVulnerability): number => {
+  (item1: ListLicense, item2: ListLicense): number => {
     const severity1: ISimpleListCell = item1.Severity;
     const severity2: ISimpleListCell = item2.Severity;
     return compareSeverity(severity1.text, severity2.text);
   },
-  (item1: ListVulnerability, item2: ListVulnerability): number => {
-    const value1: ISimpleListCell = item1.ID;
-    const value2: ISimpleListCell = item2.ID;
+  (item1: ListLicense, item2: ListLicense): number => {
+    const value1: ISimpleListCell = item1.Category;
+    const value2: ISimpleListCell = item2.Category;
     return value1.text?.localeCompare(value2.text ?? '') || 0;
   },
-  (item1: ListVulnerability, item2: ListVulnerability): number => {
+  (item1: ListLicense, item2: ListLicense): number => {
     const value1: ISimpleListCell = item1.PkgName;
     const value2: ISimpleListCell = item2.PkgName;
     return value1.text?.localeCompare(value2.text ?? '') || 0;
   },
   null,
-  (item1: ListVulnerability, item2: ListVulnerability): number => {
-    const value1: ISimpleListCell = item1.FixAvailable;
-    const value2: ISimpleListCell = item2.FixAvailable;
+  (item1: ListLicense, item2: ListLicense): number => {
+    const value1: ISimpleListCell = item1.FilePath;
+    const value2: ISimpleListCell = item2.FilePath;
     return value1.text?.localeCompare(value2.text ?? '') || 0;
   },
+  null,
 ];
 
-export class VulnerabilitiesTable extends React.Component<VulnerabilitiesTableProps> {
-  private readonly results: ObservableArray<ListVulnerability> =
-    new ObservableArray<ListVulnerability>([]);
+export class LicensesTable extends React.Component<LicenseTableProps> {
+  private readonly results: ObservableArray<ListLicense> =
+    new ObservableArray<ListLicense>([]);
 
-  constructor(props: VulnerabilitiesTableProps) {
+  constructor(props: LicenseTableProps) {
     super(props);
-    this.results = new ObservableArray<ListVulnerability>(
-      convertVulnerabilities(props.results)
+    this.results = new ObservableArray<ListLicense>(
+      convertLicenses(props.results)
     );
     // sort by severity desc by default
     this.results.splice(
       0,
       this.results.length,
-      ...sortItems<ListVulnerability>(
+      ...sortItems<ListLicense>(
         0,
         SortOrder.descending,
         sortFunctions,
@@ -169,12 +167,12 @@ export class VulnerabilitiesTable extends React.Component<VulnerabilitiesTablePr
   }
 
   render() {
-    const sortingBehavior = new ColumnSorting<ListVulnerability>(
+    const sortingBehavior = new ColumnSorting<ListLicense>(
       (columnIndex: number, proposedSortOrder: SortOrder) => {
         this.results.splice(
           0,
           this.results.length,
-          ...sortItems<ListVulnerability>(
+          ...sortItems<ListLicense>(
             columnIndex,
             proposedSortOrder,
             sortFunctions,
@@ -189,7 +187,7 @@ export class VulnerabilitiesTable extends React.Component<VulnerabilitiesTablePr
       <ZeroData
         primaryText="No problems found."
         secondaryText={
-          <span>No vulnerabilities were found for this scan target.</span>
+          <span>No licenses were found for this scan target.</span>
         }
         imageAltText="trivy"
         imagePath={'images/trivy.png'}
@@ -198,7 +196,7 @@ export class VulnerabilitiesTable extends React.Component<VulnerabilitiesTablePr
       <Table
         pageSize={this.results.length}
         selectableText={true}
-        ariaLabel="Vulnerabilities Table"
+        ariaLabel="Licenses Table"
         role="table"
         behaviors={[sortingBehavior]}
         columns={fixedColumns}
@@ -209,30 +207,25 @@ export class VulnerabilitiesTable extends React.Component<VulnerabilitiesTablePr
   }
 }
 
-function convertVulnerabilities(results: Result[]): ListVulnerability[] {
-  const output: ListVulnerability[] = [];
+function convertLicenses(results: Result[]): ListLicense[] {
+  const output: ListLicense[] = [];
   results.forEach((result) => {
     if (
-      Object.prototype.hasOwnProperty.call(result, 'Vulnerabilities') &&
-      result.Vulnerabilities !== null
+      Object.prototype.hasOwnProperty.call(result, 'Licenses') &&
+      result.Licenses !== null
     ) {
-      result.Vulnerabilities.forEach(function (vulnerability: Vulnerability) {
+      const target = result.Target;
+      result.Licenses.forEach(function (license: License) {
         output.push({
-          Severity: { text: vulnerability.Severity },
-          ID: {
-            text: vulnerability.VulnerabilityID,
-            href: vulnerability.PrimaryURL,
-            hrefTarget: '_blank',
-            hrefRel: 'noopener',
-            iconProps: {
-              iconName: 'NavigateExternalInline',
-              ariaLabel: 'External Link',
-            },
+          Severity: { text: license.Severity },
+          Category: {
+            text: license.Category,
           },
-          PkgName: { text: vulnerability.PkgName },
-          Title: { text: vulnerability.Title },
-          FixAvailable: { text: vulnerability.FixedVersion ? 'Yes' : 'No' },
-          FixedVersion: { text: vulnerability.FixedVersion ?? 'N/A' },
+          PkgName: { text: license.PkgName },
+          Name: { text: license.Name },
+          FilePath: { text: license.FilePath || target },
+          Confidence: { text: license.Confidence.toString() },
+          Link: { text: license.Link },
         });
       });
     }

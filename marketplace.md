@@ -143,3 +143,23 @@ steps:
       # Needed to access private repo
       loginDockerConfig: true
 ```
+
+## Scanning with Aqua Platform support
+
+You can add your Aqua credentials to the task. To ensure the credentials are kept secure, you should put the `AQUA_KEY` and `AQUA_SECRET` in variables, then reference the variables in the input
+
+```yaml
+- job: Scan a local project with Aqua Integration
+  steps:
+  - task: trivy@1
+    displayName: 'Scan project for everything'
+    inputs:
+      docker: false
+      version: 'latest'
+      path: '.'
+      scanners: 'vuln,misconfig,secret,license'
+      severities: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+      ignoreUnfixed: true
+      aquaKey: '$(AQUA_KEY)'
+      aquaSecret: '$(AQUA_SECRET)'
+```
