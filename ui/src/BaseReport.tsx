@@ -41,8 +41,8 @@ export class BaseReport extends React.Component<
     this.setState({ selectedTabId: newTabId });
   };
 
-  private countAssuranceIssues(assurance: AssuranceReport): number {
-    if (this.props.assurance === undefined) {
+  private countAssuranceIssues(assurance?: AssuranceReport): number {
+    if (!assurance) {
       return 0;
     }
     if (!Object.prototype.hasOwnProperty.call(assurance, 'Results')) {
@@ -64,6 +64,7 @@ export class BaseReport extends React.Component<
     const misconfigCount = countReportMisconfigurations(this.props.report);
     const secretsCount = countReportSecrets(this.props.report);
     const licensesCount = countReportLicenses(this.props.report);
+    const assuranceCount = this.countAssuranceIssues(this.props.assurance);
 
     return (
       <div className="flex-grow">
@@ -105,12 +106,12 @@ export class BaseReport extends React.Component<
                 badgeCount={licensesCount}
               />
             )}
-            {this.props.assurance !== undefined && (
+            {assuranceCount > 0 && (
               <Tab
                 id="assurance"
                 name="Assurance Issues"
                 key="assurance"
-                badgeCount={this.countAssuranceIssues(this.props.assurance)}
+                badgeCount={assuranceCount}
               />
             )}
           </TabBar>

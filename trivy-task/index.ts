@@ -51,7 +51,8 @@ async function run() {
     ? `/tmp/{assuranceResultsFile}`
     : localAssurancePath;
 
-  const env = process.env;
+  // copy the process env and add the aqua credentials
+  const env = { ...process.env };
 
   if (hasAccount) {
     task.rmRF(assurancePath);
