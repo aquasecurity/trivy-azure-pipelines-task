@@ -125,7 +125,7 @@ async function run() {
 
   task.debug('Generating additional reports...');
   if (task.exist(localOutputPath)) {
-    generateAdditionalReports(localOutputPath, outputPath, isDocker);
+    generateAdditionalReports(localOutputPath, outputPath);
   } else {
     task.error(
       'Trivy seems to have failed so no output path to generate reports from.'

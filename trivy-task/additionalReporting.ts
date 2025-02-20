@@ -14,8 +14,7 @@ const reportTypes = {
 
 export async function generateAdditionalReports(
   localFilename: string,
-  filename: string,
-  isDocker: boolean
+  filename: string
 ) {
   const jobId = task.getVariable('System.JobId') || '';
   const smallJobId = jobId.substring(0, 8);
@@ -27,7 +26,7 @@ export async function generateAdditionalReports(
     if (task.getBoolInput(inputKey, false)) {
       if (key === 'json') {
         // don't need to convert json to json
-        task.setVariable(outputKey, localFilename);
+        task.setVariable(outputKey, localFilename, false, true);
         task.debug(`Uploading ${key} report...`);
         const artifactKey = `${key}-${smallJobId}-${randomSuffix(8)}`;
         task.uploadArtifact(
@@ -46,7 +45,7 @@ export async function generateAdditionalReports(
       try {
         await generateReport(format, output, filename);
         console.log(`Generated ${key} report at ${output}`);
-        task.setVariable(outputKey, localOutput);
+        task.setVariable(outputKey, localOutput, false, true);
         task.debug(`Uploading ${key} report...`);
         const artifactKey = `${key}-${smallJobId}-${randomSuffix(8)}`;
         task.uploadArtifact(
