@@ -159,9 +159,6 @@ function configureScan(
   if (ignoreUnfixed) {
     runner.arg(['--ignore-unfixed']);
   }
-  if (options.length) {
-    runner.arg(options.split(' '));
-  }
 
   // if scanners haven't been set in the options, add them here
   if (
@@ -169,6 +166,10 @@ function configureScan(
     !options.includes('--security-checks')
   ) {
     runner.arg(['--scanners', scanners]);
+  }
+
+  if (options.length) {
+    runner.line(options);
   }
 
   runner.arg(target);
