@@ -12,7 +12,7 @@ import {
   Table,
   TableColumnLayout,
 } from 'azure-devops-ui/Table';
-import { Result, License, Severity } from './trivy';
+import { Report, Result, License, Severity } from './trivy';
 import { ISimpleListCell } from 'azure-devops-ui/List';
 import { ZeroData } from 'azure-devops-ui/ZeroData';
 import { compareSeverity, renderSeverity } from './severity';
@@ -20,7 +20,7 @@ import { ITableColumn } from 'azure-devops-ui/Components/Table/Table.Props';
 import { ArrayItemProvider } from 'azure-devops-ui/Utilities/Provider';
 
 interface LicenseTableProps {
-  results: Result[];
+  report: Report;
 }
 
 interface ListLicense extends ISimpleTableCell {
@@ -150,7 +150,7 @@ export class LicensesTable extends React.Component<LicenseTableProps> {
   constructor(props: LicenseTableProps) {
     super(props);
     this.results = new ObservableArray<ListLicense>(
-      convertLicenses(props.results)
+      convertLicenses(props.report.Results || [])
     );
     // sort by severity desc by default
     this.results.splice(

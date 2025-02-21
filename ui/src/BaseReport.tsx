@@ -66,6 +66,11 @@ export class BaseReport extends React.Component<
     const licensesCount = countReportLicenses(this.props.report);
     const assuranceCount = this.countAssuranceIssues(this.props.assurance);
 
+    const hasReportResults =
+      this.props.report &&
+      this.props.report.Results &&
+      this.props.report.Results.length > 0;
+
     return (
       <div className="flex-grow">
         <div className="flex-grow">
@@ -117,29 +122,30 @@ export class BaseReport extends React.Component<
           </TabBar>
         </div>
         <div className="tab-content flex-row">
-          {this.state.selectedTabId === 'vulnerabilities' && (
-            <div className="flex-grow">
-              <VulnerabilitiesTable results={this.props.report.Results} />
-            </div>
-          )}
+          {this.state.selectedTabId === 'vulnerabilities' &&
+            hasReportResults && (
+              <div className="flex-grow">
+                <VulnerabilitiesTable report={this.props.report} />
+              </div>
+            )}
           {this.state.selectedTabId === 'misconfigurations' && (
             <div className="flex-grow">
-              <MisconfigurationsTable results={this.props.report.Results} />
+              <MisconfigurationsTable report={this.props.report} />
             </div>
           )}
           {this.state.selectedTabId === 'secrets' && (
             <div className="flex-grow">
-              <SecretsTable results={this.props.report.Results} />
+              <SecretsTable report={this.props.report} />
             </div>
           )}
           {this.state.selectedTabId === 'licenses' && (
             <div className="flex-grow">
-              <LicensesTable results={this.props.report.Results} />
+              <LicensesTable report={this.props.report} />
             </div>
           )}
           {this.state.selectedTabId === 'assurance' && (
             <div className="flex-grow">
-              <AssuranceTable results={this.props.assurance?.Results || []} />
+              <AssuranceTable report={this.props.assurance} />
             </div>
           )}
         </div>

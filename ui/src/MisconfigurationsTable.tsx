@@ -13,7 +13,7 @@ import {
   Table,
   TableColumnLayout,
 } from 'azure-devops-ui/Table';
-import { Misconfiguration, Result, Severity } from './trivy';
+import { Report, Misconfiguration, Result, Severity } from './trivy';
 import { ISimpleListCell } from 'azure-devops-ui/List';
 import { ZeroData } from 'azure-devops-ui/ZeroData';
 import { compareSeverity, renderSeverity } from './severity';
@@ -21,7 +21,7 @@ import { ITableColumn } from 'azure-devops-ui/Components/Table/Table.Props';
 import { ArrayItemProvider } from 'azure-devops-ui/Utilities/Provider';
 
 interface MisconfigurationsTableProps {
-  results: Result[];
+  report: Report;
 }
 
 interface ListMisconfiguration extends ISimpleTableCell {
@@ -139,7 +139,7 @@ export class MisconfigurationsTable extends React.Component<MisconfigurationsTab
   constructor(props: MisconfigurationsTableProps) {
     super(props);
     this.results = new ObservableArray<ListMisconfiguration>(
-      convertMisconfigurations(props.results)
+      convertMisconfigurations(props.report.Results || [])
     );
     // sort by severity desc by default
     this.results.splice(

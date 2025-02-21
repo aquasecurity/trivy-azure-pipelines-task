@@ -12,7 +12,7 @@ import {
   Table,
   TableColumnLayout,
 } from 'azure-devops-ui/Table';
-import { Result, Severity, Vulnerability } from './trivy';
+import { Report, Result, Severity, Vulnerability } from './trivy';
 import { ISimpleListCell } from 'azure-devops-ui/List';
 import { ZeroData } from 'azure-devops-ui/ZeroData';
 import { compareSeverity, renderSeverity } from './severity';
@@ -20,7 +20,7 @@ import { ITableColumn } from 'azure-devops-ui/Components/Table/Table.Props';
 import { ArrayItemProvider } from 'azure-devops-ui/Utilities/Provider';
 
 interface VulnerabilitiesTableProps {
-  results: Result[];
+  report: Report;
 }
 
 interface ListVulnerability extends ISimpleTableCell {
@@ -152,7 +152,7 @@ export class VulnerabilitiesTable extends React.Component<VulnerabilitiesTablePr
   constructor(props: VulnerabilitiesTableProps) {
     super(props);
     this.results = new ObservableArray<ListVulnerability>(
-      convertVulnerabilities(props.results)
+      convertVulnerabilities(props.report.Results || [])
     );
     // sort by severity desc by default
     this.results.splice(
