@@ -12,14 +12,14 @@ import {
   Table,
   TableColumnLayout,
 } from 'azure-devops-ui/Table';
-import { AssuranceResult, PolicyResult } from './trivy';
+import { AssuranceReport, AssuranceResult, PolicyResult } from './trivy';
 import { ISimpleListCell } from 'azure-devops-ui/List';
 import { ZeroData } from 'azure-devops-ui/ZeroData';
 import { compareSeverity } from './severity';
 import { ArrayItemProvider } from 'azure-devops-ui/Utilities/Provider';
 
 interface AssuranceTableProps {
-  results: AssuranceResult[];
+  report?: AssuranceReport;
 }
 
 interface ListAssurance extends ISimpleTableCell {
@@ -102,7 +102,7 @@ export class AssuranceTable extends React.Component<AssuranceTableProps> {
   constructor(props: AssuranceTableProps) {
     super(props);
     this.results = new ObservableArray<ListAssurance>(
-      convertAssuranceIssues(props.results)
+      convertAssuranceIssues(props.report?.Results || [])
     );
     // sort by severity desc by default
     this.results.splice(

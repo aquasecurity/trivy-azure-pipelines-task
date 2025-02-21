@@ -13,7 +13,7 @@ import {
   Table,
   TableColumnLayout,
 } from 'azure-devops-ui/Table';
-import { Result, Secret, Severity } from './trivy';
+import { Report, Result, Secret, Severity } from './trivy';
 import { ISimpleListCell } from 'azure-devops-ui/List';
 import { ZeroData } from 'azure-devops-ui/ZeroData';
 import { compareSeverity, renderSeverity } from './severity';
@@ -21,7 +21,7 @@ import { ITableColumn } from 'azure-devops-ui/Components/Table/Table.Props';
 import { ArrayItemProvider } from 'azure-devops-ui/Utilities/Provider';
 
 interface SecretsTableProps {
-  results: Result[];
+  report: Report;
 }
 
 interface ListSecret extends ISimpleTableCell {
@@ -167,7 +167,7 @@ export class SecretsTable extends React.Component<SecretsTableProps> {
   constructor(props: SecretsTableProps) {
     super(props);
     this.results = new ObservableArray<ListSecret>(
-      convertSecrets(props.results)
+      convertSecrets(props.report.Results || [])
     );
     // sort by severity desc by default
     this.results.splice(

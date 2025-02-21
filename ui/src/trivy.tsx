@@ -218,6 +218,10 @@ export function countAllReportLicenses(reports: Report[]): number {
 export function countReportVulnerabilities(report: Report): number {
   let total = 0;
   report.Results?.forEach(function (result: Result) {
+    if (!result) {
+      return;
+    }
+
     if (
       Object.prototype.hasOwnProperty.call(result, 'Vulnerabilities') &&
       result.Vulnerabilities !== null
@@ -231,6 +235,9 @@ export function countReportVulnerabilities(report: Report): number {
 export function countReportMisconfigurations(report: Report): number {
   let total = 0;
   report.Results?.forEach(function (result: Result) {
+    if (!result) {
+      return;
+    }
     if (
       Object.prototype.hasOwnProperty.call(result, 'Misconfigurations') &&
       result.Misconfigurations !== null
@@ -244,6 +251,9 @@ export function countReportMisconfigurations(report: Report): number {
 export function countReportSecrets(report: Report): number {
   let total = 0;
   report.Results?.forEach(function (result: Result) {
+    if (!result) {
+      return;
+    }
     if (
       Object.prototype.hasOwnProperty.call(result, 'Secrets') &&
       result.Secrets !== null
@@ -257,6 +267,9 @@ export function countReportSecrets(report: Report): number {
 export function countReportLicenses(report: Report): number {
   let total = 0;
   report.Results?.forEach(function (result: Result) {
+    if (!result) {
+      return;
+    }
     if (
       Object.prototype.hasOwnProperty.call(result, 'Licenses') &&
       result.Licenses !== null
