@@ -22,16 +22,18 @@ async function run() {
 
   // check scanners only has valid values
   const validScanners = ['vuln', 'misconfig', 'secret', 'license'];
-  const scannerList = scanners.split(',');
-  scannerList.forEach((scanner) => {
-    if (!validScanners.includes(scanner.trim())) {
-      throw new Error(
-        `Invalid scanner value '${scanner}' in 'scanners'. Valid values are: ${validScanners.join(
-          ', '
-        )}`
-      );
-    }
-  });
+
+  if (scanners !== '') {
+    scanners.split(',').forEach((scanner) => {
+      if (!validScanners.includes(scanner.trim())) {
+        throw new Error(
+          `Invalid scanner value '${scanner}' in 'scanners'. Valid values are: ${validScanners.join(
+            ', '
+          )}`
+        );
+      }
+    });
+  }
 
   if (scanPath === undefined && image === undefined) {
     throw new Error(
@@ -163,7 +165,8 @@ function configureScan(
   // if scanners haven't been set in the options, add them here
   if (
     !options.includes('--scanners') &&
-    !options.includes('--security-checks')
+    !options.includes('--security-checks') &&
+    scanners.length > 0
   ) {
     runner.arg(['--scanners', scanners]);
   }
