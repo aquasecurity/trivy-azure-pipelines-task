@@ -8,7 +8,7 @@
   "helpUrl": "https://github.com/aquasecurity/trivy-azure-pipelines-task",
   "category": "Test",
   "author": "Aqua Security",
-  "version": { "Major":1,"Minor":11,"Patch":85 },
+  "version": { "Major":1,"Minor":11,"Patch":97 },
   "instanceNameFormat": "Echo trivy $(version)",
   
   "groups": [
@@ -157,7 +157,7 @@
       "name": "scanners",
       "type": "string",
       "label": "Override scanners, comma separated",
-      "defaultValue": "vuln,misconfig,secret",
+      "defaultValue": "",
       "required": false,
       "helpMarkDown": "Choose which scanners to run (vuln, misconfig, secret).",
       "groupName": "scanning"
