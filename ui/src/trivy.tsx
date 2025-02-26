@@ -141,6 +141,7 @@ export interface AssuranceReport {
 export interface AssuranceResult {
   AVDID: string;
   Title: string;
+  Message: string;
   PolicyResults: PolicyResult[];
 }
 
@@ -276,6 +277,24 @@ export function countReportLicenses(report: Report): number {
     ) {
       total += result.Licenses.length;
     }
+  });
+  return total;
+}
+
+export function countAssuranceIssues(assurance?: AssuranceReport): number {
+  if (!assurance) {
+    return 0;
+  }
+  if (!Object.prototype.hasOwnProperty.call(assurance, 'Results')) {
+    return 0;
+  }
+  let total = 0;
+  assurance.Results?.forEach((result) => {
+    result.PolicyResults?.forEach((policyResult) => {
+      if (Object.prototype.hasOwnProperty.call(policyResult, 'Failed')) {
+        total++;
+      }
+    });
   });
   return total;
 }

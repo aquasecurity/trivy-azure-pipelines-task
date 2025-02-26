@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {
   AssuranceReport,
+  countAssuranceIssues,
   countReportLicenses,
   countReportMisconfigurations,
   countReportSecrets,
@@ -41,30 +42,12 @@ export class BaseReport extends React.Component<
     this.setState({ selectedTabId: newTabId });
   };
 
-  private countAssuranceIssues(assurance?: AssuranceReport): number {
-    if (!assurance) {
-      return 0;
-    }
-    if (!Object.prototype.hasOwnProperty.call(assurance, 'Results')) {
-      return 0;
-    }
-    let total = 0;
-    assurance.Results?.forEach((result) => {
-      result.PolicyResults?.forEach((policyResult) => {
-        if (Object.prototype.hasOwnProperty.call(policyResult, 'Failed')) {
-          total++;
-        }
-      });
-    });
-    return total;
-  }
-
   render() {
     const vulnCount = countReportVulnerabilities(this.props.report);
     const misconfigCount = countReportMisconfigurations(this.props.report);
     const secretsCount = countReportSecrets(this.props.report);
     const licensesCount = countReportLicenses(this.props.report);
-    const assuranceCount = this.countAssuranceIssues(this.props.assurance);
+    const assuranceCount = countAssuranceIssues(this.props.assurance);
 
     return (
       <div className="flex-grow">
@@ -152,7 +135,7 @@ export class BaseReport extends React.Component<
           {this.state.selectedTabId === 'assurance' && (
             <div className="flex-grow">
               <AssuranceTable
-                key={this.props.report.DisplayName}
+                key={this.props.assurance?.Report.DisplayName}
                 report={this.props.assurance}
               />
             </div>
