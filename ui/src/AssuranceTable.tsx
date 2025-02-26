@@ -61,7 +61,7 @@ const fixedColumns = [
     name: 'ID',
     readonly: true,
     renderCell: renderSimpleCell,
-    width: new ObservableValue(-20),
+    width: new ObservableValue(-10),
     sortProps: {
       ariaLabelAscending: 'Sorted A to Z',
       ariaLabelDescending: 'Sorted Z to A',
@@ -213,7 +213,7 @@ function convertAssuranceIssues(results: AssuranceResult[]): ListAssurance[] {
               : 'No',
           },
           AVDID: { text: result.AVDID },
-          Title: { text: result.Title },
+          Title: { text: policyResult.policy_name },
           Message: { text: result.Message },
         });
       });
