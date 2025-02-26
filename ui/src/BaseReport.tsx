@@ -66,11 +66,6 @@ export class BaseReport extends React.Component<
     const licensesCount = countReportLicenses(this.props.report);
     const assuranceCount = this.countAssuranceIssues(this.props.assurance);
 
-    const hasReportResults =
-      this.props.report &&
-      this.props.report.Results &&
-      this.props.report.Results.length > 0;
-
     return (
       <div className="flex-grow">
         <div className="flex-grow">
@@ -122,30 +117,44 @@ export class BaseReport extends React.Component<
           </TabBar>
         </div>
         <div className="tab-content flex-row">
-          {this.state.selectedTabId === 'vulnerabilities' &&
-            hasReportResults && (
-              <div className="flex-grow">
-                <VulnerabilitiesTable report={this.props.report} />
-              </div>
-            )}
+          {this.state.selectedTabId === 'vulnerabilities' && (
+            <div className="flex-grow">
+              <VulnerabilitiesTable
+                key={this.props.report.DisplayName}
+                report={this.props.report}
+              />
+            </div>
+          )}
           {this.state.selectedTabId === 'misconfigurations' && (
             <div className="flex-grow">
-              <MisconfigurationsTable report={this.props.report} />
+              <MisconfigurationsTable
+                key={this.props.report.DisplayName}
+                report={this.props.report}
+              />
             </div>
           )}
           {this.state.selectedTabId === 'secrets' && (
             <div className="flex-grow">
-              <SecretsTable report={this.props.report} />
+              <SecretsTable
+                key={this.props.report.DisplayName}
+                report={this.props.report}
+              />
             </div>
           )}
           {this.state.selectedTabId === 'licenses' && (
             <div className="flex-grow">
-              <LicensesTable report={this.props.report} />
+              <LicensesTable
+                key={this.props.report.DisplayName}
+                report={this.props.report}
+              />
             </div>
           )}
           {this.state.selectedTabId === 'assurance' && (
             <div className="flex-grow">
-              <AssuranceTable report={this.props.assurance} />
+              <AssuranceTable
+                key={this.props.report.DisplayName}
+                report={this.props.assurance}
+              />
             </div>
           )}
         </div>

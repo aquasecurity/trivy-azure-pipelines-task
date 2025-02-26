@@ -1,5 +1,8 @@
+name: package 
+
 on:
   pull_request:
+    
 jobs:
   package:
     runs-on: ubuntu-latest
