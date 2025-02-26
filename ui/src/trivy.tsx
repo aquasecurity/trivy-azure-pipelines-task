@@ -147,6 +147,7 @@ export interface AssuranceResult {
 
 export interface PolicyResult {
   PolicyID: string;
+  policy_name: string;
   Enforced: boolean;
   Failed: boolean;
   Reason: string;
