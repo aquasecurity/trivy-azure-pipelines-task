@@ -6,6 +6,7 @@ import {
 import {
   ColumnSorting,
   ISimpleTableCell,
+  ITableColumn,
   renderSimpleCell,
   sortItems,
   SortOrder,
@@ -24,24 +25,36 @@ interface AssuranceTableProps {
 
 interface ListAssurance extends ISimpleTableCell {
   Policy: ISimpleListCell;
-  AVDID: ISimpleListCell; // with link
+  AVDID: ISimpleListCell;
   Enforced: ISimpleListCell;
   Title: ISimpleListCell;
+  Message: ISimpleListCell;
 }
 
+const renderLinkCell = (
+  rowIndex: number,
+  columnIndex: number,
+  tableColumn: ITableColumn<ListAssurance>,
+  tableItem: ListAssurance
+): JSX.Element => {
+  const url = `https://cloud.aquasec.com/ah/#/supplychain/policies/${tableItem.Policy.text}`;
+  return (
+    <div className="bolt-table-cell-content flex-row flex-center">
+      <span className="bolt-list-cell-child flex-row flex-center bolt-list-cell-text">
+        <a
+          className="text-ellipsis body-m"
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {tableItem.Title.text}
+        </a>
+      </span>
+    </div>
+  );
+};
+
 const fixedColumns = [
-  {
-    columnLayout: TableColumnLayout.singleLine,
-    id: 'Policy',
-    name: 'Policy',
-    readonly: true,
-    renderCell: renderSimpleCell,
-    width: new ObservableValue(-20),
-    sortProps: {
-      ariaLabelAscending: 'Sorted A to Z',
-      ariaLabelDescending: 'Sorted Z to A',
-    },
-  },
   {
     columnLayout: TableColumnLayout.singleLine,
     id: 'AVDID',
@@ -56,6 +69,22 @@ const fixedColumns = [
   },
   {
     columnLayout: TableColumnLayout.singleLine,
+    id: 'Title',
+    name: 'Title',
+    readonly: true,
+    renderCell: renderLinkCell,
+    width: new ObservableValue(-30),
+  },
+  {
+    columnLayout: TableColumnLayout.singleLine,
+    id: 'Message',
+    name: 'Description',
+    readonly: true,
+    renderCell: renderSimpleCell,
+    width: new ObservableValue(-50),
+  },
+  {
+    columnLayout: TableColumnLayout.singleLine,
     id: 'Enforced',
     name: 'Enforced',
     readonly: true,
@@ -65,14 +94,6 @@ const fixedColumns = [
       ariaLabelAscending: 'Sorted A to Z',
       ariaLabelDescending: 'Sorted Z to A',
     },
-  },
-  {
-    columnLayout: TableColumnLayout.singleLine,
-    id: 'Title',
-    name: 'Title',
-    readonly: true,
-    renderCell: renderSimpleCell,
-    width: new ObservableValue(-50),
   },
 ];
 
@@ -146,7 +167,9 @@ export class AssuranceTable extends React.Component<AssuranceTableProps> {
       />
     ) : (
       <React.Fragment>
-        <p>Your repository failed the following assurance policy checks.</p>
+        <p className="body-m">
+          Your repository failed the following assurance policy checks.
+        </p>
         <Table
           pageSize={this.results.length}
           selectableText={true}
@@ -165,30 +188,36 @@ export class AssuranceTable extends React.Component<AssuranceTableProps> {
 function convertAssuranceIssues(results: AssuranceResult[]): ListAssurance[] {
   const output: ListAssurance[] = [];
   results.forEach((result) => {
-    result.PolicyResults.forEach(function (policyResult: PolicyResult) {
-      if (
-        !Object.prototype.hasOwnProperty.call(policyResult, 'Failed') ||
-        !policyResult.Failed
-      ) {
-        return;
-      }
-      output.push({
-        Policy: {
-          text: Object.prototype.hasOwnProperty.call(policyResult, 'PolicyID')
-            ? policyResult.PolicyID
-            : '',
-        },
-        Enforced: {
-          text: Object.prototype.hasOwnProperty.call(policyResult, 'Enforced')
-            ? policyResult.Enforced
-              ? 'Yes'
-              : 'No'
-            : 'No',
-        },
-        AVDID: { text: result.AVDID },
-        Title: { text: result.Title },
+    if (
+      Object.prototype.hasOwnProperty.call(result, 'PolicyResults') &&
+      result.PolicyResults !== null
+    ) {
+      result.PolicyResults.forEach(function (policyResult: PolicyResult) {
+        if (
+          !Object.prototype.hasOwnProperty.call(policyResult, 'Failed') ||
+          !policyResult.Failed
+        ) {
+          return;
+        }
+        output.push({
+          Policy: {
+            text: Object.prototype.hasOwnProperty.call(policyResult, 'PolicyID')
+              ? policyResult.PolicyID
+              : '',
+          },
+          Enforced: {
+            text: Object.prototype.hasOwnProperty.call(policyResult, 'Enforced')
+              ? policyResult.Enforced
+                ? 'Yes'
+                : 'No'
+              : 'No',
+          },
+          AVDID: { text: result.AVDID },
+          Title: { text: result.Title },
+          Message: { text: result.Message },
+        });
       });
-    });
+    }
   });
   return output;
 }
