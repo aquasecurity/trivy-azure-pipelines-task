@@ -1,11 +1,10 @@
 import * as os from 'os';
-import * as util from 'util';
 import * as tool from 'azure-pipelines-tool-lib';
 import axios from 'axios';
+import process = require('process');
 import task = require('azure-pipelines-task-lib/task');
 import { hasAquaAccount, isDevMode, stripV } from './utils';
 import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner';
-import { homedir } from 'os';
 
 const fallbackTrivyVersion = 'v0.59.1';
 let trivyPath: string | undefined = undefined;
@@ -14,7 +13,6 @@ const toolsDirectory = task.getVariable('Agent.ToolsDirectory') + '/';
 
 export async function createRunner(): Promise<ToolRunner> {
   const docker = task.getBoolInput('docker', false);
-
   const version: string | undefined = task.getInput('version', true);
   const useSystemInstallation: boolean = task.getBoolInput(
     'useSystemInstallation',
@@ -44,10 +42,18 @@ export async function createRunner(): Promise<ToolRunner> {
     }
   }
 
+  // Fail-fast on Microsoft Hosted agents on non-Linux platforms
+  if (task.getAgentMode() === task.AgentHostedMode.MsHosted && task.getPlatform() !== task.Platform.Linux) {
+    throw new Error('Running Trivy in docker is available on Linux only.');
+  }
+  return dockerRunner(version);
+}
+
+async function dockerRunner(version: string): Promise<ToolRunner> {
   console.log('Run requested using docker...');
   const runner = task.tool('docker');
   const loginDockerConfig = task.getBoolInput('loginDockerConfig', false);
-  const home = homedir();
+  const home = os.homedir();
   const cwd = process.cwd();
   const dockerHome = home + '/.docker';
   const cacheDir = tmpPath + '.trivycache';
@@ -59,14 +65,30 @@ export async function createRunner(): Promise<ToolRunner> {
   task.mkdirP(dockerHome);
 
   runner.line('run --rm');
+  // Add the --user flag to run as the current user
+  if (process.getuid && process.getgid) {
+    runner.line(`--user ${process.getuid()}:${process.getgid()}`);
+  }
+  // Try to get the docker group id
+  const dockerGidResult = task.execSync('getent', ['group', 'docker'], {
+    silent: true,
+  });
+  if (dockerGidResult?.stdout) {
+    const gid = dockerGidResult.stdout.split(':')[2];
+    // Add the docker group id to the container to have access to the docker socket
+    runner.line(`--group-add ${gid}`);
+  }
+
   loginDockerConfig
-    ? runner.line('-v ' + `${task.getVariable('DOCKER_CONFIG')}:/root/.docker`)
-    : runner.line('-v ' + `${dockerHome}:/root/.docker`);
+    ? runner.line('-v ' + `${task.getVariable('DOCKER_CONFIG')}:/task/docker`)
+    : runner.line('-v ' + `${dockerHome}:/task/docker`);
   runner.line(`-v ${tmpPath}:/tmp`);
-  runner.line(`-v ${cacheDir}:/root/.cache/trivy`);
+  runner.line(`-v ${cacheDir}:/task/cache`);
   runner.line('-v /var/run/docker.sock:/var/run/docker.sock');
   runner.line(`-v ${cwd}:/src`);
   runner.line('--workdir /src');
+  runner.line('-e TRIVY_CACHE_DIR=/task/cache');
+  runner.line('-e DOCKER_CONFIG=/task/docker');
 
   if (hasAquaAccount()) {
     runner.line('-e TRIVY_RUN_AS_PLUGIN');
@@ -80,7 +102,7 @@ export async function createRunner(): Promise<ToolRunner> {
       runner.line('-e CSPM_URL=https://stage.api.cloudsploit.com');
     }
   }
-  let trivyImage = task.getInput('trivyImage', false) || 'aquasec/trivy';
+  let trivyImage = task.getInput('trivyImage', false) ?? 'aquasec/trivy';
   if (trivyImage === 'aquasec/trivy') {
     trivyImage = `${trivyImage}:${stripV(version)}`;
   }
