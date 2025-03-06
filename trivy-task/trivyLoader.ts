@@ -50,7 +50,7 @@ export async function createRunner(): Promise<ToolRunner> {
   const home = homedir();
   const cwd = process.cwd();
   const dockerHome = home + '/.docker';
-  const cacheDir = tmpPath + '.cache';
+  const cacheDir = tmpPath + '.trivycache';
 
   // ensure the cache dir is created
   task.mkdirP(cacheDir);
@@ -63,7 +63,7 @@ export async function createRunner(): Promise<ToolRunner> {
     ? runner.line('-v ' + `${task.getVariable('DOCKER_CONFIG')}:/root/.docker`)
     : runner.line('-v ' + `${dockerHome}:/root/.docker`);
   runner.line(`-v ${tmpPath}:/tmp`);
-  runner.line(`-v ${tmpPath}.cache:/root/.cache/trivy`);
+  runner.line(`-v ${cacheDir}:/root/.cache/trivy`);
   runner.line('-v /var/run/docker.sock:/var/run/docker.sock');
   runner.line(`-v ${cwd}:/src`);
   runner.line('--workdir /src');
