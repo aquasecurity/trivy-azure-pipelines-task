@@ -50,6 +50,10 @@ export async function createRunner(): Promise<ToolRunner> {
   const home = homedir();
   const cwd = process.cwd();
   const dockerHome = home + '/.docker';
+  const cacheDir = tmpPath + '.cache';
+
+  // ensure the cache dir is created
+  task.mkdirP(cacheDir);
 
   // ensure the docker home dir is created
   task.mkdirP(dockerHome);
