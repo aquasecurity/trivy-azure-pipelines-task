@@ -1,19 +1,17 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "amd",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
     "jsx": "react",
     "declaration": true,
-    "outFile": "../dist/bundle",
+    "rootDir": "./src/",
+    "outDir": "./dist/",
     "noImplicitThis": false,
   },
   "files": [
