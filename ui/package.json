@@ -1,12 +1,8 @@
 {
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "react-scripts build",
-    "compile": "webpack --mode production",
-    "lint": "eslint --ignore-path .eslintignore --ext .js,.ts,.tsx src/",
-    "lint:fix": "eslint --ignore-path .eslintignore --ext .js,.ts,.tsx src/ --fix",
-    "format": "prettier --config .prettierrc 'src/*.tsx' --write",
-    "compile:dev": "webpack --mode development",
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
     "start:dev": "webpack-dev-server --mode development"
   },
   "homepage": "./",
@@ -15,23 +11,17 @@
     "azure-devops-extension-sdk": "^4.0.2",
     "azure-devops-ui": "^2.252.0",
     "react": "^16.8.1",
-    "react-dom": "16.8.1"
+    "react-dom": "^16.8.1"
   },
   "devDependencies": {
-    "@types/node": "^17.0.42",
+    "@types/node": "^20.17.23",
     "@types/react": "^16.8.1",
     "@types/react-dom": "^16.8.1",
-    "@typescript-eslint/eslint-plugin": "^5.29.0",
-    "@typescript-eslint/parser": "^5.29.0",
     "copy-webpack-plugin": "^13.0.0",
     "css-loader": "^7.1.2",
-    "eslint": "^8.18.0",
-    "eslint-plugin-react": "^7.30.0",
-    "prettier": "^3.5.0",
     "sass-loader": "^16.0.5",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.2",
-    "typescript": "^4.9.5",
     "webpack": "^5.98.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.2.0"

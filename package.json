@@ -1,0 +1,27 @@
+{
+  "scripts": {
+    "build": "npm run build --prefix trivy-task && npm run build --prefix ui",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write .",
+    "lint:fix": "eslint --fix",
+    "lint": "eslint",
+    "postinstall": "npm ci --prefix trivy-task && npm ci --prefix ui"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.26.0",
+    "@typescript-eslint/parser": "^8.26.0",
+    "eslint": "^9.22.0",
+    "eslint-plugin-react": "^7.30.0",
+    "prettier": "^3.5.3",
+    "tfx-cli": "^0.21.0",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.26.0"
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5"
+  }
+}
