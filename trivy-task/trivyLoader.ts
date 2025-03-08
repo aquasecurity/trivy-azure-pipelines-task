@@ -43,7 +43,10 @@ export async function createRunner(): Promise<ToolRunner> {
   }
 
   // Fail-fast on Microsoft Hosted agents on non-Linux platforms
-  if (task.getAgentMode() === task.AgentHostedMode.MsHosted && task.getPlatform() !== task.Platform.Linux) {
+  if (
+    task.getAgentMode() === task.AgentHostedMode.MsHosted &&
+    task.getPlatform() !== task.Platform.Linux
+  ) {
     throw new Error('Running Trivy in docker is available on Linux only.');
   }
   return dockerRunner(version);
