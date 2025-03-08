@@ -1,5 +1,10 @@
-*.vsix
-node_modules
-.idea
-**/tsconfig.tsbuildinfo
 .env
+.idea
+.taskkey
+.vscode
+*.vsix
+**/tsconfig.tsbuildinfo
+build/
+dist/
+node_modules
+trivy-task/*.js
