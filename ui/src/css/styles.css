@@ -5,7 +5,7 @@
   width: auto;
 }
 
-.task-label{
+.task-label {
   align-self: center;
   padding: 10px;
 }
@@ -29,14 +29,13 @@
   margin-left: 0 !important;
 }
 
-.bolt-dropdown-list-box-container ul
-{
+.bolt-dropdown-list-box-container ul {
   padding-left: 2px !important;
 }
 
 .statistic-item {
   align-items: center;
-  margin-left: 1.3rem
+  margin-left: 1.3rem;
 }
 
 .statistic-count {

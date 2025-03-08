@@ -37,7 +37,7 @@ export async function createRunner(): Promise<ToolRunner> {
         const trivyPath = task.which('trivy', true);
         return task.tool(trivyPath);
       } catch (err) {
-        throw new Error('Failed to find trivy tool in system paths.');
+        throw new Error('Failed to find trivy tool in system paths. ' + err);
       }
     }
   }
@@ -82,6 +82,7 @@ async function dockerRunner(version: string): Promise<ToolRunner> {
     runner.line(`--group-add ${gid}`);
   }
 
+  /* eslint @typescript-eslint/no-unused-expressions: "off" */
   loginDockerConfig
     ? runner.line('-v ' + `${task.getVariable('DOCKER_CONFIG')}:/task/docker`)
     : runner.line('-v ' + `${dockerHome}:/task/docker`);
