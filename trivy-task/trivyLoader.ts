@@ -174,6 +174,7 @@ async function getLatestTrivyVersion(): Promise<string> {
     if (parts) {
       const latestVersion = parts[parts.length - 1];
       console.log(`Latest Trivy version is ${latestVersion}`);
+      return latestVersion;
     }
   } catch (error) {
     console.log(
