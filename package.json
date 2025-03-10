@@ -7,7 +7,7 @@
     "lint": "eslint",
     "postinstall": "npm ci --prefix trivy-task && npm ci --prefix ui",
     "package": "npm run clean && tfx extension create --manifest-js vss-manifest.js",
-    "publish": "tfx extension publish --vsix *.vsix",
+    "publish": "tfx extension publish --vsix *.vsix --auth-type pat --token $PUBLISHER_TOKEN",
     "clean": "rimraf *.vsix"
   },
   "devDependencies": {
