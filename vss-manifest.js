@@ -6,6 +6,7 @@ if (!process.env.RELEASE_VERSION) {
 
 const releaseVersion = process.env.RELEASE_VERSION.trim().replace(/v|dev/g, '');
 const releaseType = process.env.RELEASE_VERSION.includes('dev') ? 'private' : 'public';
+const devBaseUri = process.env.DEV_BASE_URI ?? 'https://localhost:3000';
 
 updateTask(releaseType, releaseVersion);
 
@@ -28,7 +29,7 @@ module.exports = () => {
     targets: [{ id: 'Microsoft.VisualStudio.Services' }],
     tags: ['trivy', 'vulnerability', 'security', 'scanner'],
     icons: { default: 'icon.png' },
-    baseUri: releaseType === 'public' ? null : 'https://localhost:3000',
+    baseUri: releaseType === 'public' ? null : devBaseUri,
     files: [
       { path: 'trivy-task' },
       { path: 'ui/node_modules/azure-devops-extension-sdk', addressable: true, packagePath: 'lib' },
