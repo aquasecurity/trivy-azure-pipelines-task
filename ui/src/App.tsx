@@ -91,8 +91,7 @@ export class App extends React.Component<AppProps, AppState> {
     timeline.records.forEach(function (record: TimelineRecord) {
       if (
         record.type == 'Task' &&
-        record.task !== null &&
-        record.task.name == 'trivy'
+        (record.task?.name == 'trivy' || record.task?.name == 'trivy-dev')
       ) {
         records.push(record);
       }

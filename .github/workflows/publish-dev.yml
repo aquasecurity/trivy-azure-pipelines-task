@@ -1,19 +1,41 @@
+# This workflow is triggered manually to publish a dev version of the extension
+# to the Azure DevOps Marketplace. It is used for testing and development purposes.
+# The version is specified as a parameter, and the publisher name can be overridden.
+# The extension is shared with the specified Azure DevOps organization(s).
+name: publish-dev
+
 on:
-  push:
-    tags:
-      - dev*
   workflow_dispatch:
+    inputs:
+      version:
+        description: Version to publish (e.g. 1.0.0)
+        required: true
+        type: string
+      publisher:
+        description: Override publisher name
+        required: false
+        type: string
+        default: AquaSecurityOfficial
+      share-with:
+        description: List of Azure DevOps organization(s) with which to share the extension (space separated)
+        required: false
+        type: string
+        default: owenrumney0307
+
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Set release version
-      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 14
-    - run: sudo npm install -g tfx-cli
-    - run: ./scripts/dev.sh
-      env:
-        PUBLISHER_TOKEN: ${{ secrets.PUBLISHER_TOKEN }}
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run package -- --publisher ${{ inputs.publisher }}
+        env:
+          RELEASE_VERSION: 'dev${{ inputs.version }}'
+      - run: npm run publish -- --share-with ${{ inputs.share-with }}
+        env:
+          PUBLISHER_TOKEN: ${{ secrets.PUBLISHER_TOKEN }}

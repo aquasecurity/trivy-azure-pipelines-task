@@ -1,12 +1,10 @@
-name: publish
+name: check
 
 on:
-  push:
-    tags:
-      - v*
+  pull_request:
 
 jobs:
-  publish:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,10 +13,9 @@ jobs:
           node-version: 20.x
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - run: npm run lint
+      - run: npm run format:check
       - run: npm run package
         env:
-          RELEASE_VERSION: '${{ github.ref_name }}'
-      - run: npm run publish
-        env:
-          PUBLISHER_TOKEN: ${{ secrets.PUBLISHER_TOKEN }}
+          # Set version to correctly render manifests
+          RELEASE_VERSION: 1.0.0

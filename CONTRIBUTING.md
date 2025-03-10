@@ -8,14 +8,14 @@
 - Access to the Aqua Security Azure DevOps Organisation (for publishing)
 - A GitHub account with write access to this repository.
 
-There are two published versions of this extension - the real, public version, and a private, test version. You cannot have both versions installed to your test organisation at the same time, so you must uninstall one before installing the other.
+There are two published versions of this extension - the real, public version, and a private, test version.
 
 The test version exists so we can publish a version and test it amongst ourselves before publishing to the real version.
 
 - Test: https://marketplace.visualstudio.com/items?itemName=AquaSecurityOfficial.trivy-official-dev
 - Real: https://marketplace.visualstudio.com/items?itemName=AquaSecurityOfficial.trivy-official
 
-You'll need to give your test organisation with access to the test version, which you can do by adding to the `--share-with` flag in `scripts/dev.sh`.
+You'll need to give your test organisation with access to the test version, which you can do by adding to the `-- --share-with` arg to the `npm run publish`.
 
 You can follow the [guide](marketplace.md) to install the extension to your test organisation.
 
@@ -29,7 +29,7 @@ To update the token, you'll need to create a personal access token in _Azure Dev
 
 ### Testing a New Version
 
-Create a tag that is prefixed with `dev` on your branch, such as `dev1.2.3`, and push it. This will trigger a GitHub action that will publish a test version of the extension. Wait a few minutes and then try running the extension in your test organisation.
+Manually trigger [GitHub Workflow](https://github.com/aquasecurity/trivy-azure-pipelines-task/actions/workflows/publish-dev.yml) that will build and publish a test version of the extension. Wait a few minutes and then try running the extension in your test organisation.
 
 ### Publishing a New Version
 
