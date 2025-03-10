@@ -7,7 +7,7 @@ export default [
   react.configs.flat.recommended,
   ...ts.configs.recommended,
   { files: ['**/*.{mjs,cjs,ts,jsx,tsx}'] },
-  { ignores: ['**/*.js'] },
+  { ignores: ['**/*.js', '**/*.d.ts'] },
   {
     languageOptions: {
       globals: globals.browser,
