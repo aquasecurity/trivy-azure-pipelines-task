@@ -6,6 +6,7 @@
 # to have access to the private's extension files in Azure Pipelines.
 # GitHub Pages should be enabled for the repository with GitHub Actions as the source.
 name: publish-dev
+run-name: Publish ${{ inputs.version }} to ${{ inputs.publisher }}'s marketplace
 
 on:
   workflow_dispatch:
