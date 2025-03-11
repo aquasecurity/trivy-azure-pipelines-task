@@ -68,18 +68,25 @@ async function dockerRunner(version: string): Promise<ToolRunner> {
   task.mkdirP(dockerHome);
 
   runner.line('run --rm');
-  // Add the --user flag to run as the current user
-  if (process.getuid && process.getgid) {
-    runner.line(`--user ${process.getuid()}:${process.getgid()}`);
-  }
-  // Try to get the docker group id
-  const dockerGidResult = task.execSync('getent', ['group', 'docker'], {
-    silent: true,
-  });
-  if (dockerGidResult?.stdout) {
-    const gid = dockerGidResult.stdout.split(':')[2];
-    // Add the docker group id to the container to have access to the docker socket
-    runner.line(`--group-add ${gid}`);
+  // Add the --user flag to run as the current user on Linux
+  if (task.getPlatform() === task.Platform.Linux) {
+    try {
+      if (process.getuid && process.getgid) {
+        runner.line(`--user ${process.getuid()}:${process.getgid()}`);
+      }
+      // Try to get the docker group id
+      const dockerGidResult = task.execSync('getent', ['group', 'docker'], {
+        silent: true,
+      });
+
+      if (dockerGidResult?.stdout) {
+        const gid = dockerGidResult.stdout.split(':')[2];
+        // Add the docker group id to the container to have access to the docker socket
+        runner.line(`--group-add ${gid}`);
+      }
+    } catch (err) {
+      task.debug('Ignoring ' + JSON.stringify(err));
+    }
   }
 
   /* eslint @typescript-eslint/no-unused-expressions: "off" */
