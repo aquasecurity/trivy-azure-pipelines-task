@@ -38,10 +38,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npm run package -- --publisher ${{ inputs.publisher }}
+      - run: |
+          npm run package -- --publisher ${{ inputs.publisher }} --override '{"baseUri": "${{ steps.pages.outputs.base_url }}"}'
         env:
           RELEASE_VERSION: 'dev${{ inputs.version }}'
-          DEV_BASE_URI: ${{ steps.pages.outputs.base_url }}
       - run: npm run publish -- --share-with ${{ inputs.share-with }}
         env:
           PUBLISHER_TOKEN: ${{ secrets.PUBLISHER_TOKEN }}
