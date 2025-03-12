@@ -3,14 +3,17 @@
   "id": "8f9cb13f-f551-439c-83e4-fac6801c3fab",
   "name": "trivy",
   "friendlyName": "Trivy",
-  "description": "Trivy is the world’s most popular open source vulnerability and misconfiguration scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.",
+  "description": "Trivy is the world's most popular open source vulnerability and misconfiguration scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.",
   "helpMarkDown": "[Learn more about this task](https://github.com/aquasecurity/trivy-azure-pipelines-task)",
   "helpUrl": "https://github.com/aquasecurity/trivy-azure-pipelines-task",
   "category": "Test",
   "author": "Aqua Security",
-  "version": { "Major":1,"Minor":11,"Patch":97 },
+  "version": {
+    "Major": 1,
+    "Minor": 0,
+    "Patch": 0
+  },
   "instanceNameFormat": "Echo trivy $(version)",
-  
   "groups": [
     {
       "name": "trivyRunner",
@@ -64,14 +67,14 @@
       "visibleRule": "docker = true"
     },
     {
-    "name": "trivyImage",
-    "type": "string",
-    "label": "Image override with tag",
-    "defaultValue": "",
-    "required": false,
-    "helpMarkDown": "Override the default Trivy docker image. If this option is used, the 'version' option is ignored.",
-    "groupName": "trivyRunner",
-    "visibleRule": "docker = true"
+      "name": "trivyImage",
+      "type": "string",
+      "label": "Image override with tag",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Override the default Trivy docker image. If this option is used, the 'version' option is ignored.",
+      "groupName": "trivyRunner",
+      "visibleRule": "docker = true"
     },
     {
       "name": "useSystemInstallation",

@@ -4,7 +4,7 @@ An Azure DevOps Pipelines Task for [Trivy](https://github.com/aquasecurity/trivy
 
 ![Screenshot showing the Trivy extension in the Azure DevOps UI](images/resultsview.png)
 
-# Installation
+## Installation
 
 1. Install the Trivy task in your Azure DevOps organisation (hit the `Get it free` button above).
 
@@ -14,13 +14,13 @@ An Azure DevOps Pipelines Task for [Trivy](https://github.com/aquasecurity/trivy
 - task: trivy@1
 ```
 
-# Additional Reports
+## Additional Reports
 
 The `Additional Output` section has check boxes to choose which reports you want to be added to the build. These are available from the results header section or from the Trivy results page using the `Download Report` dropdown.
 
 ![Results](images/results.png)
 
-# Configuration
+## Configuration
 
 Configuring the task can be done directly editing the pipeline yaml or through the configuration pane on the right of the pipeline UI screen
 
@@ -71,7 +71,7 @@ You can supply several inputs to customise the task.
 | `aquaSecret` | string |          | The Aqua API Secret to use to link scan results to your Aqua Security account _(not required)_. |
 | `aquaKey`    | string |          | The Aqua API Key to use to link scan results to your Aqua Security account _(not required)_.    |
 
-### Additional Outputs
+### Additional Options
 
 | Input     | Type   | Defaults | Description                                                                     |
 | --------- | ------ | -------- | ------------------------------------------------------------------------------- |
@@ -151,15 +151,15 @@ You can add your Aqua credentials to the task. To ensure the credentials are kep
 ```yaml
 - job: Scan a local project with Aqua Integration
   steps:
-  - task: trivy@1
-    displayName: 'Scan project for everything'
-    inputs:
-      docker: false
-      version: 'latest'
-      path: '.'
-      scanners: 'vuln,misconfig,secret,license'
-      severities: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
-      ignoreUnfixed: true
-      aquaKey: '$(AQUA_KEY)'
-      aquaSecret: '$(AQUA_SECRET)'
+    - task: trivy@1
+      displayName: 'Scan project for everything'
+      inputs:
+        docker: false
+        version: 'latest'
+        path: '.'
+        scanners: 'vuln,misconfig,secret,license'
+        severities: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+        ignoreUnfixed: true
+        aquaKey: '$(AQUA_KEY)'
+        aquaSecret: '$(AQUA_SECRET)'
 ```

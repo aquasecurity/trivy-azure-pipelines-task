@@ -1,0 +1,42 @@
+{
+  "scripts": {
+    "build": "npm run build --prefix trivy-task && npm run build --prefix ui",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write .",
+    "lint:fix": "eslint --fix",
+    "lint": "eslint",
+    "postinstall": "npm ci --prefix trivy-task && npm ci --prefix ui",
+    "package": "npm run clean && tfx extension create --manifest-js vss-manifest.js",
+    "publish": "npm run clean && tfx extension publish --manifest-js vss-manifest.js --auth-type pat --token $PUBLISHER_TOKEN",
+    "clean": "rimraf *.vsix",
+    "start:dev": "npm run start:dev --prefix ui"
+  },
+  "devDependencies": {
+    "eslint": "^9.22.0",
+    "eslint-plugin-react": "^7.30.0",
+    "prettier": "^3.5.3",
+    "rimraf": "^6.0.1",
+    "tfx-cli": "^0.21.0",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.26.0"
+  },
+  "prettier": {
+    "endOfLine": "lf",
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "overrides": [
+      {
+        "files": [
+          "*.json",
+          "*.js"
+        ],
+        "options": {
+          "printWidth": 120
+        }
+      }
+    ]
+  }
+}

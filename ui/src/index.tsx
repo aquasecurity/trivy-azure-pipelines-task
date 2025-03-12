@@ -1,4 +1,3 @@
-/* eslint-disable react/no-deprecated */
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { SurfaceBackground, SurfaceContext } from 'azure-devops-ui/Surface';
