@@ -1,17 +1,16 @@
-import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner';
+import path from 'path';
 import task = require('azure-pipelines-task-lib/task');
+import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner';
 
 import { createRunner, tmpPath } from './trivyLoader';
-import { getAquaAccount, hasAquaAccount } from './utils';
+import { getAquaAccount, hasAquaAccount, isDevMode } from './utils';
 import { generateAdditionalReports } from './additionalReporting';
 
 async function run() {
   task.debug('Starting Trivy task...');
-  const isDocker = task.getBoolInput('docker', false);
-  const resultsFile = `trivy-results-${Math.random()}.json`;
-  const localOutputPath = `${tmpPath}${resultsFile}`;
-  const outputPath = isDocker ? `/tmp/${resultsFile}` : localOutputPath;
-  task.rmRF(localOutputPath);
+  const resultsFileName = `results-${Math.random()}.json`;
+  const resultsFilePath = path.join(tmpPath, resultsFileName);
+  task.rmRF(resultsFilePath);
 
   const scanPath = task.getInput('path', false);
   const image = task.getInput('image', false);
@@ -27,9 +26,7 @@ async function run() {
     scanners.split(',').forEach((scanner) => {
       if (!validScanners.includes(scanner.trim())) {
         throw new Error(
-          `Invalid scanner value '${scanner}' in 'scanners'. Valid values are: ${validScanners.join(
-            ', '
-          )}`
+          `Invalid scanner value '${scanner}' in 'scanners'. Valid values are: ${validScanners.join(',')}`
         );
       }
     });
@@ -47,25 +44,22 @@ async function run() {
   }
 
   const hasAccount = hasAquaAccount();
-  const assuranceResultsFile = `trivy-assurance-${Math.random()}.json`;
-  const localAssurancePath = `${tmpPath}${assuranceResultsFile}`;
-  const assurancePath = isDocker
-    ? `/tmp/{assuranceResultsFile}`
-    : localAssurancePath;
+  const assuranceFileName = `assurance-${Math.random()}.json`;
+  const assuranceFilePath = path.join(tmpPath, assuranceFileName);
 
   // copy the process env and add the aqua credentials
   const env = { ...process.env };
 
   if (hasAccount) {
-    task.rmRF(assurancePath);
+    task.rmRF(assuranceFilePath);
     const credentials = getAquaAccount();
     env.AQUA_KEY = credentials.key;
     env.AQUA_SECRET = credentials.secret;
     env.TRIVY_RUN_AS_PLUGIN = 'aqua';
     env.OVERRIDE_REPOSITORY = task.getVariable('Build.Repository.Name');
     env.OVERRIDE_BRANCH = task.getVariable('Build.SourceBranchName');
-    env.AQUA_ASSURANCE_EXPORT = assurancePath;
-    if (task.getBoolInput('devMode', false)) {
+    env.AQUA_ASSURANCE_EXPORT = assuranceFilePath;
+    if (isDevMode()) {
       env.AQUA_URL = 'https://api.dev.supply-chain.cloud.aquasec.com';
       env.CSPM_URL = 'https://stage.api.cloudsploit.com';
     }
@@ -82,7 +76,7 @@ async function run() {
       runner,
       'fs',
       scanPath,
-      outputPath,
+      resultsFilePath,
       severities,
       scanners,
       ignoreUnfixed,
@@ -93,7 +87,7 @@ async function run() {
       runner,
       'image',
       image,
-      outputPath,
+      resultsFilePath,
       severities,
       scanners,
       ignoreUnfixed,
@@ -111,23 +105,21 @@ async function run() {
 
   if (hasAccount) {
     console.log('Publishing JSON assurance results...');
-    if (task.exist(localAssurancePath)) {
+    if (task.exist(assuranceFilePath)) {
       task.addAttachment(
         'ASSURANCE_RESULT',
-        assuranceResultsFile,
-        localAssurancePath
+        assuranceFileName,
+        assuranceFilePath
       );
     }
   }
 
   task.debug('Publishing JSON results...');
-  if (task.exist(localOutputPath)) {
-    task.addAttachment('JSON_RESULT', resultsFile, localOutputPath);
-  }
+  if (task.exist(resultsFilePath)) {
+    task.addAttachment('JSON_RESULT', resultsFileName, resultsFilePath);
 
-  task.debug('Generating additional reports...');
-  if (task.exist(localOutputPath)) {
-    generateAdditionalReports(localOutputPath, outputPath);
+    task.debug('Generating additional reports...');
+    generateAdditionalReports(resultsFilePath);
   } else {
     task.error(
       'Trivy seems to have failed so no output path to generate reports from.'
