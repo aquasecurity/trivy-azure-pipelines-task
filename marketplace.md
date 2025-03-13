@@ -14,11 +14,19 @@ An Azure DevOps Pipelines Task for [Trivy](https://github.com/aquasecurity/trivy
 - task: trivy@1
 ```
 
-## Additional Reports
+## Agents Compatibility
 
-The `Additional Output` section has check boxes to choose which reports you want to be added to the build. These are available from the results header section or from the Trivy results page using the `Download Report` dropdown.
+| Agent OS | Run binary | Scan FileSystem | Docker |
+| :------- | :--------: | :-------------: | :----: |
+| Linux    |     ✅     |       ✅        |   ✅   |
+| MacOS    |     ✅     |       ✅        |   🔴   |
+| Windows  |     ✅     |       ✅        |   🔴   |
 
-![Results](images/results.png)
+### Self-Hosted Agents
+
+At least, access to Docker Engine is required to run Trivy in docker container or scan docker images.
+
+While you can attempt to scan Docker images on Windows, running the task using a Docker image will mostly fail.
 
 ## Configuration
 
@@ -78,6 +86,11 @@ You can supply several inputs to customise the task.
 | `options` | string |          | Additional flags to pass to trivy. Example: `--timeout 10m0s` _(not required)_. |
 
 ### Additional Outputs
+
+The `Additional Output` section has check boxes to choose which reports you want to be added to the build.
+These are available from the results header section or from the Trivy results page using the `Download Report` dropdown.
+
+![Results](images/results.png)
 
 | Input             | Type | Defaults | Description                                                |
 | ----------------- | ---- | -------- | ---------------------------------------------------------- |
