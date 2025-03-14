@@ -23,7 +23,11 @@ stages:
               docker: false
               version: $(trivyVersion)
               image: ubuntu:latest
+              cosignOutput: true
+              cyclonedxOutput: true
               sarifOutput: true
+              spdxOutput: true
+              tableOutput: true
               exitCode: 0
 
           - task: trivy-dev@1
@@ -33,6 +37,9 @@ stages:
               trivyImage: ghcr.io/aquasecurity/trivy:latest
               image: ghcr.io/aquasecurity/trivy:latest
               cosignOutput: true
+              cyclonedxOutput: true
+              sarifOutput: true
+              spdxjsonOutput: true
               exitCode: 0
 
           - bash: ls -lR "${AGENT_TEMPDIRECTORY}/trivy"

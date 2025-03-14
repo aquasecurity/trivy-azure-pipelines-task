@@ -111,12 +111,12 @@ export class App extends React.Component<AppProps, AppState> {
       setTimeout(this.check.bind(this), this.props.checkInterval);
       return;
     }
-    const attachments = await this.buildClient.getAttachments(
+    const jsonAttachments = await this.buildClient.getAttachments(
       this.project.id,
       build.id,
       'JSON_RESULT'
     );
-    if (attachments.length === 0) {
+    if (jsonAttachments.length === 0) {
       this.setState({
         error:
           'No attachments found: cannot load results. Did Trivy run properly?',
@@ -126,64 +126,88 @@ export class App extends React.Component<AppProps, AppState> {
 
     this.setState({ status: worstState });
 
-    const artifacts = await this.buildClient.getArtifacts(
-      this.project.id,
-      build.id
-    );
+    const reportTypes = {
+      sarifReport: 'SARIF',
+      cyclonedxReport: 'CycloneDX',
+      spdxReport: 'SPDX',
+      spdxjsonReport: 'SPDX JSON',
+      cosignReport: 'Cosign',
+      tableReport: 'Table',
+    };
+    type ReportType = keyof typeof reportTypes;
 
-    console.log(JSON.stringify(artifacts));
+    // get all supported report attachments for the build once
+    const additionalAttachments: Attachment[] = [];
+    for (const key of Object.keys(reportTypes)) {
+      const reportAttachments = await this.buildClient.getAttachments(
+        this.project.id,
+        build.id,
+        key
+      );
+      additionalAttachments.push(...reportAttachments);
+    }
 
-    attachments.forEach(
-      function (attachment: Attachment) {
-        records.forEach(
-          async function (record: TimelineRecord) {
-            try {
-              const buffer = await this.buildClient.getAttachment(
-                this.project.id,
-                build.id,
-                timeline.id,
-                record.id,
-                'JSON_RESULT',
-                attachment.name
-              );
-              const report = this.decodeReport(buffer) as Report;
-              if (!report.DownloadReports) {
-                report.DownloadReports = [];
-              }
+    jsonAttachments.forEach(
+      async function (attachment: Attachment) {
+        // get the record id from attachment url
+        const recordId = attachment._links.self.href.split('/')[10];
+        // get the record from the timeline
+        const record = records.find((record) => record.id === recordId);
+        if (!record) {
+          console.log(`Record not found for attachment: ${attachment.name}`);
+          return;
+        }
+        try {
+          const buffer = await this.buildClient.getAttachment(
+            this.project.id,
+            build.id,
+            timeline.id,
+            record.id,
+            'JSON_RESULT',
+            attachment.name
+          );
+          const report = this.decodeReport(buffer) as Report;
+          if (!report.DownloadReports) {
+            report.DownloadReports = [];
+          }
 
-              if (record.name) {
-                report.DisplayName = record.name;
-              }
+          if (record.name) {
+            report.DisplayName = record.name;
+          }
+          // Add json report to the report downloads by default
+          report.DownloadReports.push({
+            Name: 'JSON',
+            Url: attachment._links.self.href,
+          });
 
-              try {
-                console.log(
-                  'Checking for artifacts for record ' + JSON.stringify(record)
-                );
-                artifacts
-                  .filter((artifact) => artifact.source === record.parentId)
-                  .forEach((artifact) => {
-                    console.log('Artifact: ' + JSON.stringify(artifact));
-                    report.DownloadReports.push({
-                      // the name of the report has the task as a prefix so that needs
-                      // to be stripped
-                      Name: artifact.name.replace(artifact.source, ''),
-                      Url: artifact.resource.downloadUrl,
-                    });
-                  });
-              } catch {
-                console.log('Failed to decode report artifact');
-              }
-
-              this.setState((prevState: any) => ({
-                reports: [...prevState.reports, report],
-              }));
-            } catch (e) {
+          // check if there are any other attachments with the same record id
+          // and add them to the downloads
+          additionalAttachments
+            .filter(
+              (reportAttachment) =>
+                reportAttachment._links.self.href.split('/')[10] === recordId
+            )
+            .forEach((reportAttachment) => {
+              // get the report type from attachment url
+              const attachmentUrl = reportAttachment._links.self.href;
+              const attachmentType = attachmentUrl.split('/')[12];
               console.log(
-                'Failed to decode results attachment ' + JSON.stringify(e)
+                `Found ${attachmentType} for report ${report.DisplayName}`
               );
-            }
-          }.bind(this)
-        );
+              report.DownloadReports.push({
+                Name: reportTypes[attachmentType as ReportType],
+                Url: attachmentUrl,
+              });
+            });
+
+          this.setState((prevState: any) => ({
+            reports: [...prevState.reports, report],
+          }));
+        } catch (e) {
+          console.log(
+            'Failed to decode results attachment ' + JSON.stringify(e)
+          );
+        }
       }.bind(this)
     );
 

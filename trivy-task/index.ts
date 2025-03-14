@@ -1,14 +1,15 @@
 import path from 'path';
 import task = require('azure-pipelines-task-lib/task');
 import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner';
-
+import { randomUUID } from 'crypto';
 import { createRunner, tmpPath } from './trivyLoader';
 import { getAquaAccount, hasAquaAccount, isDevMode } from './utils';
 import { generateAdditionalReports } from './additionalReporting';
 
 async function run() {
   task.debug('Starting Trivy task...');
-  const resultsFileName = `results-${Math.random()}.json`;
+  const randomPrefix = randomUUID();
+  const resultsFileName = `trivy-results-${randomPrefix}.json`;
   const resultsFilePath = path.join(tmpPath, resultsFileName);
   task.rmRF(resultsFilePath);
 
@@ -44,7 +45,7 @@ async function run() {
   }
 
   const hasAccount = hasAquaAccount();
-  const assuranceFileName = `assurance-${Math.random()}.json`;
+  const assuranceFileName = `assurance-${randomPrefix}.json`;
   const assuranceFilePath = path.join(tmpPath, assuranceFileName);
 
   // copy the process env and add the aqua credentials
