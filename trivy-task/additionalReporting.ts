@@ -1,6 +1,6 @@
+import path from 'path';
 import task = require('azure-pipelines-task-lib/task');
 import { createRunner } from './trivyLoader';
-import { randomSuffix } from './utils';
 
 const reportTypes = {
   sarif: { DisplayName: 'SARIF', Extension: '.json' },
@@ -13,43 +13,31 @@ const reportTypes = {
 };
 
 export async function generateAdditionalReports(filename: string) {
-  const jobId = task.getVariable('System.JobId') || '';
-  const smallJobId = jobId.substring(0, 8);
+  const artifactName = path.basename(filename, path.extname(filename));
 
   for (const [key, value] of Object.entries(reportTypes)) {
     task.debug(`Checking if ${key} report is required`);
     const inputKey = `${key}Output`;
     const outputKey = `${key}Report`;
+
     if (task.getBoolInput(inputKey, false)) {
       if (key === 'json') {
-        // don't need to convert json to json
+        // don't need to convert json to json and create attachment
         task.setVariable(outputKey, filename, false, true);
-        task.debug(`Uploading ${key} report...`);
-        const artifactKey = `${key}-${smallJobId}-${randomSuffix(8)}`;
-        task.uploadArtifact(
-          artifactKey,
-          filename,
-          `${jobId}${value.DisplayName}`
-        );
+        task.uploadArtifact(artifactName, filename, artifactName);
         continue;
       }
 
       console.log(`Generating ${key} report...`);
       const format = getReportFormat(key);
       const output = `${filename.replace(/json$/, format)}${value.Extension}`;
-      const localOutput = `${filename.replace(/json$/, format)}${value.Extension}`;
 
       try {
         await generateReport(format, output, filename);
         console.log(`Generated ${key} report at ${output}`);
-        task.setVariable(outputKey, localOutput, false, true);
-        task.debug(`Uploading ${key} report...`);
-        const artifactKey = `${key}-${smallJobId}-${randomSuffix(8)}`;
-        task.uploadArtifact(
-          artifactKey,
-          localOutput,
-          `${jobId}${value.DisplayName}`
-        );
+        task.addAttachment(outputKey, path.basename(output), output);
+        task.setVariable(outputKey, output, false, true);
+        task.uploadArtifact(artifactName, output, artifactName);
       } catch (error) {
         task.error(`Failed to generate ${key} report: ${error}`);
       }
