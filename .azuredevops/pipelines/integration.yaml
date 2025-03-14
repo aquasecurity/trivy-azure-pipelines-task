@@ -1,0 +1,88 @@
+---
+trigger: none
+
+variables:
+  System.Debug: true
+  # Set defaults
+  vmImage: ubuntu-latest
+  trivyVersion: latest
+  useDocker: false
+  scanImage: ''
+  scanPath: ''
+
+stages:
+  - stage: Smoke
+    jobs:
+      - job: Ubuntu
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: trivy-dev@1
+            displayName: Scan Ubuntu image
+            inputs:
+              docker: false
+              version: $(trivyVersion)
+              image: ubuntu:latest
+              sarifOutput: true
+              exitCode: 0
+
+          - task: trivy-dev@1
+            displayName: Self-Scan in Docker
+            inputs:
+              docker: true
+              trivyImage: ghcr.io/aquasecurity/trivy:latest
+              image: ghcr.io/aquasecurity/trivy:latest
+              cosignOutput: true
+              exitCode: 0
+
+          - bash: ls -lR "${AGENT_TEMPDIRECTORY}/trivy"
+            displayName: Show files ownership
+
+  - stage: CrossPlatform
+    trigger: manual
+    jobs:
+      # https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/jobs-job-strategy?view=azure-pipelines
+      - job: Binary
+        strategy:
+          matrix:
+            Ubuntu:
+              scanPath: '.'
+            MacOS:
+              vmImage: macOS-latest
+              scanPath: '.'
+            Windows:
+              vmImage: windows-latest
+              trivyVersion: v0.59.1
+              scanPath: '.'
+            ImageScan:
+              scanImage: aquasec/trivy:latest
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          - task: trivy-dev@1
+            inputs:
+              docker: false
+              version: $(trivyVersion)
+              image: $(scanImage)
+              path: $(scanPath)
+              exitCode: 0
+              sarifOutput: true
+
+      - job: Docker
+        strategy:
+          matrix:
+            ImageScan:
+              scanImage: nginx
+            PathScan:
+              scanPath: '.'
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          - task: trivy-dev@1
+            inputs:
+              docker: true
+              version: $(trivyVersion)
+              image: $(scanImage)
+              path: $(scanPath)
+              exitCode: 0
+              sarifOutput: true

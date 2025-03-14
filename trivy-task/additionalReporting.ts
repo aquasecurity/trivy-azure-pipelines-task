@@ -12,10 +12,7 @@ const reportTypes = {
   table: { DisplayName: 'Table', Extension: '.md' },
 };
 
-export async function generateAdditionalReports(
-  localFilename: string,
-  filename: string
-) {
+export async function generateAdditionalReports(filename: string) {
   const jobId = task.getVariable('System.JobId') || '';
   const smallJobId = jobId.substring(0, 8);
 
@@ -26,12 +23,12 @@ export async function generateAdditionalReports(
     if (task.getBoolInput(inputKey, false)) {
       if (key === 'json') {
         // don't need to convert json to json
-        task.setVariable(outputKey, localFilename, false, true);
+        task.setVariable(outputKey, filename, false, true);
         task.debug(`Uploading ${key} report...`);
         const artifactKey = `${key}-${smallJobId}-${randomSuffix(8)}`;
         task.uploadArtifact(
           artifactKey,
-          localFilename,
+          filename,
           `${jobId}${value.DisplayName}`
         );
         continue;
@@ -40,7 +37,7 @@ export async function generateAdditionalReports(
       console.log(`Generating ${key} report...`);
       const format = getReportFormat(key);
       const output = `${filename.replace(/json$/, format)}${value.Extension}`;
-      const localOutput = `${localFilename.replace(/json$/, format)}${value.Extension}`;
+      const localOutput = `${filename.replace(/json$/, format)}${value.Extension}`;
 
       try {
         await generateReport(format, output, filename);

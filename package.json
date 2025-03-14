@@ -12,6 +12,7 @@
     "start:dev": "npm run start:dev --prefix ui"
   },
   "devDependencies": {
+    "@types/node": "^20.17.24",
     "eslint": "^9.22.0",
     "eslint-plugin-react": "^7.30.0",
     "prettier": "^3.5.3",
