@@ -1,6 +1,7 @@
 import path from 'path';
 import task = require('azure-pipelines-task-lib/task');
 import { createRunner } from './trivyLoader';
+import { TaskInputs } from './utils';
 
 const reportTypes = {
   sarif: { DisplayName: 'SARIF', Extension: '.json' },
@@ -12,15 +13,18 @@ const reportTypes = {
   table: { DisplayName: 'Table', Extension: '.md' },
 };
 
-export async function generateAdditionalReports(filename: string) {
+export async function generateAdditionalReports(
+  inputs: TaskInputs,
+  filename: string
+) {
   const artifactName = path.basename(filename, path.extname(filename));
 
   for (const [key, value] of Object.entries(reportTypes)) {
     task.debug(`Checking if ${key} report is required`);
-    const inputKey = `${key}Output`;
+    const inputKey = `${key}Output` as keyof TaskInputs;
     const outputKey = `${key}Report`;
 
-    if (task.getBoolInput(inputKey, false)) {
+    if (inputs[inputKey]) {
       if (key === 'json') {
         // don't need to convert json to json and create attachment
         task.setVariable(outputKey, filename, false, true);
@@ -33,7 +37,7 @@ export async function generateAdditionalReports(filename: string) {
       const output = `${filename.replace(/json$/, format)}${value.Extension}`;
 
       try {
-        await generateReport(format, output, filename);
+        await generateReport(inputs, format, output, filename);
         console.log(`Generated ${key} report at ${output}`);
         task.addAttachment(outputKey, path.basename(output), output);
         task.setVariable(outputKey, output, false, true);
@@ -46,11 +50,12 @@ export async function generateAdditionalReports(filename: string) {
 }
 
 async function generateReport(
+  inputs: TaskInputs,
   format: string,
   output: string,
   filename: string
 ): Promise<void> {
-  const runner = await createRunner();
+  const runner = await createRunner(inputs);
   runner.arg(['convert', '--format', format, '--output', output, filename]);
   const result = runner.execSync();
 
@@ -61,11 +66,11 @@ async function generateReport(
 
 function getReportFormat(key: string): string {
   switch (key) {
-    case 'spdxjson':
-      return 'spdx-json';
-    case 'cosign':
-      return 'cosign-vuln';
-    default:
-      return key;
+  case 'spdxjson':
+    return 'spdx-json';
+  case 'cosign':
+    return 'cosign-vuln';
+  default:
+    return key;
   }
 }

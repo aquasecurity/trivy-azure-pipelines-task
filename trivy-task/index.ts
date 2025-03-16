@@ -3,48 +3,18 @@ import task = require('azure-pipelines-task-lib/task');
 import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner';
 import { randomUUID } from 'crypto';
 import { createRunner, tmpPath } from './trivyLoader';
-import { getAquaAccount, hasAquaAccount, isDevMode } from './utils';
 import { generateAdditionalReports } from './additionalReporting';
+import { getTaskInputs, hasAquaAccount, TaskInputs } from './utils';
 
 async function run() {
   task.debug('Starting Trivy task...');
+  const inputs = getTaskInputs();
   const randomPrefix = randomUUID();
   const resultsFileName = `trivy-results-${randomPrefix}.json`;
   const resultsFilePath = path.join(tmpPath, resultsFileName);
   task.rmRF(resultsFilePath);
 
-  const scanPath = task.getInput('path', false);
-  const image = task.getInput('image', false);
-  const scanners = task.getInput('scanners', false) ?? '';
-  const ignoreUnfixed = task.getBoolInput('ignoreUnfixed', false);
-  const severities = task.getInput('severities', false) ?? '';
-  const options = task.getInput('options', false) ?? '';
-
-  // check scanners only has valid values
-  const validScanners = ['vuln', 'misconfig', 'secret', 'license'];
-
-  if (scanners !== '') {
-    scanners.split(',').forEach((scanner) => {
-      if (!validScanners.includes(scanner.trim())) {
-        throw new Error(
-          `Invalid scanner value '${scanner}' in 'scanners'. Valid values are: ${validScanners.join(',')}`
-        );
-      }
-    });
-  }
-
-  if (scanPath === undefined && image === undefined) {
-    throw new Error(
-      "You must specify something to scan. Use either the 'image' or 'path' option."
-    );
-  }
-  if (scanPath !== undefined && image !== undefined) {
-    throw new Error(
-      "You must specify only one of the 'image' or 'path' options. Use multiple task definitions if you want to scan multiple targets."
-    );
-  }
-
-  const hasAccount = hasAquaAccount();
+  const hasAccount = hasAquaAccount(inputs);
   const assuranceFileName = `assurance-${randomPrefix}.json`;
   const assuranceFilePath = path.join(tmpPath, assuranceFileName);
 
@@ -53,48 +23,25 @@ async function run() {
 
   if (hasAccount) {
     task.rmRF(assuranceFilePath);
-    const credentials = getAquaAccount();
-    env.AQUA_KEY = credentials.key;
-    env.AQUA_SECRET = credentials.secret;
+    // const credentials = getAquaAccount();
+    env.AQUA_KEY = inputs.aquaKey;
+    env.AQUA_SECRET = inputs.aquaSecret;
     env.TRIVY_RUN_AS_PLUGIN = 'aqua';
     env.OVERRIDE_REPOSITORY = task.getVariable('Build.Repository.Name');
     env.OVERRIDE_BRANCH = task.getVariable('Build.SourceBranchName');
     env.AQUA_ASSURANCE_EXPORT = assuranceFilePath;
-    if (isDevMode()) {
+    if (inputs.devMode) {
       env.AQUA_URL = 'https://api.dev.supply-chain.cloud.aquasec.com';
       env.CSPM_URL = 'https://stage.api.cloudsploit.com';
     }
   }
 
-  const runner = await createRunner();
-
-  if (task.getBoolInput('debug', false)) {
+  const runner = await createRunner(inputs);
+  if (inputs.debug) {
     runner.arg('--debug');
   }
 
-  if (scanPath !== undefined) {
-    configureScan(
-      runner,
-      'fs',
-      scanPath,
-      resultsFilePath,
-      severities,
-      scanners,
-      ignoreUnfixed,
-      options
-    );
-  } else if (image !== undefined) {
-    configureScan(
-      runner,
-      'image',
-      image,
-      resultsFilePath,
-      severities,
-      scanners,
-      ignoreUnfixed,
-      options
-    );
-  }
+  configureScan(runner, inputs, resultsFilePath);
 
   task.debug('Running Trivy...');
   const result = runner.execSync({ env });
@@ -120,7 +67,7 @@ async function run() {
     task.addAttachment('JSON_RESULT', resultsFileName, resultsFilePath);
 
     task.debug('Generating additional reports...');
-    generateAdditionalReports(resultsFilePath);
+    generateAdditionalReports(inputs, resultsFilePath);
   } else {
     task.error(
       'Trivy seems to have failed so no output path to generate reports from.'
@@ -129,46 +76,36 @@ async function run() {
   console.log('Done!');
 }
 
-function configureScan(
-  runner: ToolRunner,
-  type: string,
-  target: string,
-  outputPath: string,
-  severities: string,
-  scanners: string,
-  ignoreUnfixed: boolean,
-  options: string
-) {
+function configureScan(runner: ToolRunner, inputs: TaskInputs, output: string) {
   console.log('Configuring options for image scan...');
-  let exitCode = task.getInput('exitCode', false);
-  if (exitCode === undefined) {
-    exitCode = '1';
-  }
-  runner.arg([type]);
-  runner.arg(['--exit-code', exitCode]);
+  const scanType = inputs.image ? 'image' : 'fs';
+  const scanTarget = inputs.image ? inputs.image : inputs.scanPath;
+
+  runner.arg([scanType]);
+  runner.arg(['--exit-code', inputs.exitCode]);
   runner.arg(['--format', 'json']);
-  runner.arg(['--output', outputPath]);
-  if (severities.length) {
-    runner.arg(['--severity', severities]);
+  runner.arg(['--output', output]);
+  if (inputs.severities) {
+    runner.arg(['--severity', inputs.severities]);
   }
-  if (ignoreUnfixed) {
+  if (inputs.ignoreUnfixed) {
     runner.arg(['--ignore-unfixed']);
   }
 
   // if scanners haven't been set in the options, add them here
   if (
-    !options.includes('--scanners') &&
-    !options.includes('--security-checks') &&
-    scanners.length > 0
+    !inputs.options.includes('--scanners') &&
+    !inputs.options.includes('--security-checks') &&
+    inputs.scanners.length > 0
   ) {
-    runner.arg(['--scanners', scanners]);
+    runner.arg(['--scanners', inputs.scanners]);
   }
 
-  if (options.length) {
-    runner.line(options);
+  if (inputs.options) {
+    runner.line(inputs.options);
   }
 
-  runner.arg(target);
+  runner.arg(scanTarget);
 }
 
 run().catch((err: Error) => {
