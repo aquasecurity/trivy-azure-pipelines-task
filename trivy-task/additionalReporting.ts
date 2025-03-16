@@ -66,11 +66,11 @@ async function generateReport(
 
 function getReportFormat(key: string): string {
   switch (key) {
-  case 'spdxjson':
-    return 'spdx-json';
-  case 'cosign':
-    return 'cosign-vuln';
-  default:
-    return key;
+    case 'spdxjson':
+      return 'spdx-json';
+    case 'cosign':
+      return 'cosign-vuln';
+    default:
+      return key;
   }
 }

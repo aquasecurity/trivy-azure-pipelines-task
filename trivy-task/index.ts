@@ -37,9 +37,7 @@ async function run() {
   }
 
   const runner = await createRunner(inputs);
-  if (inputs.debug) {
-    runner.arg('--debug');
-  }
+  runner.argIf(inputs.debug, '--debug');
 
   configureScan(runner, inputs, resultsFilePath);
 
@@ -85,18 +83,14 @@ function configureScan(runner: ToolRunner, inputs: TaskInputs, output: string) {
   runner.arg(['--exit-code', inputs.exitCode]);
   runner.arg(['--format', 'json']);
   runner.arg(['--output', output]);
-  if (inputs.severities) {
-    runner.arg(['--severity', inputs.severities]);
-  }
-  if (inputs.ignoreUnfixed) {
-    runner.arg(['--ignore-unfixed']);
-  }
+  runner.argIf(inputs.severities, ['--severity', inputs.severities]);
+  runner.argIf(inputs.ignoreUnfixed, ['--ignore-unfixed']);
 
   // if scanners haven't been set in the options, add them here
   if (
     !inputs.options.includes('--scanners') &&
     !inputs.options.includes('--security-checks') &&
-    inputs.scanners.length > 0
+    inputs.scanners
   ) {
     runner.arg(['--scanners', inputs.scanners]);
   }
