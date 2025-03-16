@@ -5,8 +5,14 @@ import { stripV } from './utils';
 
 const fallbackVersion = 'v0.60.0';
 const releasesUri = 'https://github.com/aquasecurity/trivy/releases';
+let isInstalled = false;
 
 export async function installTrivy(version: string) {
+  if (isInstalled) {
+    // Skip installation if already installed
+    return;
+  }
+
   console.log(`Requested Trivy version to install: ${version}`);
   if (version === 'latest') {
     version = await getLatestVersion();
@@ -23,6 +29,7 @@ export async function installTrivy(version: string) {
     cachedPath = await tool.cacheDir(extractPath, 'trivy', version);
   }
   tool.prependPath(cachedPath);
+  isInstalled = true;
 }
 
 async function getLatestVersion(): Promise<string> {
