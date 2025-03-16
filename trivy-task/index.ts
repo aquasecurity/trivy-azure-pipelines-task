@@ -65,7 +65,7 @@ async function run() {
     task.addAttachment('JSON_RESULT', resultsFileName, resultsFilePath);
 
     task.debug('Generating additional reports...');
-    generateAdditionalReports(inputs, resultsFilePath);
+    await generateAdditionalReports(inputs, resultsFilePath);
   } else {
     task.error(
       'Trivy seems to have failed so no output path to generate reports from.'
