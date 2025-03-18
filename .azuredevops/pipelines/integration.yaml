@@ -34,6 +34,7 @@ stages:
             displayName: Self-Scan in Docker
             inputs:
               docker: true
+              loginDockerConfig: true
               trivyImage: ghcr.io/aquasecurity/trivy:latest
               image: ghcr.io/aquasecurity/trivy:latest
               cosignOutput: true
