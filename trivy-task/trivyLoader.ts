@@ -31,7 +31,7 @@ async function dockerRunner(inputs: TaskInputs): Promise<ToolRunner> {
   const cwd = process.cwd();
   const dockerHome = path.join(os.homedir(), '.docker');
   const dockerConfig = inputs.loginDockerConfig
-    ? task.getVariable('DOCKER_CONFIG') ?? dockerHome
+    ? (task.getVariable('DOCKER_CONFIG') ?? dockerHome)
     : dockerHome;
 
   // ensure the docker home dir is created with agent ownership

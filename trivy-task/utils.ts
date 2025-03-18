@@ -92,8 +92,10 @@ function validateInputs(inputs: TaskInputs): void {
   if (inputs.loginDockerConfig && inputs.docker) {
     const dockerConfig = task.getVariable('DOCKER_CONFIG');
     if (!dockerConfig || dockerConfig.length === 0) {
-      task.warning("'loginDockerConfig' is set to true, but 'DOCKER_CONFIG' is not set or empty. " +
-        "This may cause issues with Docker login. Please check your pipeline configuration.");
+      task.warning(
+        "'loginDockerConfig' is set to true, but 'DOCKER_CONFIG' is not set or empty. " +
+          'This may cause issues with Docker login. Please check your pipeline configuration.'
+      );
     }
   }
 }
