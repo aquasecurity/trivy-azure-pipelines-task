@@ -2,41 +2,36 @@ import os from 'os';
 import path from 'path';
 import task = require('azure-pipelines-task-lib/task');
 import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner';
-import { hasAquaAccount, isDevMode, stripV } from './utils';
 import { installTrivy } from './installer';
+import { TaskInputs, hasAquaAccount, stripV } from './utils';
 
 const agentTmp = task.getVariable('Agent.TempDirectory') ?? os.tmpdir();
 export const tmpPath = path.join(agentTmp, 'trivy');
 
-export async function createRunner(): Promise<ToolRunner> {
-  const docker = task.getBoolInput('docker', false);
-  const version = task.getInput('version', false) ?? 'latest';
-  const useSystem = task.getBoolInput('useSystemInstallation', false);
-
+export async function createRunner(inputs: TaskInputs): Promise<ToolRunner> {
   // ensure the temp dir is created
   task.mkdirP(tmpPath);
 
-  if (docker) {
-    return dockerRunner(version);
+  if (inputs.docker) {
+    return dockerRunner(inputs);
   }
 
-  if (useSystem) {
+  if (inputs.useSystem) {
     console.log('Run requested using system Trivy binary...');
   } else {
-    await installTrivy(version);
+    await installTrivy(inputs.version);
   }
   return task.tool('trivy');
 }
 
-async function dockerRunner(version: string): Promise<ToolRunner> {
+async function dockerRunner(inputs: TaskInputs): Promise<ToolRunner> {
   console.log('Run requested using docker...');
   validateDockerOnNonLinux();
   const runner = task.tool('docker');
-  const loginDockerConfig = task.getBoolInput('loginDockerConfig', false);
   const cwd = process.cwd();
   const dockerHome = path.join(os.homedir(), '.docker');
-  const dockerConfig = loginDockerConfig
-    ? task.getVariable('DOCKER_CONFIG')
+  const dockerConfig = inputs.loginDockerConfig
+    ? (task.getVariable('DOCKER_CONFIG') ?? dockerHome)
     : dockerHome;
 
   // ensure the docker home dir is created with agent ownership
@@ -52,22 +47,22 @@ async function dockerRunner(version: string): Promise<ToolRunner> {
   runner.line(`-e TRIVY_CACHE_DIR=${tmpPath}`);
   runner.line(`-e DOCKER_CONFIG=${dockerConfig}`);
 
-  if (hasAquaAccount()) {
+  if (hasAquaAccount(inputs)) {
     runner.line('-e TRIVY_RUN_AS_PLUGIN');
     runner.line('-e AQUA_KEY');
     runner.line('-e AQUA_SECRET');
     runner.line('-e OVERRIDE_REPOSITORY');
     runner.line('-e OVERRIDE_BRANCH');
     runner.line('-e AQUA_ASSURANCE_EXPORT');
-    if (isDevMode()) {
+    if (inputs.devMode) {
       runner.line('-e AQUA_URL=https://api.dev.supply-chain.cloud.aquasec.com');
       runner.line('-e CSPM_URL=https://stage.api.cloudsploit.com');
     }
   }
-  let trivyImage = task.getInput('trivyImage', false) ?? 'aquasec/trivy';
-  if (trivyImage === 'aquasec/trivy') {
-    trivyImage = `${trivyImage}:${stripV(version)}`;
-  }
+  const trivyImage =
+    inputs.trivyImage === 'aquasec/trivy'
+      ? `${inputs.trivyImage}:${stripV(inputs.version)}`
+      : inputs.trivyImage;
   console.log(`Using Trivy image: ${trivyImage}`);
   runner.line(trivyImage);
 
