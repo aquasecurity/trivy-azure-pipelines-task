@@ -18,7 +18,7 @@ assignees: owenrumney
 * OS: Linux, MacOS or Windows
 * Version: provide agent version
 
-#### Task Verison
+#### Task Version
 
 <!-- The version of the extension that you have installed in the organization -->
 
