@@ -150,7 +150,11 @@ export class App extends React.Component<AppProps, AppState> {
     jsonAttachments.forEach(
       async function (attachment: Attachment) {
         // get the record id from attachment url
-        const recordId = attachment._links.self.href.split('/')[10];
+        const jsonAttachementUrl = attachment._links.self.href;
+        // handle legacy url https://{organization}.visualstudio.com
+        const recordId = jsonAttachementUrl.includes('dev.azure.com')
+          ? jsonAttachementUrl.split('/')[10]
+          : jsonAttachementUrl.split('/')[9];
         // get the record from the timeline
         const record = records.find((record) => record.id === recordId);
         if (!record) {
@@ -183,17 +187,19 @@ export class App extends React.Component<AppProps, AppState> {
           // check if there are any other attachments with the same record id
           // and add them to the downloads
           additionalAttachments
-            .filter(
-              (reportAttachment) =>
-                reportAttachment._links.self.href.split('/')[10] === recordId
+            .filter((reportAttachment) =>
+              reportAttachment._links.self.href.includes(recordId)
             )
             .forEach((reportAttachment) => {
               // get the report type from attachment url
               const attachmentUrl = reportAttachment._links.self.href;
-              const attachmentType = attachmentUrl.split('/')[12];
               console.log(
-                `Found ${attachmentType} for report ${report.DisplayName}`
+                `Found ${attachmentUrl} for report ${report.DisplayName}`
               );
+              // handle legacy url https://{organization}.visualstudio.com
+              const attachmentType = attachmentUrl.includes('dev.azure.com')
+                ? attachmentUrl.split('/')[12]
+                : attachmentUrl.split('/')[11];
               report.DownloadReports.push({
                 Name: reportTypes[attachmentType as ReportType],
                 Url: attachmentUrl,
