@@ -7,7 +7,7 @@ if (!process.env.RELEASE_VERSION) {
 const releaseVersion = process.env.RELEASE_VERSION.trim().replace(/v|dev/g, '');
 const releaseType = process.env.RELEASE_VERSION.includes('dev') ? 'private' : 'public';
 
-updateTask(releaseType, releaseVersion);
+updateTask(releaseType);
 
 module.exports = () => {
   return {
@@ -27,19 +27,14 @@ module.exports = () => {
     categories: ['Azure Pipelines'],
     targets: [{ id: 'Microsoft.VisualStudio.Services' }],
     tags: ['trivy', 'vulnerability', 'security', 'scanner'],
-    icons: { default: 'icon.png' },
+    icons: { default: 'images/icon.png' },
     baseUri: releaseType === 'public' ? null : 'https://localhost:3000',
     files: [
-      { path: 'trivy-task' },
-      { path: 'ui/node_modules/azure-devops-extension-sdk', addressable: true, packagePath: 'lib' },
+      { path: 'images', addressable: true },
       { path: 'LICENSE', addressable: true },
-      { path: 'ui/build/main.js', addressable: true, packagePath: 'main.js' },
-      { path: 'ui/build/index.html', addressable: true, packagePath: 'index.html' },
-      { path: 'images/results.png', addressable: true },
-      { path: 'images/resultsview.png', addressable: true },
-      { path: 'images/settings.png', addressable: true },
-      { path: 'images/trivytask.png', addressable: true },
-      { path: 'images/trivy.png', addressable: true, packagePath: 'images/trivy.png' },
+      { path: 'trivy-task' },
+      { path: 'ui/build', addressable: true, packagePath: '/' },
+      { path: 'ui/node_modules/azure-devops-extension-sdk', addressable: true, packagePath: 'lib' },
     ],
     content: {
       license: { path: 'LICENSE' },
@@ -65,6 +60,45 @@ module.exports = () => {
           name: 'Trivy',
           uri: 'index.html',
           supportsTasks: ['8f9cb13f-f551-439c-83e4-fac6801c3fab', '3612b9ee-fd2a-11ef-8d14-00155d47a2a9'],
+        },
+      },
+      {
+        id: 'endpoint-auth-scheme-token',
+        type: 'ms.vss-endpoint.service-endpoint-type',
+        targets: ['ms.vss-endpoint.endpoint-types'],
+        properties: {
+          name: 'AquaPlatform',
+          displayName: 'Aqua Security Platform',
+          icon: 'images/aqua-logo.png',
+          // URL is not used in task, but required for manifest validation.
+          url: { value: 'https://api.cloudsploit.com', isVisible: false },
+          authenticationSchemes: [
+            {
+              type: 'ms.vss-endpoint.endpoint-auth-scheme-none',
+              inputDescriptors: [
+                {
+                  id: 'aquaKey',
+                  name: 'Aqua Platform API Key',
+                  inputMode: 'passwordbox',
+                  isConfidential: true,
+                  validation: {
+                    isRequired: true,
+                    dataType: 'string',
+                  },
+                },
+                {
+                  id: 'aquaSecret',
+                  name: 'Aqua Platform API Secret',
+                  inputMode: 'passwordbox',
+                  isConfidential: true,
+                  validation: {
+                    isRequired: true,
+                    dataType: 'string',
+                  },
+                },
+              ],
+            },
+          ],
         },
       },
     ],

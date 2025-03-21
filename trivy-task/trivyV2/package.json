@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -b tsconfig.json"
+  },
+  "dependencies": {
+    "azure-pipelines-task-lib": "^4.17.3",
+    "azure-pipelines-tool-lib": "^2.0.8"
+  }
+}

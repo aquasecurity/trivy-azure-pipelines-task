@@ -1,6 +1,7 @@
 export enum ArtifactType {
   Image = 'container_image',
   FileSystem = 'filesystem',
+  Repository = 'repository',
 }
 
 export enum Severity {
@@ -163,12 +164,13 @@ export function getReportTitle(report: Report): string {
   }
   switch (report.ArtifactType) {
     case ArtifactType.FileSystem:
-      if (report.ArtifactName === '.') {
-        return 'Filesystem: (project root)';
-      }
-      return 'Filesystem: ' + report.ArtifactName;
+      return `Filesystem: ${report.ArtifactName === '.' ? '(project root)' : report.ArtifactName}`;
     case ArtifactType.Image:
-      return 'Image: ' + report.ArtifactName;
+      return `Image: ${report.ArtifactName}`;
+    case ArtifactType.Repository:
+      return `Repository: ${report.ArtifactName === '.' ? '(self)' : report.ArtifactName}`;
+    default:
+      return `${report.ArtifactType}: ${report.ArtifactName}`;
   }
 }
 
