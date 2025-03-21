@@ -62,6 +62,45 @@ module.exports = () => {
           supportsTasks: ['8f9cb13f-f551-439c-83e4-fac6801c3fab', '3612b9ee-fd2a-11ef-8d14-00155d47a2a9'],
         },
       },
+      {
+        id: 'endpoint-auth-scheme-token',
+        type: 'ms.vss-endpoint.service-endpoint-type',
+        targets: ['ms.vss-endpoint.endpoint-types'],
+        properties: {
+          name: 'AquaPlatform',
+          displayName: 'Aqua Security Platform',
+          icon: 'images/aqua-logo.png',
+          // URL is not used in task, but required for manifest validation.
+          url: { value: 'https://api.cloudsploit.com', isVisible: false },
+          authenticationSchemes: [
+            {
+              type: 'ms.vss-endpoint.endpoint-auth-scheme-none',
+              inputDescriptors: [
+                {
+                  id: 'aquaKey',
+                  name: 'Aqua Platform API Key',
+                  inputMode: 'passwordbox',
+                  isConfidential: true,
+                  validation: {
+                    isRequired: true,
+                    dataType: 'string',
+                  },
+                },
+                {
+                  id: 'aquaSecret',
+                  name: 'Aqua Platform API Secret',
+                  inputMode: 'passwordbox',
+                  isConfidential: true,
+                  validation: {
+                    isRequired: true,
+                    dataType: 'string',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      },
     ],
     scopes: ['vso.build_execute'],
   };
