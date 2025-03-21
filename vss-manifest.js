@@ -7,7 +7,7 @@ if (!process.env.RELEASE_VERSION) {
 const releaseVersion = process.env.RELEASE_VERSION.trim().replace(/v|dev/g, '');
 const releaseType = process.env.RELEASE_VERSION.includes('dev') ? 'private' : 'public';
 
-updateTask(releaseType, releaseVersion);
+updateTask(releaseType);
 
 module.exports = () => {
   return {
@@ -27,19 +27,14 @@ module.exports = () => {
     categories: ['Azure Pipelines'],
     targets: [{ id: 'Microsoft.VisualStudio.Services' }],
     tags: ['trivy', 'vulnerability', 'security', 'scanner'],
-    icons: { default: 'icon.png' },
+    icons: { default: 'images/icon.png' },
     baseUri: releaseType === 'public' ? null : 'https://localhost:3000',
     files: [
-      { path: 'trivy-task' },
-      { path: 'ui/node_modules/azure-devops-extension-sdk', addressable: true, packagePath: 'lib' },
+      { path: 'images', addressable: true },
       { path: 'LICENSE', addressable: true },
-      { path: 'ui/build/main.js', addressable: true, packagePath: 'main.js' },
-      { path: 'ui/build/index.html', addressable: true, packagePath: 'index.html' },
-      { path: 'images/results.png', addressable: true },
-      { path: 'images/resultsview.png', addressable: true },
-      { path: 'images/settings.png', addressable: true },
-      { path: 'images/trivytask.png', addressable: true },
-      { path: 'images/trivy.png', addressable: true, packagePath: 'images/trivy.png' },
+      { path: 'trivy-task' },
+      { path: 'ui/build', addressable: true, packagePath: '/' },
+      { path: 'ui/node_modules/azure-devops-extension-sdk', addressable: true, packagePath: 'lib' },
     ],
     content: {
       license: { path: 'LICENSE' },
