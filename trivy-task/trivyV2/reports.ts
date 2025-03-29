@@ -34,7 +34,9 @@ export async function generateReports(inputs: TaskInputs, filePath: string) {
   // Process JSON results
   task.addAttachment('JSON_RESULT', path.basename(filePath), filePath);
   task.setVariable('jsonReport', filePath, false, true);
-  task.uploadArtifact(artifactName, filePath, artifactName);
+  if (inputs.publish) {
+    task.uploadArtifact(artifactName, filePath, artifactName);
+  }
 
   // Process requested reports
   const requestedReports = reports.filter((item) =>
@@ -55,7 +57,9 @@ export async function generateReports(inputs: TaskInputs, filePath: string) {
       task.debug(`Generated  ${report.name} report at ${output}`);
       task.addAttachment(outputKey, path.basename(output), output);
       task.setVariable(outputKey, output, false, true);
-      task.uploadArtifact(artifactName, output, artifactName);
+      if (inputs.publish) {
+        task.uploadArtifact(artifactName, output, artifactName);
+      }
     } catch (error) {
       task.error(`Failed to generate ${report.name} report: ${error}`);
     }

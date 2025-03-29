@@ -188,6 +188,15 @@
     },
     {
       "groupName": "reportsInput",
+      "name": "publish",
+      "type": "boolean",
+      "label": "Publish reports as artifacts",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "Publish generated reports as pipeline artifacts."
+    },
+    {
+      "groupName": "reportsInput",
       "name": "templates",
       "type": "string",
       "label": "Report Templates Directory",

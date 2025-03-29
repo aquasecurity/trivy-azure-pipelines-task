@@ -11,6 +11,7 @@ export type TaskInputs = {
   severities: string;
   reports: string[];
   templates?: string;
+  publish: boolean;
   ignoreUnfixed: boolean;
   ignoreScanErrors: boolean;
   hasAquaAccount: boolean;
@@ -41,6 +42,7 @@ export function getTaskInputs(): TaskInputs {
     ignoreUnfixed: task.getBoolInput('ignoreUnfixed', false),
     ignoreScanErrors: task.getBoolInput('ignoreScanErrors', false),
     reports: task.getDelimitedInput('reports', ',').map((s) => s.trim()),
+    publish: task.getBoolInput('publish', false),
     templates: task.getInput('templates', false),
     hasAquaAccount: !!aquaPlatform,
     aquaKey: task.getEndpointAuthorizationParameter(
