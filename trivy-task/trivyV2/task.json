@@ -93,12 +93,7 @@
       "helpMarkDown": "The type of scan to perform.",
       "options": {
         "filesystem": "filesystem",
-        "image": "image",
-        "kubernetes": "kubernetes",
-        "repository": "repository",
-        "rootfs": "rootfs",
-        "sbom": "sbom",
-        "vm": "vm"
+        "image": "image"
       }
     },
     {
