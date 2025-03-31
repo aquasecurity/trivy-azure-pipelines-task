@@ -10,7 +10,7 @@
   "author": "Aqua Security",
   "version": {
     "Major": 1,
-    "Minor": 0,
+    "Minor": 12,
     "Patch": 0
   },
   "instanceNameFormat": "Echo trivy $(version)",
@@ -305,10 +305,10 @@
   ],
   "execution": {
     "Node20_1": {
-      "target": "index.js"
+      "target": "dist/index.js"
     },
     "Node10": {
-      "target": "index.js"
+      "target": "dist/index.js"
     }
   }
 }

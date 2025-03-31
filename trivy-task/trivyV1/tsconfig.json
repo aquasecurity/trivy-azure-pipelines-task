@@ -1,0 +1,6 @@
+{
+  "extends": "../tsconfig.task.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+  }
+}

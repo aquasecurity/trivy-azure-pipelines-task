@@ -1,11 +1,15 @@
 {
   "scripts": {
-    "build": "npm run build --prefix trivy-task && npm run build --prefix ui",
+    "build": "npm run build:v1 && npm run build:v2 && npm run build --prefix ui",
+    "build:v1": "npm run build --prefix trivy-task/trivyV1",
+    "build:v2": "npm run build --prefix trivy-task/trivyV2",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
     "lint:fix": "eslint --fix",
     "lint": "eslint",
-    "postinstall": "npm ci --prefix trivy-task && npm ci --prefix ui",
+    "postinstall": "npm run ci:v1 && npm run ci:v2 && npm ci --prefix ui",
+    "ci:v1": "npm ci --prefix trivy-task/trivyV1",
+    "ci:v2": "npm ci --prefix trivy-task/trivyV2",
     "package": "npm run clean && tfx extension create --manifest-js vss-manifest.js",
     "publish": "npm run clean && tfx extension publish --manifest-js vss-manifest.js --auth-type pat --token $PUBLISHER_TOKEN",
     "clean": "rimraf *.vsix",

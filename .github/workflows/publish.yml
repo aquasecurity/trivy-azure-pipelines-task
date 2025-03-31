@@ -23,3 +23,4 @@ jobs:
         env:
           PUBLISHER_TOKEN: ${{ secrets.PUBLISHER_TOKEN }}
           RELEASE_VERSION: '${{ github.ref_name }}'
+          BUILD_NUMBER: ${{ github.run_number }}

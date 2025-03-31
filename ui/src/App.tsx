@@ -127,11 +127,15 @@ export class App extends React.Component<AppProps, AppState> {
     this.setState({ status: worstState });
 
     const reportTypes = {
-      sarifReport: 'SARIF',
-      cyclonedxReport: 'CycloneDX',
-      spdxReport: 'SPDX',
-      spdxjsonReport: 'SPDX JSON',
+      asffReport: 'ASFF',
       cosignReport: 'Cosign',
+      cyclonedxReport: 'CycloneDX',
+      githubReport: 'GitHub',
+      htmlReport: 'HTML',
+      junitReport: 'JUnit',
+      sarifReport: 'SARIF',
+      spdxjsonReport: 'SPDX JSON',
+      spdxReport: 'SPDX',
       tableReport: 'Table',
     };
     type ReportType = keyof typeof reportTypes;
