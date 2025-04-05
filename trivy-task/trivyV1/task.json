@@ -127,11 +127,11 @@
       "name": "type",
       "type": "pickList",
       "label": "Scan Type",
-      "defaultValue": "image",
       "required": false,
       "options": {
         "image": "Image",
-        "filesystem": "Filesystem"
+        "filesystem": "Filesystem",
+        "repo": "Repository"
       },
       "helpMarkDown": "The type of scan to perform, can be a filesystem scan or an image scan.",
       "groupName": "scanning"
@@ -140,7 +140,6 @@
       "name": "path",
       "type": "string",
       "label": "Path to scan",
-      "defaultValue": "",
       "required": false,
       "helpMarkDown": "The specified path will be scanned using an 'fs' scan type. If this option is used, the 'image' option cannot be set.",
       "groupName": "scanning",
@@ -150,7 +149,6 @@
       "name": "image",
       "type": "string",
       "label": "Image to scan",
-      "defaultValue": "",
       "required": false,
       "helpMarkDown": "The specified image will be scanned using an 'image' scan type. If this option is used, the 'path' option cannot be set.",
       "groupName": "scanning",

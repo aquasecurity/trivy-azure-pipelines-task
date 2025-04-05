@@ -104,6 +104,10 @@ function configureScan(runner: ToolRunner, inputs: TaskInputs, output: string) {
     runner.line(inputs.options);
   }
 
+  if (!scanTarget) {
+    throw new Error('No scan target specified.');
+  }
+
   runner.arg(scanTarget);
 }
 
