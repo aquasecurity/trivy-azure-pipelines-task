@@ -9,6 +9,7 @@ export type TaskInputs = {
   exitCode: string;
   debug?: boolean;
   devMode?: boolean;
+  type?: string;
   image: string;
   scanPath: string;
   scanners: string;
@@ -39,6 +40,7 @@ export function getTaskInputs(): TaskInputs {
     exitCode: task.getInput('exitCode', false) ?? '1',
     debug: task.getBoolInput('debug', false),
     devMode: task.getBoolInput('devMode', false),
+    type: task.getInput('type', false) ?? '',
     image: task.getInput('image', false) ?? '',
     scanPath: task.getInput('path', false) ?? '',
     scanners: task.getInput('scanners', false) ?? '',
