@@ -10,8 +10,8 @@ export type TaskInputs = {
   debug?: boolean;
   devMode?: boolean;
   type?: string;
-  image: string;
-  scanPath: string;
+  image?: string;
+  scanPath?: string;
   scanners: string;
   severities: string;
   ignoreUnfixed?: boolean;
@@ -41,8 +41,8 @@ export function getTaskInputs(): TaskInputs {
     debug: task.getBoolInput('debug', false),
     devMode: task.getBoolInput('devMode', false),
     type: task.getInput('type', false) ?? '',
-    image: task.getInput('image', false) ?? '',
-    scanPath: task.getInput('path', false) ?? '',
+    image: task.getInput('image', false),
+    scanPath: task.getInput('path', false),
     scanners: task.getInput('scanners', false) ?? '',
     severities: task.getInput('severities', false) ?? '',
     ignoreUnfixed: task.getBoolInput('ignoreUnfixed', false),
