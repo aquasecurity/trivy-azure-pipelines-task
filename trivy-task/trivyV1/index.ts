@@ -76,7 +76,7 @@ async function run() {
 
 function configureScan(runner: ToolRunner, inputs: TaskInputs, output: string) {
   console.log('Configuring options for image scan...');
-  const scanType = inputs.type ? inputs.type : inputs.image ? 'image' : 'fs';
+  const scanType = inputs.type !== undefined && inputs.type !== '' ? inputs.type : inputs.image ? 'image' : 'fs';
   const scanTarget = inputs.image ? inputs.image : inputs.scanPath;
 
   runner.arg([scanType]);
