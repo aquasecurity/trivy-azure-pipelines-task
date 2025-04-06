@@ -93,7 +93,8 @@
       "helpMarkDown": "The type of scan to perform.",
       "options": {
         "filesystem": "filesystem",
-        "image": "image"
+        "image": "image",
+        "repository": "repository"
       }
     },
     {
