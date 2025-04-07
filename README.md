@@ -28,6 +28,6 @@ While you can attempt to scan Docker images on Windows, running the task using a
 
 If new to the Trivy pipeline task, you should use the newer v2 version.
 
-[Trivy@1 Configuration](https://github.com/aquasecurity/trivy-azure-pipeline-task/docs/trivyv1.md)
+[Trivy@1 Configuration](https://github.com/aquasecurity/trivy-azure-pipelines-task/blob/main/docs/trivyv1.md)
 
-[Trivy@2 Configuration](https://github.com/aquasecurity/trivy-azure-pipeline-task/docs/trivyv2.md)
+[Trivy@2 Configuration](https://github.com/aquasecurity/trivy-azure-pipelines-task/blob/main/docs/trivyv2.md)
