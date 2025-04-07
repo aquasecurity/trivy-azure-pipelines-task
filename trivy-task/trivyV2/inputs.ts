@@ -57,11 +57,7 @@ export function getTaskInputs(): TaskInputs {
       'aquaSecret',
       true
     ),
-    aquaUrl: task.getEndpointAuthorizationParameter(
-      aquaPlatform,
-      'aquaUrl',
-      true
-    ),
+    aquaUrl: task.getEndpointUrl(aquaPlatform, true),
     authUrl: task.getEndpointAuthorizationParameter(
       aquaPlatform,
       'authUrl',

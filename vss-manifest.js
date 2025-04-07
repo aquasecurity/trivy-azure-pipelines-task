@@ -38,7 +38,7 @@ module.exports = () => {
     ],
     content: {
       license: { path: 'LICENSE' },
-      details: { path: 'marketplace.md' },
+      details: { path: 'README.md' },
     },
     links: {
       home: { uri: 'https://www.aquasec.com/' },
@@ -70,12 +70,21 @@ module.exports = () => {
           name: 'AquaPlatform',
           displayName: 'Aqua Platform Configuration',
           icon: 'images/icon.png',
-          // URL is not used in task, but required for manifest validation.
-          url: { value: 'https://trivy.dev', isVisible: false },
+          url: { displayName: 'Aqua Platform URL' },
           authenticationSchemes: [
             {
               type: 'ms.vss-endpoint.endpoint-auth-scheme-none',
               inputDescriptors: [
+                {
+                  id: 'authUrl',
+                  name: 'Aqua Platform Authentication URL',
+                  inputMode: 'textbox',
+                  isConfidential: false,
+                  validation: {
+                    isRequired: true,
+                    dataType: 'string',
+                  },
+                },
                 {
                   id: 'aquaKey',
                   name: 'Aqua Platform API Key',
@@ -91,17 +100,6 @@ module.exports = () => {
                   name: 'Aqua Platform API Secret',
                   inputMode: 'passwordbox',
                   isConfidential: true,
-                  validation: {
-                    isRequired: true,
-                    dataType: 'string',
-                  },
-                },
-
-                {
-                  id: 'authUrl',
-                  name: 'Aqua Platform Authentication URL',
-                  inputMode: 'textbox',
-                  isConfidential: false,
                   validation: {
                     isRequired: true,
                     dataType: 'string',
