@@ -50,6 +50,9 @@ async function dockerRunner(inputs: TaskInputs): Promise<ToolRunner> {
     runner.line('-e OVERRIDE_BRANCH');
     runner.line('-e OVERRIDE_REPOSITORY');
     runner.line('-e TRIVY_RUN_AS_PLUGIN');
+    // https://trivy.dev/latest/docs/plugin/user-guide/#installing-plugins
+    runner.line(`-e XDG_DATA_HOME=${tmpPath}`);
+    task.mkdirP(path.join(tmpPath, '.trivy', 'plugins'));
   }
 
   const trivyImage =

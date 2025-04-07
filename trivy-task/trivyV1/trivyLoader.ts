@@ -58,7 +58,11 @@ async function dockerRunner(inputs: TaskInputs): Promise<ToolRunner> {
       runner.line('-e AQUA_URL=https://api.dev.supply-chain.cloud.aquasec.com');
       runner.line('-e CSPM_URL=https://stage.api.cloudsploit.com');
     }
+    // https://trivy.dev/latest/docs/plugin/user-guide/#installing-plugins
+    runner.line(`-e XDG_DATA_HOME=${tmpPath}`);
+    task.mkdirP(path.join(tmpPath, '.trivy', 'plugins'));
   }
+
   const trivyImage =
     inputs.trivyImage === 'aquasec/trivy'
       ? `${inputs.trivyImage}:${stripV(inputs.version)}`
