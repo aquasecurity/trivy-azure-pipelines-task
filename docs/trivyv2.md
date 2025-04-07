@@ -54,79 +54,84 @@ For more information about creating the connected service, see [Configuring Aqua
 | `publish`   | boolean  | false    | Publish generated reports as pipeline artifacts.                                                                                                                                                                                  |
 | `templates` | string   |          | Specify a custom directory containing templates for the ASFF, HTML, JUnit reports. If not set, will look up in the `contrib` directory of the Trivy installation. Visible only when `method = system` and `reports` is not empty. |
 
-### Example of scanning multiple targets
+## Examples
+
+### Scanning multiple targets and publish results as test run
 
 ```yaml
-trigger:
-  - main
+steps:
+  - task: trivy@2
+    name: TrivyCurrent
+    displayName: 'Scan current repository as filesystem'
+    inputs:
+      version: 'latest'
+      type: 'filesystem'
+      target: '.'
+      scanners: 'misconfig,vuln,secret'
+      ignoreUnfixed: true
+      ignoreScanErrors: true
+      reports: 'github, html, junit'
+      publish: true
 
-jobs:
-  - job: scan_nginx
-    steps:
-      - task: trivy@2
-        inputs:
-          aquaPlatform: 'Aqua Platform Connection'
-          version: 'latest'
-          type: 'filesystem'
-          target: '.'
-          scanners: 'misconfig,vuln,secret'
-          ignoreUnfixed: true
-          ignoreScanErrors: true
-          reports: 'github, html, junit'
-          publish: true
+  - task: trivy@2
+    name: TrivyPrivate
+    displayName: 'Scan private GitHub repository'
+    inputs:
+      type: 'repository'
+      target: 'https://github.com/owner/repo'
+      scanners: 'secret,vuln,misconfig'
+      ignoreUnfixed: true
+      reports: 'github, junit, sarif'
+    env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
 
-  - job: use_binary
-    steps:
-      - task: trivy@2
-        inputs:
-          method: 'install'
-          type: 'repo'
-          target: 'https://github.com/owenrumney/trivy-bad'
-          scanners: 'secret,vuln,misconfig'
-          ignoreUnfixed: true
-          ignoreScanErrors: true
-          reports: 'github, junit, sarif'
-        env:
-          GITHUB_TOKEN: $(GITHUB_TOKEN)
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: |
+        $(TrivyCurrent.junitReport)
+        $(TrivyPrivate.junitReport)
+      searchFolder: '$(Agent.TempDirectory)'
+      testRunTitle: 'Trivy'
+      publishRunAttachments: false
 ```
 
-## Scanning Images in Private Registries
+### Scanning Images in Private Registries
 
 You can scan images in private registries by using the `image` input after completing a `docker login`. For example:
 
 ```yaml
 steps:
   - task: Docker@2
-    displayName: Login to ACR
+    displayName: Login to container registry
     inputs:
       command: login
-      containerRegistry: dockerRegistryServiceConnection1
+      containerRegistry: containerRegistryServiceConnection
+
   - task: trivy@2
     inputs:
       type: 'image'
       image: my.private.registry/org/my-image:latest
-      # Needed to access private repo
 ```
 
-## Scanning with Aqua Platform support
+### Scanning with Aqua Platform support
 
 Configure your Connected Service using the [service endpoint docs](connectedservice.md).
 
-| :warning: Aqua Platform integration only works for `install` mode and does not support `image` scanning.
+> [!IMPORTANT]
+> Aqua Platform integration only works for `install` mode and does not support `image` scanning.
 
 ```yaml
-jobs:
-  - job: scan_local
-    steps:
-      - task: trivy@2
-        inputs:
-          aquaPlatform: 'Aqua Platform Connection'
-          version: 'latest'
-          type: 'filesystem'
-          target: '.'
-          scanners: 'misconfig,vuln,secret'
-          ignoreUnfixed: true
-          ignoreScanErrors: true
-          reports: 'github, html, junit'
-          publish: true
+steps:
+  - task: trivy@2
+    inputs:
+      aquaPlatform: 'Aqua Platform Connection'
+      version: 'latest'
+      type: 'filesystem'
+      target: '.'
+      scanners: 'misconfig,vuln,secret'
+      ignoreUnfixed: true
+      ignoreScanErrors: true
+      reports: 'github, html, junit'
+      publish: true
 ```
