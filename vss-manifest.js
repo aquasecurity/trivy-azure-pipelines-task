@@ -96,16 +96,7 @@ module.exports = () => {
                     dataType: 'string',
                   },
                 },
-                {
-                  id: 'aquaUrl',
-                  name: 'Aqua Platform URL',
-                  inputMode: 'textbox',
-                  isConfidential: false,
-                  validation: {
-                    isRequired: true,
-                    dataType: 'string',
-                  },
-                },
+
                 {
                   id: 'authUrl',
                   name: 'Aqua Platform Authentication URL',

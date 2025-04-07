@@ -106,7 +106,6 @@ steps:
       type: 'image'
       image: my.private.registry/org/my-image:latest
       # Needed to access private repo
-      loginDockerConfig: true
 ```
 
 ## Scanning with Aqua Platform support

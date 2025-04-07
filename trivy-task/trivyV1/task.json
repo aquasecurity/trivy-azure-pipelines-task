@@ -1,10 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
-  "id": "3612b9ee-fd2a-11ef-8d14-00155d47a2a9",
-  "name": "trivy-dev",
-  "friendlyName": "Trivy [Dev]",
-  "deprecated": true,
-  "deprecationMessage": "This task is deprecated. Please use the new version of the task.",
+  "id": "8f9cb13f-f551-439c-83e4-fac6801c3fab",
+  "name": "trivy",
+  "friendlyName": "Trivy",
   "description": "Trivy is the world's most popular open source vulnerability and misconfiguration scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.",
   "helpMarkDown": "[Learn more about this task](https://github.com/aquasecurity/trivy-azure-pipelines-task)",
   "helpUrl": "https://github.com/aquasecurity/trivy-azure-pipelines-task/docs/trivyv1.md",
@@ -13,7 +11,7 @@
   "version": {
     "Major": 1,
     "Minor": 14,
-    "Patch": 9
+    "Patch": 0
   },
   "instanceNameFormat": "Echo trivy $(version)",
   "groups": [
@@ -131,9 +129,9 @@
       "label": "Scan Type",
       "required": false,
       "options": {
-        "image": "image",
-        "filesystem": "filesystem",
-        "repo": "repo"
+        "image": "Image",
+        "filesystem": "Filesystem",
+        "repo": "Repository"
       },
       "helpMarkDown": "The type of scan to perform, can be a filesystem scan or an image scan.",
       "groupName": "scanning"
