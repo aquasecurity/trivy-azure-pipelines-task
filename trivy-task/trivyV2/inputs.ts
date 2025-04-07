@@ -17,6 +17,8 @@ export type TaskInputs = {
   hasAquaAccount: boolean;
   aquaKey?: string;
   aquaSecret?: string;
+  aquaUrl?: string;
+  authUrl?: string;
 };
 
 /**
@@ -53,6 +55,16 @@ export function getTaskInputs(): TaskInputs {
     aquaSecret: task.getEndpointAuthorizationParameter(
       aquaPlatform,
       'aquaSecret',
+      true
+    ),
+    aquaUrl: task.getEndpointAuthorizationParameter(
+      aquaPlatform,
+      'aquaUrl',
+      true
+    ),
+    authUrl: task.getEndpointAuthorizationParameter(
+      aquaPlatform,
+      'authUrl',
       true
     ),
   };

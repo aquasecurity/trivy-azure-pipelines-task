@@ -68,10 +68,10 @@ module.exports = () => {
         targets: ['ms.vss-endpoint.endpoint-types'],
         properties: {
           name: 'AquaPlatform',
-          displayName: 'Aqua Security Platform',
-          icon: 'images/aqua-logo.png',
+          displayName: 'Aqua Platform Configuration',
+          icon: 'images/icon.png',
           // URL is not used in task, but required for manifest validation.
-          url: { value: 'https://api.cloudsploit.com', isVisible: false },
+          url: { value: 'https://trivy.dev', isVisible: false },
           authenticationSchemes: [
             {
               type: 'ms.vss-endpoint.endpoint-auth-scheme-none',
@@ -91,6 +91,26 @@ module.exports = () => {
                   name: 'Aqua Platform API Secret',
                   inputMode: 'passwordbox',
                   isConfidential: true,
+                  validation: {
+                    isRequired: true,
+                    dataType: 'string',
+                  },
+                },
+                {
+                  id: 'aquaUrl',
+                  name: 'Aqua Platform URL',
+                  inputMode: 'textbox',
+                  isConfidential: false,
+                  validation: {
+                    isRequired: true,
+                    dataType: 'string',
+                  },
+                },
+                {
+                  id: 'authUrl',
+                  name: 'Aqua Platform Authentication URL',
+                  inputMode: 'textbox',
+                  isConfidential: false,
                   validation: {
                     isRequired: true,
                     dataType: 'string',

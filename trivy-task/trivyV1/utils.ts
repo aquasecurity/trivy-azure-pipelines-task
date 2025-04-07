@@ -79,6 +79,16 @@ function validateInputs(inputs: TaskInputs): void {
     });
   }
 
+  if (inputs.aquaKey && inputs.image) {
+    throw new Error('Aqua Platform is not supported for image scans.');
+  }
+
+  if (inputs.aquaKey && inputs.docker) {
+    throw new Error(
+      'Aqua Platform is not supported when running in Docker mode.'
+    );
+  }
+
   // validate image and path inputs
   if (!inputs.image && !inputs.scanPath) {
     throw new Error(
