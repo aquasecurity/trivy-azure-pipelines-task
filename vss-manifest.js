@@ -31,18 +31,21 @@ module.exports = () => {
     baseUri: releaseType === 'public' ? null : 'https://localhost:3000',
     files: [
       { path: 'images', addressable: true },
-      { path: 'LICENSE', addressable: true },
       { path: 'trivy-task' },
       { path: 'ui/build', addressable: true, packagePath: '/' },
       { path: 'ui/node_modules/azure-devops-extension-sdk', addressable: true, packagePath: 'lib' },
     ],
     content: {
-      license: { path: 'LICENSE' },
       details: { path: 'README.md' },
+      license: { path: 'LICENSE' },
+      privacypolicy: { path: 'PRIVACY.md' },
     },
     links: {
       home: { uri: 'https://www.aquasec.com/' },
-      license: { uri: './LICENSE' },
+      learn: { uri: 'https://trivy.dev/' },
+      license: { uri: 'LICENSE' },
+      privacypolicy: { uri: 'PRIVACY.md' },
+      getstarted: { uri: 'https://github.com/aquasecurity/trivy-azure-pipelines-task/blob/main/docs/trivyv2.md' },
     },
     contributions: [
       {
