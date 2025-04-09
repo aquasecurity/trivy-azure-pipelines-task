@@ -1,6 +1,7 @@
 # Trivy v1 Configuration
 
-| :warning: If you are new to the Trivy Azure Pipeline task, you would be better using the [Trivy v2 task](trivyv2.md)
+> [!IMPORTANT]
+> If you are new to the Trivy Azure Pipeline task, you would be better using the [Trivy v2 task](trivyv2.md)
 
 Configuring the task can be done directly editing the pipeline yaml or through the configuration pane on the right of the pipeline UI screen
 
