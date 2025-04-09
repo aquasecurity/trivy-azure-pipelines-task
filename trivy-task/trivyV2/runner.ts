@@ -41,17 +41,6 @@ async function dockerRunner(inputs: TaskInputs): Promise<ToolRunner> {
   runner.line(`-e TRIVY_CACHE_DIR=${tmpPath}`);
   runner.argIf(dockerConfig, ['-e', `DOCKER_CONFIG=${dockerConfig}`]);
 
-  if (inputs.hasAquaAccount) {
-    runner.argIf(process.env.AQUA_URL, ['-e', 'AQUA_URL']);
-    runner.argIf(process.env.CSPM_URL, ['-e', 'CSPM_URL']);
-    runner.line('-e AQUA_ASSURANCE_EXPORT');
-    runner.line('-e AQUA_KEY');
-    runner.line('-e AQUA_SECRET');
-    runner.line('-e OVERRIDE_BRANCH');
-    runner.line('-e OVERRIDE_REPOSITORY');
-    runner.line('-e TRIVY_RUN_AS_PLUGIN');
-  }
-
   const trivyImage =
     inputs.image === ''
       ? `aquasec/trivy:${stripV(inputs.version)}`

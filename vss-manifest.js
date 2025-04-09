@@ -38,7 +38,7 @@ module.exports = () => {
     ],
     content: {
       license: { path: 'LICENSE' },
-      details: { path: 'marketplace.md' },
+      details: { path: 'README.md' },
     },
     links: {
       home: { uri: 'https://www.aquasec.com/' },
@@ -68,14 +68,23 @@ module.exports = () => {
         targets: ['ms.vss-endpoint.endpoint-types'],
         properties: {
           name: 'AquaPlatform',
-          displayName: 'Aqua Security Platform',
-          icon: 'images/aqua-logo.png',
-          // URL is not used in task, but required for manifest validation.
-          url: { value: 'https://api.cloudsploit.com', isVisible: false },
+          displayName: 'Aqua Platform Configuration',
+          icon: 'images/icon.png',
+          url: { displayName: 'Aqua Platform URL' },
           authenticationSchemes: [
             {
               type: 'ms.vss-endpoint.endpoint-auth-scheme-none',
               inputDescriptors: [
+                {
+                  id: 'authUrl',
+                  name: 'Aqua Platform Authentication URL',
+                  inputMode: 'textbox',
+                  isConfidential: false,
+                  validation: {
+                    isRequired: true,
+                    dataType: 'string',
+                  },
+                },
                 {
                   id: 'aquaKey',
                   name: 'Aqua Platform API Key',

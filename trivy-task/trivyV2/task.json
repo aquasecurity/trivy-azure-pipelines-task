@@ -3,15 +3,14 @@
   "id": "8f9cb13f-f551-439c-83e4-fac6801c3fab",
   "name": "trivy",
   "friendlyName": "Trivy",
-  "preview": true,
   "description": "Trivy is the world's most popular open source vulnerability and misconfiguration scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.",
   "helpMarkDown": "[Learn more about this task](https://github.com/aquasecurity/trivy-azure-pipelines-task)",
-  "helpUrl": "https://github.com/aquasecurity/trivy-azure-pipelines-task",
+  "helpUrl": "https://github.com/aquasecurity/trivy-azure-pipelines-task/docs/trivyv2.md",
   "category": "Test",
   "author": "Aqua Security",
   "version": {
     "Major": 2,
-    "Minor": 0,
+    "Minor": 1,
     "Patch": 0
   },
   "instanceNameFormat": "Echo trivy $(version)",

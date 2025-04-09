@@ -26,11 +26,25 @@ async function run() {
 
   // configure the environment variables for Aqua Plugin
   if (inputs.hasAquaAccount) {
+    if (inputs.scanType === 'image') {
+      throw new Error(
+        'Aqua platform is not supported for image scan. Please use the filesystem scan.'
+      );
+    }
+
+    if (inputs.method === 'docker') {
+      throw new Error(
+        'Aqua platform is not supported for docker run. Please use the install method.'
+      );
+    }
+
     task.rmRF(assuranceFilePath);
     task.debug('Configuring Aqua environment variables...');
     env.AQUA_ASSURANCE_EXPORT = assuranceFilePath;
     env.AQUA_KEY = inputs.aquaKey;
     env.AQUA_SECRET = inputs.aquaSecret;
+    env.AQUA_URL = inputs.aquaUrl;
+    env.CSPM_URL = inputs.authUrl;
     env.OVERRIDE_BRANCH = task.getVariable('Build.SourceBranchName');
     env.OVERRIDE_REPOSITORY = task.getVariable('Build.Repository.Name');
     env.TRIVY_RUN_AS_PLUGIN = 'aqua';

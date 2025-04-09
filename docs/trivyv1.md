@@ -1,44 +1,17 @@
-# Trivy
+# Trivy v1 Configuration
 
-An Azure DevOps Pipelines Task for [Trivy](https://github.com/aquasecurity/trivy), with an integrated UI.
-
-![Screenshot showing the Trivy extension in the Azure DevOps UI](images/resultsview.png)
-
-## Installation
-
-1. Install the Trivy task in your Azure DevOps organisation (hit the `Get it free` button above).
-
-2. Add the task to your `azure-pipelines.yml` in a project where you'd like to run Trivy:
-
-```yaml
-- task: trivy@1
-```
-
-## Agents Compatibility
-
-| Agent OS | Run binary | Scan FileSystem | Docker |
-| :------- | :--------: | :-------------: | :----: |
-| Linux    |     ✅     |       ✅        |   ✅   |
-| MacOS    |     ✅     |       ✅        |   🔴   |
-| Windows  |     ✅     |       ✅        |   🔴   |
-
-### Self-Hosted Agents
-
-At least, access to Docker Engine is required to run Trivy in docker container or scan docker images.
-
-While you can attempt to scan Docker images on Windows, running the task using a Docker image will mostly fail.
-
-## Configuration
+> [!IMPORTANT]
+> If you are new to the Trivy Azure Pipeline task, you would be better using the [Trivy v2 task](trivyv2.md)
 
 Configuring the task can be done directly editing the pipeline yaml or through the configuration pane on the right of the pipeline UI screen
 
 Select the Trivy task from the installed tasks
 
-![Select Trivy](images/trivytask.png)
+![Select Trivy](../images/trivytask.png)
 
 The input variables are grouped logically, expand the sections to make the required changes.
 
-![Pipeline settings](images/settings.png)
+![Pipeline settings](../images/settings.png)
 
 ## Input Variables
 
