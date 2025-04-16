@@ -5,7 +5,7 @@ import { TaskInputs } from './utils';
 
 const reportTypes = {
   sarif: { DisplayName: 'SARIF', Extension: '.json' },
-  cyclonedx: { DisplayName: 'CycloneDX', Extension: '.xml' },
+  cyclonedx: { DisplayName: 'CycloneDX', Extension: '.json' },
   spdx: { DisplayName: 'SPDX', Extension: '.tag' },
   json: { DisplayName: 'JSON', Extension: '.json' },
   spdxjson: { DisplayName: 'SPDX JSON', Extension: '.json' },
