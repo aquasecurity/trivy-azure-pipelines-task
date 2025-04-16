@@ -11,7 +11,7 @@ type Report = {
 const reports: Report[] = [
   { name: 'asff', extension: '.json' },
   { name: 'cosign', extension: '.json' },
-  { name: 'cyclonedx', extension: '.xml' },
+  { name: 'cyclonedx', extension: '.json' },
   { name: 'github', extension: '.gsbom' },
   { name: 'html', extension: '.html' },
   { name: 'junit', extension: '.xml' },
