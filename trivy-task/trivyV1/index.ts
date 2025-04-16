@@ -88,6 +88,7 @@ function configureScan(runner: ToolRunner, inputs: TaskInputs, output: string) {
   runner.arg(['--exit-code', inputs.exitCode]);
   runner.arg(['--format', 'json']);
   runner.arg(['--output', output]);
+  runner.arg('--list-all-pkgs');
   runner.argIf(inputs.severities, ['--severity', inputs.severities]);
   runner.argIf(inputs.ignoreUnfixed, ['--ignore-unfixed']);
 

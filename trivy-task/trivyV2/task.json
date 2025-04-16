@@ -93,7 +93,8 @@
       "options": {
         "filesystem": "filesystem",
         "image": "image",
-        "repository": "repository"
+        "repository": "repository",
+        "sbom": "sbom"
       }
     },
     {
