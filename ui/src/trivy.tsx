@@ -51,6 +51,20 @@ export interface License {
   Link: string;
 }
 
+export interface ExperimentalModifiedFindings {
+  Type: string;
+  Status: string;
+  Statement: string;
+  Source: string;
+  Finding: {
+    ID?: string;
+    VulnerabilityID?: string;
+    Title: string;
+    Severity: Severity;
+    FilePath: string;
+  };
+}
+
 interface CauseMetadata {
   StartLine: number;
   EndLine: number;
@@ -76,6 +90,7 @@ export interface Result {
   Secrets: Secret[];
   Misconfigurations: Misconfiguration[];
   Licenses: License[];
+  ExperimentalModifiedFindings: ExperimentalModifiedFindings[];
 }
 
 interface RootFS {
@@ -283,6 +298,25 @@ export function countReportLicenses(report: Report): number {
       result.Licenses !== null
     ) {
       total += result.Licenses.length;
+    }
+  });
+  return total;
+}
+
+export function countReportSuppressed(report: Report): number {
+  let total = 0;
+  report.Results?.forEach(function (result: Result) {
+    if (!result) {
+      return;
+    }
+    if (
+      Object.prototype.hasOwnProperty.call(
+        result,
+        'ExperimentalModifiedFindings'
+      ) &&
+      result.ExperimentalModifiedFindings !== null
+    ) {
+      total += result.ExperimentalModifiedFindings.length;
     }
   });
   return total;
