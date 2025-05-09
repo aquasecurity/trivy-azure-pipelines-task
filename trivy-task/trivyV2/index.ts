@@ -81,6 +81,7 @@ function configureScan(runner: ToolRunner, inputs: TaskInputs) {
   runner.arg('--list-all-pkgs');
   runner.argIf(inputs.severities, ['--severity', inputs.severities]);
   runner.argIf(inputs.ignoreUnfixed, ['--ignore-unfixed']);
+  runner.argIf(inputs.showSuppressed, ['--show-suppressed']);
   runner.arg(['--output', resultsFilePath]);
   runner.arg(inputs.options);
   runner.arg(inputs.target);

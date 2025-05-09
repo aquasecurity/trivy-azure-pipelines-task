@@ -5,6 +5,7 @@ import {
   countReportLicenses,
   countReportMisconfigurations,
   countReportSecrets,
+  countReportSuppressed,
   countReportVulnerabilities,
   Report,
 } from './trivy';
@@ -12,6 +13,7 @@ import { SecretsTable } from './SecretsTable';
 import { VulnerabilitiesTable } from './VulnerabilitiesTable';
 import { MisconfigurationsTable } from './MisconfigurationsTable';
 import { LicensesTable } from './LicenseTable';
+import { SuppressedTable } from './SuppressedTable';
 import { Tab, TabBar, TabSize } from 'azure-devops-ui/Tabs';
 import { AssuranceTable } from './AssuranceTable';
 
@@ -47,6 +49,7 @@ export class BaseReport extends React.Component<
     const misconfigCount = countReportMisconfigurations(this.props.report);
     const secretsCount = countReportSecrets(this.props.report);
     const licensesCount = countReportLicenses(this.props.report);
+    const suppressedCount = countReportSuppressed(this.props.report);
     const assuranceCount = countAssuranceIssues(this.props.assurance);
 
     return (
@@ -89,6 +92,14 @@ export class BaseReport extends React.Component<
                 badgeCount={licensesCount}
               />
             )}
+            {suppressedCount > 0 && (
+              <Tab
+                id="suppressed"
+                name="Suppressed"
+                key="Suppressed"
+                badgeCount={suppressedCount}
+              />
+            )}
             {assuranceCount > 0 && (
               <Tab
                 id="assurance"
@@ -127,6 +138,14 @@ export class BaseReport extends React.Component<
           {this.state.selectedTabId === 'licenses' && (
             <div className="flex-grow">
               <LicensesTable
+                key={this.props.report.DisplayName}
+                report={this.props.report}
+              />
+            </div>
+          )}
+          {this.state.selectedTabId === 'suppressed' && (
+            <div className="flex-grow">
+              <SuppressedTable
                 key={this.props.report.DisplayName}
                 report={this.props.report}
               />
