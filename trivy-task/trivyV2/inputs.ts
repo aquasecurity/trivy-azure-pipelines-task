@@ -13,6 +13,7 @@ export type TaskInputs = {
   templates?: string;
   publish: boolean;
   ignoreUnfixed: boolean;
+  showSuppressed: boolean;
   ignoreScanErrors: boolean;
   hasAquaAccount: boolean;
   aquaKey?: string;
@@ -42,6 +43,7 @@ export function getTaskInputs(): TaskInputs {
       .map((s) => s.trim())
       .join(','),
     ignoreUnfixed: task.getBoolInput('ignoreUnfixed', false),
+    showSuppressed: task.getBoolInput('showSuppressed', false),
     ignoreScanErrors: task.getBoolInput('ignoreScanErrors', false),
     reports: task.getDelimitedInput('reports', ',').map((s) => s.trim()),
     publish: task.getBoolInput('publish', false),

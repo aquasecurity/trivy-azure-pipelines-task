@@ -4,6 +4,7 @@ import {
   countReportLicenses,
   countReportMisconfigurations,
   countReportSecrets,
+  countReportSuppressed,
   countReportVulnerabilities,
   Report,
 } from './trivy';
@@ -51,6 +52,10 @@ export class ReportStats extends React.Component<ReportStatsProps> {
       {
         name: 'Licenses',
         value: countReportLicenses(this.props.report),
+      },
+      {
+        name: 'Suppressed',
+        value: countReportSuppressed(this.props.report),
       },
     ];
     return (
