@@ -23,6 +23,8 @@ export class ReportStats extends React.Component<ReportStatsProps> {
     this.props = props;
   }
 
+  suppressedCount = countReportSuppressed(this.props.report);
+
   render() {
     const stats = [
       {
@@ -53,10 +55,12 @@ export class ReportStats extends React.Component<ReportStatsProps> {
         name: 'Licenses',
         value: countReportLicenses(this.props.report),
       },
-      {
-        name: 'Suppressed',
-        value: countReportSuppressed(this.props.report),
-      },
+      this.suppressedCount > 0
+        ? {
+            name: 'Suppressed',
+            value: this.suppressedCount,
+          }
+        : {},
     ];
     return (
       <Card className="flex-grow">
