@@ -111,7 +111,7 @@ steps:
   - task: trivy@2
     inputs:
       type: 'image'
-      image: my.private.registry/org/my-image:latest
+      target: my.private.registry/org/my-image:latest
 ```
 
 ### Scanning with Aqua Platform support
