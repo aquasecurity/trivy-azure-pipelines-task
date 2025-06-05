@@ -14,7 +14,8 @@ This guide covers the steps to install the Aqua Trivy extension for Azure DevOps
 
 3. Select the Azure DevOps organization where you want to install the extension.
 
-4. Click **Install** to complete the installation.
+4. Click **Get It Free** to complete the installation.
+   ![Marketplace](./imgs/marketplace.png)
 
 5. Once installed, the Trivy task will be available for use in your Azure DevOps pipelines.
 

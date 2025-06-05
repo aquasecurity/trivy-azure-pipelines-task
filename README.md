@@ -15,7 +15,9 @@ This extension allows you to scan various targets for:
 
 ## Quick Start
 
-1. Install the Trivy task from the [Azure DevOps Marketplace](<(https://marketplace.visualstudio.com/items?itemName=AquaSecurityOfficial.trivy-official)>) (hit the `Get it free` button above)
+1. Install the Trivy task from the [Azure DevOps Marketplace](https://marketplace.visualstudio.com/items?itemName=AquaSecurityOfficial.trivy-official) and press the `Get it free` button.
+
+![Marketplace](docs/imgs/marketplace.png)
 
 2. Add the task to your `azure-pipelines.yml`:
 
