@@ -47,7 +47,7 @@ export function getTaskInputs(): TaskInputs {
     showSuppressed: task.getBoolInput('showSuppressed', false),
     ignoreScanErrors: task.getBoolInput('ignoreScanErrors', false),
     failOnSeverityThreshold:
-      task.getInput('failOnSeverityThreshold', false) ?? '',
+      task.getInput('failOnSeverityThreshold', false) ?? 'UNKNOWN', // default to UNKNOWN
     reports: task.getDelimitedInput('reports', ',').map((s) => s.trim()),
     publish: task.getBoolInput('publish', false),
     templates: task.getInput('templates', false),
