@@ -93,9 +93,6 @@ function highestSeverityBreached(
   inputs: TaskInputs,
   resultsFilePath: string
 ): boolean {
-  if (!inputs.failOnSeverityThreshold) {
-    return false;
-  }
   task.debug(`Fail on severity threshold: ${inputs.failOnSeverityThreshold}`);
 
   const severityThreshold = inputs.failOnSeverityThreshold.toUpperCase();
@@ -132,18 +129,30 @@ function checkScanResult(exitCode: number, inputs: TaskInputs) {
   );
 
   task.debug(`Highest severity breached: ${isHighestSeverityBreached}`);
-  if (exitCode === 2 && inputs.ignoreScanErrors && isHighestSeverityBreached) {
-    task.setResult(task.TaskResult.SucceededWithIssues, 'Issues found.');
-  } else if (
-    exitCode === 2 &&
-    !inputs.ignoreScanErrors &&
-    isHighestSeverityBreached
-  ) {
-    task.setResult(task.TaskResult.Failed, 'Issues found.');
-  } else if (exitCode === 2 && !highestSeverityBreached) {
-    task.setResult(task.TaskResult.Succeeded, 'No issues found.');
+  if (exitCode === 2 && inputs.ignoreScanErrors) {
+    if (isHighestSeverityBreached) {
+      task.setResult(task.TaskResult.SucceededWithIssues, 'Issues found.');
+      return;
+    } else {
+      task.setResult(
+        task.TaskResult.Succeeded,
+        'Issues found but ignoring scan errors as per configuration.'
+      );
+      return;
+    }
+  } else if (exitCode === 2 && !inputs.ignoreScanErrors) {
+    if (isHighestSeverityBreached) {
+      task.setResult(task.TaskResult.Failed, 'Issues found.');
+    } else {
+      task.setResult(
+        task.TaskResult.Succeeded,
+        'Issues found but ignoring scan errors as per configuration.'
+      );
+    }
+    return;
   } else {
     task.setResult(task.TaskResult.Failed, 'Trivy runner error.', true);
+    return;
   }
 }
 

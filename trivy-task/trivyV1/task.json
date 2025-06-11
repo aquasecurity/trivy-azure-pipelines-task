@@ -10,8 +10,8 @@
   "author": "Aqua Security",
   "version": {
     "Major": 1,
-    "Minor": 18,
-    "Patch": 2
+    "Minor": 19,
+    "Patch": 1
   },
   "instanceNameFormat": "Echo trivy $(version)",
   "groups": [
