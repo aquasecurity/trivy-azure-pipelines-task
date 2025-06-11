@@ -5,6 +5,7 @@ import { randomUUID } from 'crypto';
 import { createRunner, tmpPath } from './runner';
 import { generateReports } from './reports';
 import { getTaskInputs, TaskInputs } from './inputs';
+import { getHighestSeverityLevel, severityLevels } from './utils';
 
 const randomPrefix = randomUUID();
 const resultsFileName = `trivy-results-${randomPrefix}.json`;
@@ -57,6 +58,7 @@ async function run() {
   task.debug('Running Trivy...');
 
   const result = runner.execSync({ env });
+
   checkScanResult(result.code, inputs);
 
   if (inputs.hasAquaAccount && task.exist(assuranceFilePath)) {
@@ -87,13 +89,59 @@ function configureScan(runner: ToolRunner, inputs: TaskInputs) {
   runner.arg(inputs.target);
 }
 
+function highestSeverityBreached(
+  inputs: TaskInputs,
+  resultsFilePath: string
+): boolean {
+  if (!inputs.failOnSeverityThreshold) {
+    return false;
+  }
+  task.debug(`Fail on severity threshold: ${inputs.failOnSeverityThreshold}`);
+
+  const severityThreshold = inputs.failOnSeverityThreshold.toUpperCase();
+  const highestFoundSeverity = getHighestSeverityLevel(resultsFilePath);
+
+  const severityThresholdIndex = severityLevels.indexOf(severityThreshold);
+  const highestIndex = severityLevels.indexOf(highestFoundSeverity);
+
+  task.debug(
+    `Highest severity found: ${highestFoundSeverity} (index: ${highestIndex})`
+  );
+  task.debug(
+    `Severity threshold: ${severityThreshold} (index: ${severityThresholdIndex})`
+  );
+
+  return (
+    severityThresholdIndex >= 0 &&
+    highestIndex >= 0 &&
+    highestIndex >= severityThresholdIndex
+  );
+}
+
 function checkScanResult(exitCode: number, inputs: TaskInputs) {
+  task.debug(`Trivy scan completed with exit code: ${exitCode}`);
+
   if (exitCode === 0) {
     task.setResult(task.TaskResult.Succeeded, 'No issues found.');
-  } else if (exitCode === 2 && inputs.ignoreScanErrors) {
+    return;
+  }
+
+  const isHighestSeverityBreached = highestSeverityBreached(
+    inputs,
+    resultsFilePath
+  );
+
+  task.debug(`Highest severity breached: ${isHighestSeverityBreached}`);
+  if (exitCode === 2 && inputs.ignoreScanErrors && isHighestSeverityBreached) {
     task.setResult(task.TaskResult.SucceededWithIssues, 'Issues found.');
-  } else if (exitCode === 2 && !inputs.ignoreScanErrors) {
+  } else if (
+    exitCode === 2 &&
+    !inputs.ignoreScanErrors &&
+    isHighestSeverityBreached
+  ) {
     task.setResult(task.TaskResult.Failed, 'Issues found.');
+  } else if (exitCode === 2 && !highestSeverityBreached) {
+    task.setResult(task.TaskResult.Succeeded, 'No issues found.');
   } else {
     task.setResult(task.TaskResult.Failed, 'Trivy runner error.', true);
   }
