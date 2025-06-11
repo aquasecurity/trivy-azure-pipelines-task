@@ -144,10 +144,7 @@ function checkScanResult(exitCode: number, inputs: TaskInputs) {
     if (isHighestSeverityBreached) {
       task.setResult(task.TaskResult.Failed, 'Issues found.');
     } else {
-      task.setResult(
-        task.TaskResult.Succeeded,
-        'No issues found.'
-      );
+      task.setResult(task.TaskResult.Succeeded, 'No issues found.');
     }
     return;
   } else {
