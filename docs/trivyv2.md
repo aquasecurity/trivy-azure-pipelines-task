@@ -35,14 +35,15 @@ For more information about creating the connected service, see [Configuring Aqua
 
 ### Scan Options
 
-| Input              | Type     | Defaults | Description                                                                                                                        |
-| ------------------ | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `type`             | pickList |          | The type of scan to perform. Options: `filesystem`, `image`, `repository`.                                                         |
-| `target`           | string   |          | The specified target will be scanned using the selected scan type.                                                                 |
-| `scanners`         | pickList |          | Choose which scanners to run. Options: `license`, `misconfig`, `secret`, `vuln`. Multi-select is supported.                        |
-| `severities`       | pickList |          | Severities of security issues to be displayed. Options: `UNKNOWN`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`. Multi-select is supported. |
-| `ignoreUnfixed`    | boolean  | false    | Include only fixed vulnerabilities.                                                                                                |
-| `ignoreScanErrors` | boolean  | false    | Ignore scan errors and continue the pipeline with a `SucceededWithIssues` result.                                                  |
+| Input                     | Type     | Defaults | Description                                                                                                                                                                                                                                                   |
+| ------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`                    | pickList |          | The type of scan to perform. Options: `filesystem`, `image`, `repository`.                                                                                                                                                                                    |
+| `target`                  | string   |          | The specified target will be scanned using the selected scan type.                                                                                                                                                                                            |
+| `scanners`                | pickList |          | Choose which scanners to run. Options: `license`, `misconfig`, `secret`, `vuln`. Multi-select is supported.                                                                                                                                                   |
+| `severities`              | pickList |          | Severities of security issues to be displayed. Options: `UNKNOWN`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`. Multi-select is supported.                                                                                                                            |
+| `ignoreUnfixed`           | boolean  | false    | Include only fixed vulnerabilities.                                                                                                                                                                                                                           |
+| `failOnSeverityThreshold` | pickList |          | Set a threshold for failing the task based on the highest severity level found during the scan. If set, the task will fail if any issue with a severity equal to or higher than this level is found. Options: `UNKNOWN`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`. |
+| `ignoreScanErrors`        | boolean  | false    | Ignore scan errors and continue the pipeline with a `SucceededWithIssues` result.                                                                                                                                                                             |
 
 ---
 

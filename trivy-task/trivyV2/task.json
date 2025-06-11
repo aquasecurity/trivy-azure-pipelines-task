@@ -10,8 +10,8 @@
   "author": "Aqua Security",
   "version": {
     "Major": 2,
-    "Minor": 4,
-    "Patch": 0
+    "Minor": 5,
+    "Patch": 2
   },
   "instanceNameFormat": "Echo trivy $(version)",
   "groups": [
@@ -170,6 +170,26 @@
       "defaultValue": "false",
       "required": false,
       "helpMarkDown": "Ignore scan errors and continue the pipeline with `SucceededWithIssues` result."
+    },
+    {
+      "groupName": "scanInput",
+      "name": "failOnSeverityThreshold",
+      "type": "pickList",
+      "label": "Fail on Severity Level Threshold",
+      "defaultValue": "",
+      "required": false,
+      "options": {
+        "UNKNOWN": "UNKNOWN",
+        "LOW": "LOW",
+        "MEDIUM": "MEDIUM",
+        "HIGH": "HIGH",
+        "CRITICAL": "CRITICAL"
+      },
+      "helpMarkDown": "Set a threshold for failing the task based on the highest severity level found during the scan. If set, the task will fail if any issue with a severity equal to or higher than this level is found.",
+      "properties": {
+        "EditableOptions": "False",
+        "MultiSelectFlatList": "False"
+      }
     },
     {
       "groupName": "reportsInput",

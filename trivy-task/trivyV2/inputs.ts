@@ -15,6 +15,7 @@ export type TaskInputs = {
   ignoreUnfixed: boolean;
   showSuppressed: boolean;
   ignoreScanErrors: boolean;
+  failOnSeverityThreshold: string;
   hasAquaAccount: boolean;
   aquaKey?: string;
   aquaSecret?: string;
@@ -45,6 +46,8 @@ export function getTaskInputs(): TaskInputs {
     ignoreUnfixed: task.getBoolInput('ignoreUnfixed', false),
     showSuppressed: task.getBoolInput('showSuppressed', false),
     ignoreScanErrors: task.getBoolInput('ignoreScanErrors', false),
+    failOnSeverityThreshold:
+      task.getInput('failOnSeverityThreshold', false) ?? '',
     reports: task.getDelimitedInput('reports', ',').map((s) => s.trim()),
     publish: task.getBoolInput('publish', false),
     templates: task.getInput('templates', false),
