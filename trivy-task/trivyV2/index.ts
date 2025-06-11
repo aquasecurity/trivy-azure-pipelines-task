@@ -146,7 +146,7 @@ function checkScanResult(exitCode: number, inputs: TaskInputs) {
     } else {
       task.setResult(
         task.TaskResult.Succeeded,
-        'Issues found but ignoring scan errors as per configuration.'
+        'No issues found.'
       );
     }
     return;
