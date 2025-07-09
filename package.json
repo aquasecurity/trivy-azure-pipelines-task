@@ -12,7 +12,7 @@
     "ci:v2": "npm ci --prefix trivy-task/trivyV2",
     "package": "npm run clean && tfx extension create --manifest-js vss-manifest.js",
     "publish": "npm run clean && npm run build && tfx extension publish --manifest-js vss-manifest.js --auth-type pat --token $PUBLISHER_TOKEN",
-    "clean": "rimraf *.vsix",
+    "clean": "rimraf --glob '*.vsix'",
     "start:dev": "npm run start:dev --prefix ui"
   },
   "devDependencies": {
