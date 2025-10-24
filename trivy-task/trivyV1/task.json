@@ -87,6 +87,16 @@
       "visibleRule": "docker = false"
     },
     {
+      "name": "trivyUrl",
+      "type": "string",
+      "label": "Custom Trivy Download URL",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Specify a custom URL to download Trivy from. If this option is used, the 'version' option is ignored.",
+      "groupName": "trivyRunner",
+      "visibleRule": "useSystemInstallation = false && docker = false"
+    },
+    {
       "name": "version",
       "type": "string",
       "label": "Trivy Version",

@@ -19,7 +19,7 @@ export async function createRunner(inputs: TaskInputs): Promise<ToolRunner> {
   if (inputs.useSystem) {
     console.log('Run requested using system Trivy binary...');
   } else {
-    await installTrivy(inputs.version);
+    await installTrivy(inputs);
   }
   return task.tool('trivy');
 }

@@ -21,6 +21,7 @@ export type TaskInputs = {
   aquaSecret?: string;
   aquaUrl?: string;
   authUrl?: string;
+  trivyUrl?: string;
 };
 
 /**
@@ -68,5 +69,6 @@ export function getTaskInputs(): TaskInputs {
       'authUrl',
       true
     ),
+    trivyUrl: task.getInput('trivyUrl', false) ?? '',
   };
 }
