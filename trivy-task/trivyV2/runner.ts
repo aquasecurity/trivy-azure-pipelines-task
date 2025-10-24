@@ -14,7 +14,7 @@ export async function createRunner(inputs: TaskInputs): Promise<ToolRunner> {
     case 'docker':
       return dockerRunner(inputs);
     case 'install':
-      await installTrivy(inputs.version);
+      await installTrivy(inputs);
       return task.tool('trivy');
     case 'system':
       console.log('Run requested using system Trivy binary...');

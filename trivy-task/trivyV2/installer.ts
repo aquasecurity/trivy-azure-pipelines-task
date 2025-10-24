@@ -2,31 +2,32 @@ import os from 'os';
 import tool = require('azure-pipelines-tool-lib');
 import task = require('azure-pipelines-task-lib/task');
 import { stripV } from './utils';
+import { TaskInputs } from './inputs';
 
 const fallbackVersion = 'v0.60.0';
 const releasesUri = 'https://github.com/aquasecurity/trivy/releases';
 let isInstalled = false;
 
-export async function installTrivy(version: string) {
+export async function installTrivy(inputs: TaskInputs): Promise<void> {
   if (isInstalled) {
     // Skip installation if already installed
     return;
   }
 
-  console.log(`Requested Trivy version to install: ${version}`);
-  if (version === 'latest') {
-    version = await getLatestVersion();
+  console.log(`Requested Trivy version to install: ${inputs.version}`);
+  if (inputs.version === 'latest') {
+    inputs.version = await getLatestVersion();
   }
 
-  let cachedPath = tool.findLocalTool('trivy', version);
+  let cachedPath = tool.findLocalTool('trivy', inputs.version);
   if (!cachedPath) {
-    const url = await getArtifactURL(version);
+    const url = await getArtifactURL(inputs);
     const downloadPath = await tool.downloadTool(url);
     const extractPath =
       getPlatform() === 'windows'
         ? await tool.extractZip(downloadPath)
         : await tool.extractTar(downloadPath);
-    cachedPath = await tool.cacheDir(extractPath, 'trivy', version);
+    cachedPath = await tool.cacheDir(extractPath, 'trivy', inputs.version);
   }
   tool.prependPath(cachedPath);
   isInstalled = true;
@@ -49,11 +50,16 @@ async function getLatestVersion(): Promise<string> {
   return version;
 }
 
-async function getArtifactURL(version: string): Promise<string> {
+async function getArtifactURL(inputs: TaskInputs): Promise<string> {
+  if (inputs.trivyUrl) {
+    console.log(`Using custom Trivy URL: ${inputs.trivyUrl}`);
+    return inputs.trivyUrl;
+  }
+
   const arch = getArchitecture();
   const platform = getPlatform();
   const extension = platform === 'windows' ? '.zip' : '.tar.gz';
-  return `${releasesUri}/download/${version}/trivy_${stripV(version)}_${platform}-${arch}${extension}`;
+  return `${releasesUri}/download/${inputs.version}/trivy_${stripV(inputs.version)}_${platform}-${arch}${extension}`;
 }
 
 function getArchitecture(): string {

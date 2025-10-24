@@ -25,6 +25,7 @@ export type TaskInputs = {
   spdxjsonOutput?: boolean;
   tableOutput?: boolean;
   options: string;
+  trivyUrl?: string;
 };
 
 /**
@@ -56,6 +57,7 @@ export function getTaskInputs(): TaskInputs {
     spdxjsonOutput: task.getBoolInput('spdxjsonOutput', false),
     tableOutput: task.getBoolInput('tableOutput', false),
     options: task.getInput('options', false) ?? '',
+    trivyUrl: task.getInput('trivyUrl', false) ?? '',
   };
   validateInputs(inputs);
   return inputs;
