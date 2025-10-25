@@ -15,7 +15,7 @@ export async function installTrivy(inputs: TaskInputs): Promise<void> {
   }
 
   // if using the trivyUrl input, skip version resolution
-  if (inputs.trivyUrl === '') {
+  if (!inputs.trivyUrl) {
     console.log(`Requested Trivy version to install: ${inputs.version}`);
     if (inputs.version === 'latest') {
       inputs.version = await getLatestVersion();
