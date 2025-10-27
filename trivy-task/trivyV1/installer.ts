@@ -13,9 +13,12 @@ export async function installTrivy(inputs: TaskInputs) {
     return;
   }
 
-  console.log(`Requested Trivy version to install: ${inputs.version}`);
-  if (inputs.version === 'latest') {
-    inputs.version = await getLatestVersion();
+  // if using the trivyUrl input, skip version resolution
+  if (!inputs.trivyUrl) {
+    console.log(`Requested Trivy version to install: ${inputs.version}`);
+    if (inputs.version === 'latest') {
+      inputs.version = await getLatestVersion();
+    }
   }
 
   let cachedPath = tool.findLocalTool('trivy', inputs.version);
