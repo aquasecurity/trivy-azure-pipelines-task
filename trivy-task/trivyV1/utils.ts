@@ -26,6 +26,7 @@ export type TaskInputs = {
   tableOutput?: boolean;
   options: string;
   trivyUrl?: string;
+  skipDownloadCertificateChecking: boolean;
 };
 
 /**
@@ -58,6 +59,10 @@ export function getTaskInputs(): TaskInputs {
     tableOutput: task.getBoolInput('tableOutput', false),
     options: task.getInput('options', false) ?? '',
     trivyUrl: task.getInput('trivyUrl', false) ?? '',
+    skipDownloadCertificateChecking: task.getBoolInput(
+      'skipDownloadCertificateChecking',
+      false
+    ),
   };
   validateInputs(inputs);
   return inputs;

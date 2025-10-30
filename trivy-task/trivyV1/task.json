@@ -97,6 +97,16 @@
       "visibleRule": "useSystemInstallation = false && docker = false"
     },
     {
+      "groupName": "runnerInput",
+      "name": "skipDownloadCertificateChecking",
+      "type": "boolean",
+      "label": "Skip Download Certificate Checking",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "Skip the certificate checking when downloading Trivy from a custom URL. This is useful when the custom URL is self-signed or has a certificate that is not trusted by the system but care should be taken to ensure the security of the system.",
+      "visibleRule": "trivyUrl != \"\""
+    },
+    {
       "name": "version",
       "type": "string",
       "label": "Trivy Version",

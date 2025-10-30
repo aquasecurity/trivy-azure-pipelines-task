@@ -24,7 +24,15 @@ export async function installTrivy(inputs: TaskInputs) {
   let cachedPath = tool.findLocalTool('trivy', inputs.version);
   if (!cachedPath) {
     const url = await getArtifactURL(inputs);
+    // set the environment variable to skip certificate checking
+    if (inputs.trivyUrl && inputs.skipDownloadCertificateChecking) {
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    }
     const downloadPath = await tool.downloadTool(url);
+    // clean up after the installation has completed
+    if (inputs.trivyUrl && inputs.skipDownloadCertificateChecking) {
+      delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+    }
     const extractPath =
       getPlatform() === 'windows'
         ? await tool.extractZip(downloadPath)
