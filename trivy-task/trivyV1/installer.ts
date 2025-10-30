@@ -24,7 +24,25 @@ export async function installTrivy(inputs: TaskInputs) {
   let cachedPath = tool.findLocalTool('trivy', inputs.version);
   if (!cachedPath) {
     const url = await getArtifactURL(inputs);
+
+    if (inputs.trivyUrl && inputs.customCaCertPath) {
+      console.log(`Using custom CA certificate: ${inputs.customCaCertPath}`);
+      process.env.NODE_EXTRA_CA_CERTS = inputs.customCaCertPath;
+    } else if (inputs.trivyUrl && inputs.skipDownloadCertificateChecking) {
+      task.warning(
+        '⚠️  Certificate validation is disabled for Trivy download. This is insecure and should only be used in trusted environments.'
+      );
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    }
+
     const downloadPath = await tool.downloadTool(url);
+
+    if (inputs.trivyUrl && inputs.customCaCertPath) {
+      delete process.env.NODE_EXTRA_CA_CERTS;
+    } else if (inputs.trivyUrl && inputs.skipDownloadCertificateChecking) {
+      delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+    }
+
     const extractPath =
       getPlatform() === 'windows'
         ? await tool.extractZip(downloadPath)

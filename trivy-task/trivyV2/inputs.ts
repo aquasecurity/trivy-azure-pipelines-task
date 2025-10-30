@@ -22,6 +22,8 @@ export type TaskInputs = {
   aquaUrl?: string;
   authUrl?: string;
   trivyUrl?: string;
+  customCaCertPath?: string;
+  skipDownloadCertificateChecking: boolean;
 };
 
 /**
@@ -70,5 +72,10 @@ export function getTaskInputs(): TaskInputs {
       true
     ),
     trivyUrl: task.getInput('trivyUrl', false) ?? '',
+    customCaCertPath: task.getPathInput('customCaCertPath', false),
+    skipDownloadCertificateChecking: task.getBoolInput(
+      'skipDownloadCertificateChecking',
+      false
+    ),
   };
 }
