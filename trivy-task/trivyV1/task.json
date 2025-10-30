@@ -107,7 +107,7 @@
       "visibleRule": "trivyUrl != \"\""
     },
     {
-      "groupName": "runnerInput",
+      "groupName": "trivyRunner",
       "name": "skipDownloadCertificateChecking",
       "type": "boolean",
       "label": "Skip Download Certificate Checking",
