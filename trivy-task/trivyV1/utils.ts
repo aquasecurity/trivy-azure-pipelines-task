@@ -60,7 +60,7 @@ export function getTaskInputs(): TaskInputs {
     tableOutput: task.getBoolInput('tableOutput', false),
     options: task.getInput('options', false) ?? '',
     trivyUrl: task.getInput('trivyUrl', false) ?? '',
-    customCaCertPath: task.getPathInput('customCaCertPath', false),
+    customCaCertPath: task.getInput('customCaCertPath', false) ?? undefined,
     skipDownloadCertificateChecking: task.getBoolInput(
       'skipDownloadCertificateChecking',
       false
