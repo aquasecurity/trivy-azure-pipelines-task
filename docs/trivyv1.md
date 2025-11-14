@@ -80,7 +80,11 @@ These are available from the results header section or from the Trivy results pa
 
 ## Output Variables
 
-Output variables allow you to get information from previous sections of the pipeline
+Output variables allow you to access report file paths in subsequent pipeline steps.
+
+When you enable report outputs (via `cosignOutput`, `cyclonedxOutput`, etc.), the task exports output variables containing the file paths to the generated reports.
+
+Each report format has a corresponding output variable named `{format}Report`. To access these in subsequent tasks, use the format `$(taskName.outputVariable)`.
 
 | Output            | Description                                     |
 | ----------------- | ----------------------------------------------- |
@@ -91,6 +95,29 @@ Output variables allow you to get information from previous sections of the pipe
 | `spdxReport`      | Output path for the SPDX report                 |
 | `spdxjsonReport`  | Output path for the SPDX JSON report            |
 | `tableReport`     | Output path for the table report                |
+
+### Example: Using Output Variables
+
+```yaml
+steps:
+  - task: trivy@1
+    name: TrivyScan
+    inputs:
+      path: .
+      jsonOutput: true
+      sarifOutput: true
+      junitOutput: true
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '$(TrivyScan.junitReport)'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(TrivyScan.sarifReport)'
+      ArtifactName: 'SARIF Results'
+```
 
 ### Example of scanning multiple targets
 
