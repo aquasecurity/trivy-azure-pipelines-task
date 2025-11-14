@@ -58,6 +58,32 @@ For more information about creating the connected service, see [Configuring Aqua
 | `publish`   | boolean  | false    | Publish generated reports as pipeline artifacts.                                                                                                                                                                                  |
 | `templates` | string   |          | Specify a custom directory containing templates for the ASFF, HTML, JUnit reports. If not set, will look up in the `contrib` directory of the Trivy installation. Visible only when `method = system` and `reports` is not empty. |
 
+---
+
+## Output Variables
+
+Report file paths are exported as output variables for use in subsequent pipeline tasks.
+
+The task always generates a JSON report and exports its path via `jsonReport`. Additional report formats specified in the `reports` input also have their file paths exported.
+
+Each report format has a corresponding output variable named `{format}Report`. To access these in subsequent tasks, use the format `$(taskName.outputVariable)`.
+
+| Output            | Description                                        |
+| ----------------- | -------------------------------------------------- |
+| `asffReport`      | Output path for the ASFF report                    |
+| `cosignReport`    | Output path for the Cosign vulnerability report    |
+| `cyclonedxReport` | Output path for the CycloneDX report               |
+| `githubReport`    | Output path for the GitHub SBOM report             |
+| `htmlReport`      | Output path for the HTML report                    |
+| `jsonReport`      | Output path for the JSON report (always generated) |
+| `junitReport`     | Output path for the JUnit report                   |
+| `sarifReport`     | Output path for the SARIF report                   |
+| `spdxReport`      | Output path for the SPDX report                    |
+| `spdxjsonReport`  | Output path for the SPDX JSON report               |
+| `tableReport`     | Output path for the table report                   |
+
+---
+
 ## Examples
 
 ### Scanning multiple targets and publish results as test run
