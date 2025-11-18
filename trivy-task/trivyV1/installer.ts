@@ -25,23 +25,18 @@ export async function installTrivy(inputs: TaskInputs) {
   if (!cachedPath) {
     const url = await getArtifactURL(inputs);
 
-    if (inputs.trivyUrl && inputs.customCaCertPath) {
-      console.log(`Using custom CA certificate: ${inputs.customCaCertPath}`);
-      process.env.NODE_EXTRA_CA_CERTS = inputs.customCaCertPath;
-    } else if (inputs.trivyUrl && inputs.skipDownloadCertificateChecking) {
-      task.warning(
-        '⚠️  Certificate validation is disabled for Trivy download. This is insecure and should only be used in trusted environments.'
+    if (process.env.NODE_EXTRA_CA_CERTS) {
+      task.debug(
+        `NODE_EXTRA_CA_CERTS is set: ${process.env.NODE_EXTRA_CA_CERTS}`
       );
-      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    }
+    if (process.env.NODE_TLS_REJECT_UNAUTHORIZED) {
+      task.debug(
+        `NODE_TLS_REJECT_UNAUTHORIZED is set: ${process.env.NODE_TLS_REJECT_UNAUTHORIZED}`
+      );
     }
 
     const downloadPath = await tool.downloadTool(url);
-
-    if (inputs.trivyUrl && inputs.customCaCertPath) {
-      delete process.env.NODE_EXTRA_CA_CERTS;
-    } else if (inputs.trivyUrl && inputs.skipDownloadCertificateChecking) {
-      delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
-    }
 
     const extractPath =
       getPlatform() === 'windows'
@@ -72,6 +67,11 @@ async function getLatestVersion(): Promise<string> {
 
 async function getArtifactURL(inputs: TaskInputs): Promise<string> {
   if (inputs.trivyUrl) {
+    if (inputs.version === 'latest') {
+      // fail the task because a specific version is required when using a custom URL
+      throw new Error('A specific version is required when using a custom URL');
+    }
+
     console.log(`Using custom Trivy URL: ${inputs.trivyUrl}`);
     return inputs.trivyUrl;
   }

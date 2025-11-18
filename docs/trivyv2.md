@@ -24,15 +24,19 @@ For more information about creating the connected service, see [Configuring Aqua
 
 ### Trivy Runner
 
-| Input                             | Type     | Defaults | Description                                                                                                                                                                                                                       |
-| --------------------------------- | -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `method`                          | pickList | install  | Specify how Trivy should be executed: `install` to download Trivy from GitHub releases, `docker` to run Trivy as a Docker container, or `system` to use a pre-installed Trivy executable.                                         |
-| `image`                           | string   |          | Specify a custom Trivy Docker image to use. If set, the `version` option is ignored. Visible only when `method = docker`.                                                                                                         |
-| `trivyUrl`                        | string   |          | Specify a custom URL to download Trivy from (e.g., internal mirror/proxy). If set, the 'version' option is ignored. Only visible when not using system installation or Docker mode.                                               |
-| `customCaCertPath`                | string   |          | Path to a custom CA certificate file on the agent to trust when downloading Trivy. **RECOMMENDED** approach for self-signed certificates. Only visible when `trivyUrl` is set.                                                    |
-| `skipDownloadCertificateChecking` | bool     | false    | Skip TLS certificate validation when downloading Trivy. **WARNING:** Insecure - only use in trusted environments when CA cert is unavailable. Only use if `customCaCertPath` cannot be used. Only visible when `trivyUrl` is set. |
-| `version`                         | string   | latest   | Specify the version of Trivy to use. Ignored if a custom Trivy Docker image is specified. Visible unless `method = system` or `image` is set.                                                                                     |
-| `options`                         | string   |          | Provide additional command-line options to pass to the Trivy executable.                                                                                                                                                          |
+| Input      | Type     | Defaults | Description                                                                                                                                                                               |
+| ---------- | -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `method`   | pickList | install  | Specify how Trivy should be executed: `install` to download Trivy from GitHub releases, `docker` to run Trivy as a Docker container, or `system` to use a pre-installed Trivy executable. |
+| `image`    | string   |          | Specify a custom Trivy Docker image to use. If set, the `version` option is ignored. Visible only when `method = docker`.                                                                 |
+| `trivyUrl` | string   |          | Specify a custom URL to download Trivy from (e.g., internal mirror/proxy). **IMPORTANT**: Must include a specific version in the URL (e.g., `v0.60.0`), `latest` will not work.           |
+| `version`  | string   | latest   | Specify the version of Trivy to use. Ignored if a custom Trivy Docker image is specified. Visible unless `method = system` or `image` is set.                                             |
+| `options`  | string   |          | Provide additional command-line options to pass to the Trivy executable.                                                                                                                  |
+
+> [!NOTE]
+> For custom CA certificates or to skip SSL checking when downloading Trivy, use environment variables:
+>
+> - `NODE_EXTRA_CA_CERTS`: Path to custom CA certificate file for self-signed certificates (recommended approach)
+> - `NODE_TLS_REJECT_UNAUTHORIZED`: Set to `0` to skip certificate validation (insecure, use only in trusted environments)
 
 ---
 
@@ -166,13 +170,16 @@ steps:
       publish: true
 ```
 
-### Using Custom Download URL with Self-Signed Certificates
+### Using Custom Download URL
 
-If you're downloading Trivy from an internal mirror or proxy with self-signed certificates, you have two options:
+When using `trivyUrl` to download Trivy from an internal mirror or proxy:
+
+> [!IMPORTANT]
+> The `trivyUrl` must include a specific version (e.g., `v0.60.0`). Using `latest` in the URL will not work.
 
 #### Option 1: Custom CA Certificate (Recommended)
 
-Upload your CA certificate to the agent machine and provide the path:
+Upload your CA certificate to the agent machine and set the `NODE_EXTRA_CA_CERTS` environment variable:
 
 ```yaml
 steps:
@@ -180,10 +187,11 @@ steps:
     inputs:
       method: 'install'
       trivyUrl: 'https://internal-mirror.company.com/trivy/releases/download/v0.60.0/trivy_0.60.0_Linux-64bit.tar.gz'
-      customCaCertPath: '/etc/ssl/certs/company-ca.crt'
       type: 'filesystem'
       target: '.'
       scanners: 'vuln,misconfig,secret'
+    env:
+      NODE_EXTRA_CA_CERTS: '/etc/ssl/certs/company-ca.crt'
 ```
 
 #### Option 2: Skip Certificate Validation (Not Recommended)
@@ -196,11 +204,12 @@ steps:
     inputs:
       method: 'install'
       trivyUrl: 'https://internal-mirror.company.com/trivy/releases/download/v0.60.0/trivy_0.60.0_Linux-64bit.tar.gz'
-      skipDownloadCertificateChecking: true
       type: 'filesystem'
       target: '.'
       scanners: 'vuln,misconfig,secret'
+    env:
+      NODE_TLS_REJECT_UNAUTHORIZED: '0'
 ```
 
 > [!WARNING]
-> Only use `skipDownloadCertificateChecking: true` in trusted environments. This disables certificate validation and is inherently insecure. Always prefer using `customCaCertPath` when possible.
+> Only use `NODE_TLS_REJECT_UNAUTHORIZED: '0'` in trusted environments. This disables certificate validation and is inherently insecure. Always prefer using `NODE_EXTRA_CA_CERTS` when possible.

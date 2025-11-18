@@ -10,7 +10,7 @@
   "author": "Aqua Security",
   "version": {
     "Major": 2,
-    "Minor": 6,
+    "Minor": 7,
     "Patch": 1
   },
   "instanceNameFormat": "Echo trivy $(version)",
@@ -71,7 +71,7 @@
       "label": "Custom Trivy Download URL",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "Specify a custom URL to download Trivy from. If this option is used, the 'version' option is ignored.",
+      "helpMarkDown": "Specify a custom URL to download Trivy from. If this option is used, the 'version' must be set to a specific version.",
       "visibleRule": "method != system && method != docker"
     },
     {
