@@ -10,7 +10,7 @@
   "author": "Aqua Security",
   "version": {
     "Major": 1,
-    "Minor": 19,
+    "Minor": 20,
     "Patch": 1
   },
   "instanceNameFormat": "Echo trivy $(version)",
@@ -92,29 +92,9 @@
       "label": "Custom Trivy Download URL",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "Specify a custom URL to download Trivy from. If this option is used, the 'version' option is ignored.",
+      "helpMarkDown": "Specify a custom URL to download Trivy from. If this option is used, the 'version' must be set to a specific version.",
       "groupName": "trivyRunner",
       "visibleRule": "useSystemInstallation = false && docker = false"
-    },
-    {
-      "name": "customCaCertPath",
-      "type": "filePath",
-      "label": "Custom CA Certificate Path",
-      "defaultValue": "",
-      "required": false,
-      "helpMarkDown": "Path to a custom CA certificate file on the agent to trust when downloading Trivy. This is the recommended approach for self-signed certificates.",
-      "groupName": "trivyRunner",
-      "visibleRule": "trivyUrl != \"\""
-    },
-    {
-      "groupName": "trivyRunner",
-      "name": "skipDownloadCertificateChecking",
-      "type": "boolean",
-      "label": "Skip Download Certificate Checking",
-      "defaultValue": false,
-      "required": false,
-      "helpMarkDown": "Skip the certificate checking when downloading Trivy from a custom URL. This is useful when the custom URL is self-signed or has a certificate that is not trusted by the system but care should be taken to ensure the security of the system.",
-      "visibleRule": "trivyUrl != \"\""
     },
     {
       "name": "version",
