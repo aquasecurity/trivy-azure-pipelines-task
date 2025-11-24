@@ -29,6 +29,10 @@
   margin-left: 0 !important;
 }
 
+.bolt-textfield-input {
+  color: var(--text-primary-color)
+}
+
 .bolt-dropdown-list-box-container ul {
   padding-left: 2px !important;
 }
