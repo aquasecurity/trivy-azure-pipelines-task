@@ -1,8 +1,8 @@
 import os from 'os';
 import tool = require('azure-pipelines-tool-lib');
 import task = require('azure-pipelines-task-lib/task');
-import { stripV } from './utils';
 import { TaskInputs } from './inputs';
+import { stripV } from './utils';
 
 const fallbackVersion = 'v0.60.0';
 const releasesUri = 'https://github.com/aquasecurity/trivy/releases';
@@ -79,8 +79,8 @@ async function getArtifactURL(inputs: TaskInputs): Promise<string> {
 
   const arch = getArchitecture();
   const platform = getPlatform();
-  const extension = platform === 'windows' ? '.zip' : '.tar.gz';
-  return `${releasesUri}/download/${inputs.version}/trivy_${stripV(inputs.version)}_${platform}-${arch}${extension}`;
+  const extension = platform === 'windows' ? 'zip' : 'tar.gz';
+  return `https://get.trivy.dev/trivy?client=azure-pipeline&version=${stripV(inputs.version)}&os=${platform}&arch=${arch}&type=${extension}`;
 }
 
 function getArchitecture(): string {
