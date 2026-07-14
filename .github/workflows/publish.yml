@@ -16,6 +16,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Install file utility for extension packaging
+        run: |
+          if ! command -v file >/dev/null 2>&1; then
+            if command -v apt-get >/dev/null 2>&1; then
+              sudo apt-get update -qq && sudo apt-get install -y file
+            elif command -v apk >/dev/null 2>&1; then
+              sudo apk add --no-cache file
+            else
+              echo "file command not found and no supported package manager available"
+              exit 1
+            fi
+          fi
       - run: npm run package
         env:
           RELEASE_VERSION: '${{ github.ref_name }}'

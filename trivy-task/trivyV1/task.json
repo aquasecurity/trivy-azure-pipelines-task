@@ -11,7 +11,7 @@
   "version": {
     "Major": 1,
     "Minor": 20,
-    "Patch": 3
+    "Patch": 4
   },
   "instanceNameFormat": "Echo trivy $(version)",
   "groups": [
