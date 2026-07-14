@@ -23,6 +23,11 @@ import { Report, AssuranceReport } from './trivy';
 import { Loading } from './Loading';
 import { ReportsPane } from './ReportsPane';
 import { Crash } from './Crash';
+import {
+  formatApiError,
+  getOptionalAttachments,
+  parseAttachmentSelfLink,
+} from './attachmentUtils';
 
 type AppState = {
   status: TimelineRecordState;
@@ -140,31 +145,33 @@ export class App extends React.Component<AppProps, AppState> {
     };
     type ReportType = keyof typeof reportTypes;
 
-    // get all supported report attachments for the build once
-    const additionalAttachments: Attachment[] = [];
-    for (const key of Object.keys(reportTypes)) {
-      const reportAttachments = await this.buildClient.getAttachments(
-        this.project.id,
-        build.id,
-        key
-      );
-      additionalAttachments.push(...reportAttachments);
-    }
+    const additionalAttachments = await getOptionalAttachments(
+      this.buildClient,
+      this.project.id,
+      build.id,
+      Object.keys(reportTypes)
+    );
 
-    jsonAttachments.forEach(
-      async function (attachment: Attachment) {
-        // get the record id from attachment url
-        const jsonAttachementUrl = attachment._links.self.href;
-        // handle legacy url https://{organization}.visualstudio.com
-        const recordId = jsonAttachementUrl.includes('dev.azure.com')
-          ? jsonAttachementUrl.split('/')[10]
-          : jsonAttachementUrl.split('/')[9];
-        // get the record from the timeline
-        const record = records.find((record) => record.id === recordId);
+    await Promise.all(
+      jsonAttachments.map(async (attachment: Attachment) => {
+        const parsedAttachment = parseAttachmentSelfLink(
+          attachment._links.self.href
+        );
+        if (!parsedAttachment) {
+          console.log(
+            `Unable to parse attachment URL for: ${attachment.name}`
+          );
+          return;
+        }
+
+        const record = records.find(
+          (timelineRecord) => timelineRecord.id === parsedAttachment.recordId
+        );
         if (!record) {
           console.log(`Record not found for attachment: ${attachment.name}`);
           return;
         }
+
         try {
           const buffer = await this.buildClient.getAttachment(
             this.project.id,
@@ -182,30 +189,35 @@ export class App extends React.Component<AppProps, AppState> {
           if (record.name) {
             report.DisplayName = record.name;
           }
-          // Add json report to the report downloads by default
           report.DownloadReports.push({
             Name: 'JSON',
             Url: attachment._links.self.href,
           });
 
-          // check if there are any other attachments with the same record id
-          // and add them to the downloads
           additionalAttachments
             .filter((reportAttachment) =>
-              reportAttachment._links.self.href.includes(recordId)
+              reportAttachment._links.self.href.includes(
+                parsedAttachment.recordId
+              )
             )
             .forEach((reportAttachment) => {
-              // get the report type from attachment url
               const attachmentUrl = reportAttachment._links.self.href;
-              console.log(
-                `Found ${attachmentUrl} for report ${report.DisplayName}`
-              );
-              // handle legacy url https://{organization}.visualstudio.com
-              const attachmentType = attachmentUrl.includes('dev.azure.com')
-                ? attachmentUrl.split('/')[12]
-                : attachmentUrl.split('/')[11];
+              const parsedReportAttachment =
+                parseAttachmentSelfLink(attachmentUrl);
+              if (!parsedReportAttachment) {
+                return;
+              }
+
+              const reportType =
+                reportTypes[
+                  parsedReportAttachment.attachmentType as ReportType
+                ];
+              if (!reportType) {
+                return;
+              }
+
               report.DownloadReports.push({
-                Name: reportTypes[attachmentType as ReportType],
+                Name: reportType,
                 Url: attachmentUrl,
               });
             });
@@ -215,10 +227,10 @@ export class App extends React.Component<AppProps, AppState> {
           }));
         } catch (e) {
           console.log(
-            'Failed to decode results attachment ' + JSON.stringify(e)
+            'Failed to decode results attachment ' + formatApiError(e)
           );
         }
-      }.bind(this)
+      })
     );
 
     // check if we have assurance results
@@ -259,6 +271,25 @@ export class App extends React.Component<AppProps, AppState> {
     this.setState({ error: msg });
   }
 
+  async initializeAfterSdkReady() {
+    const buildPageService: IBuildPageDataService = await SDK.getService(
+      BuildServiceIds.BuildPageDataService
+    );
+    if (!buildPageService) {
+      this.setError('Failed to get build page data service.');
+      return;
+    }
+
+    this.buildPageData = await buildPageService.getBuildPageData();
+    const projectService = await SDK.getService<IProjectPageService>(
+      CommonServiceIds.ProjectPageService
+    );
+
+    this.project = await projectService.getProject();
+    this.buildClient = API.getClient(BuildRestClient);
+    await this.check();
+  }
+
   async componentDidMount() {
     setTimeout(
       function () {
@@ -268,39 +299,22 @@ export class App extends React.Component<AppProps, AppState> {
       }.bind(this),
       5000
     );
-    SDK.init()
-      .then(() => {
-        SDK.ready()
-          .then(async () => {
-            this.setState({ sdkReady: true });
-            const buildPageService: IBuildPageDataService =
-              await SDK.getService(BuildServiceIds.BuildPageDataService);
-            if (!buildPageService) {
-              this.setError('Failed to get build page data service.');
-              return;
-            }
-
-            this.buildPageData = await buildPageService.getBuildPageData();
-            const projectService = await SDK.getService<IProjectPageService>(
-              CommonServiceIds.ProjectPageService
-            );
-
-            this.project = await projectService.getProject();
-            this.buildClient = API.getClient(BuildRestClient);
-            await this.check();
-          })
-          .catch((e) =>
-            this.setError.bind(this)(
-              'Azure DevOps SDK failed to enter a ready state: ' +
-                JSON.stringify(e)
-            )
-          );
-      })
-      .catch((e) =>
-        this.setError.bind(this)(
-          'Azure DevOps SDK failed to initialise: ' + JSON.stringify(e)
-        )
+    try {
+      await SDK.init();
+      await SDK.ready();
+      this.setState({ sdkReady: true });
+      try {
+        await this.initializeAfterSdkReady();
+      } catch (e) {
+        this.setError(
+          'Failed to load Trivy results from Azure DevOps: ' + formatApiError(e)
+        );
+      }
+    } catch (e) {
+      this.setError(
+        'Azure DevOps SDK failed to enter a ready state: ' + formatApiError(e)
       );
+    }
   }
 
   decodeReport(buffer: ArrayBuffer): Report {
@@ -324,12 +338,19 @@ export class App extends React.Component<AppProps, AppState> {
   }
 
   render() {
-    return this.state.status == TimelineRecordState.Completed ? (
-      <ReportsPane
-        reports={this.state.reports}
-        assuranceReports={this.state.assuranceReports}
-      />
-    ) : this.state.error !== '' ? (
+    if (
+      this.state.status == TimelineRecordState.Completed ||
+      this.state.reports.length > 0
+    ) {
+      return (
+        <ReportsPane
+          reports={this.state.reports}
+          assuranceReports={this.state.assuranceReports}
+        />
+      );
+    }
+
+    return this.state.error !== '' ? (
       <Crash message={this.state.error} />
     ) : (
       <Loading status={this.state.status} />

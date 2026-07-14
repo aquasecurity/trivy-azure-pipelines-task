@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "tsc src/attachmentUtils.ts --outDir test-dist --esModuleInterop --skipLibCheck --module commonjs --target es2019 --moduleResolution node && node scripts/attachmentUtils.test.js",
     "build": "webpack --mode production",
     "build:dev": "webpack --mode development",
     "start:dev": "webpack-dev-server --mode development"

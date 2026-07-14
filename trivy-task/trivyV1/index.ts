@@ -43,11 +43,6 @@ async function run() {
 
   task.debug('Running Trivy...');
   const result = runner.execSync({ env });
-  if (result.code === 0) {
-    task.setResult(task.TaskResult.Succeeded, 'No problems found.');
-  } else {
-    task.setResult(task.TaskResult.Failed, 'Failed: Trivy detected problems.');
-  }
 
   if (hasAccount) {
     console.log('Publishing JSON assurance results...');
@@ -70,6 +65,12 @@ async function run() {
     task.error(
       'Trivy seems to have failed so no output path to generate reports from.'
     );
+  }
+
+  if (result.code === 0) {
+    task.setResult(task.TaskResult.Succeeded, 'No problems found.');
+  } else {
+    task.setResult(task.TaskResult.Failed, 'Failed: Trivy detected problems.');
   }
   console.log('Done!');
 }
