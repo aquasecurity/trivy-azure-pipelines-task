@@ -90,10 +90,7 @@ export class App extends React.Component<AppProps, AppState> {
       return;
     }
 
-    const timeline = await buildClient.getBuildTimeline(
-      projectId,
-      build.id
-    );
+    const timeline = await buildClient.getBuildTimeline(projectId, build.id);
     const records: TimelineRecord[] = [];
     timeline.records.forEach(function (record: TimelineRecord) {
       if (
@@ -160,9 +157,7 @@ export class App extends React.Component<AppProps, AppState> {
           attachment._links.self.href
         );
         if (!parsedAttachment) {
-          console.log(
-            `Unable to parse attachment URL for: ${attachment.name}`
-          );
+          console.log(`Unable to parse attachment URL for: ${attachment.name}`);
           return;
         }
 

@@ -48,10 +48,7 @@ async function run() {
   });
 
   test('parseAttachmentSelfLink returns null for unsupported URLs', () => {
-    assert.strictEqual(
-      parseAttachmentSelfLink('https://example.com/attachments'),
-      null
-    );
+    assert.strictEqual(parseAttachmentSelfLink('https://example.com/attachments'), null);
   });
 
   test('isNotFoundError detects Azure DevOps 404 errors', () => {

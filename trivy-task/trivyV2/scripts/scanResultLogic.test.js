@@ -1,8 +1,5 @@
 const assert = require('assert');
-const {
-  highestSeverityBreached,
-  resolveScanResult,
-} = require('../dist/scanResultLogic');
+const { highestSeverityBreached, resolveScanResult } = require('../dist/scanResultLogic');
 
 function test(name, fn) {
   try {
@@ -16,10 +13,7 @@ function test(name, fn) {
 
 test('highestSeverityBreached fails when threshold is UNKNOWN and vulns exist', () => {
   assert.strictEqual(
-    highestSeverityBreached(
-      { failOnSeverityThreshold: 'UNKNOWN', ignoreScanErrors: false },
-      'HIGH'
-    ),
+    highestSeverityBreached({ failOnSeverityThreshold: 'UNKNOWN', ignoreScanErrors: false }, 'HIGH'),
     true
   );
 });

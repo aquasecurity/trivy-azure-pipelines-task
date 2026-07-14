@@ -57,7 +57,10 @@ async function run() {
   await finalizeScan(result.code, inputs, resultsFilePath);
 }
 
-function configureScan(runner: ToolRunner, inputs: ReturnType<typeof getTaskInputs>) {
+function configureScan(
+  runner: ToolRunner,
+  inputs: ReturnType<typeof getTaskInputs>
+) {
   task.rmRF(resultsFilePath);
   console.log('Configuring options for image scan...');
   runner.arg(inputs.scanType);

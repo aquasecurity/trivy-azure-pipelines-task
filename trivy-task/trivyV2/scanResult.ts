@@ -30,9 +30,7 @@ export function checkScanResult(
     resultsFilePath
   );
 
-  task.debug(
-    `Highest severity breached: ${isHighestSeverityBreachedResult}`
-  );
+  task.debug(`Highest severity breached: ${isHighestSeverityBreachedResult}`);
   if (exitCode === 2 && inputs.ignoreScanErrors) {
     if (isHighestSeverityBreachedResult) {
       task.setResult(task.TaskResult.SucceededWithIssues, 'Issues found.');
