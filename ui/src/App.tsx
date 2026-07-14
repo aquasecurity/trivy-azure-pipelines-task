@@ -74,8 +74,10 @@ export class App extends React.Component<AppProps, AppState> {
       );
       return;
     }
-    const build = await this.buildClient.getBuild(
-      this.project.id,
+    const projectId = this.project.id;
+    const buildClient = this.buildClient;
+    const build = await buildClient.getBuild(
+      projectId,
       this.buildPageData.build.id
     );
     // if the build isn't running/finished, try again shortly
@@ -88,8 +90,8 @@ export class App extends React.Component<AppProps, AppState> {
       return;
     }
 
-    const timeline = await this.buildClient.getBuildTimeline(
-      this.project.id,
+    const timeline = await buildClient.getBuildTimeline(
+      projectId,
       build.id
     );
     const records: TimelineRecord[] = [];
@@ -116,8 +118,8 @@ export class App extends React.Component<AppProps, AppState> {
       setTimeout(this.check.bind(this), this.props.checkInterval);
       return;
     }
-    const jsonAttachments = await this.buildClient.getAttachments(
-      this.project.id,
+    const jsonAttachments = await buildClient.getAttachments(
+      projectId,
       build.id,
       'JSON_RESULT'
     );
@@ -146,8 +148,8 @@ export class App extends React.Component<AppProps, AppState> {
     type ReportType = keyof typeof reportTypes;
 
     const additionalAttachments = await getOptionalAttachments(
-      this.buildClient,
-      this.project.id,
+      buildClient,
+      projectId,
       build.id,
       Object.keys(reportTypes)
     );
@@ -173,8 +175,8 @@ export class App extends React.Component<AppProps, AppState> {
         }
 
         try {
-          const buffer = await this.buildClient.getAttachment(
-            this.project.id,
+          const buffer = await buildClient.getAttachment(
+            projectId,
             build.id,
             timeline.id,
             record.id,
@@ -234,8 +236,8 @@ export class App extends React.Component<AppProps, AppState> {
     );
 
     // check if we have assurance results
-    const assuranceAttachments = await this.buildClient.getAttachments(
-      this.project.id,
+    const assuranceAttachments = await buildClient.getAttachments(
+      projectId,
       build.id,
       'ASSURANCE_RESULT'
     );
@@ -245,8 +247,8 @@ export class App extends React.Component<AppProps, AppState> {
           records.forEach(
             async function (record: TimelineRecord) {
               try {
-                const buffer = await this.buildClient.getAttachment(
-                  this.project.id,
+                const buffer = await buildClient.getAttachment(
+                  projectId,
                   build.id,
                   timeline.id,
                   record.id,
