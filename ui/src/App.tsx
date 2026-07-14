@@ -115,10 +115,11 @@ export class App extends React.Component<AppProps, AppState> {
       setTimeout(this.check.bind(this), this.props.checkInterval);
       return;
     }
-    const jsonAttachments = await buildClient.getAttachments(
+    const jsonAttachments = await getOptionalAttachments(
+      buildClient,
       projectId,
       build.id,
-      'JSON_RESULT'
+      ['JSON_RESULT']
     );
     if (jsonAttachments.length === 0) {
       this.setState({
@@ -230,11 +231,11 @@ export class App extends React.Component<AppProps, AppState> {
       })
     );
 
-    // check if we have assurance results
-    const assuranceAttachments = await buildClient.getAttachments(
+    const assuranceAttachments = await getOptionalAttachments(
+      buildClient,
       projectId,
       build.id,
-      'ASSURANCE_RESULT'
+      ['ASSURANCE_RESULT']
     );
     if (assuranceAttachments.length > 0) {
       assuranceAttachments.forEach(

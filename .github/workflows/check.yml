@@ -16,6 +16,8 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm run build
+      - run: npm run test --prefix ui
+      - run: npm run test --prefix trivy-task/trivyV2
       - name: Install file utility for extension packaging
         run: |
           if ! command -v file >/dev/null 2>&1; then
