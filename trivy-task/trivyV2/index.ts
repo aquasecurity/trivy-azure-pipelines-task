@@ -3,9 +3,8 @@ import task = require('azure-pipelines-task-lib/task');
 import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner';
 import { randomUUID } from 'crypto';
 import { createRunner, tmpPath } from './runner';
-import { generateReports } from './reports';
-import { getTaskInputs, TaskInputs } from './inputs';
-import { getHighestSeverityLevel, severityLevels } from './utils';
+import { getTaskInputs } from './inputs';
+import { finalizeScan, publishAssuranceResults } from './taskFlow';
 
 const randomPrefix = randomUUID();
 const resultsFileName = `trivy-results-${randomPrefix}.json`;
@@ -15,17 +14,13 @@ const assuranceFilePath = path.join(tmpPath, assuranceFileName);
 
 async function run() {
   console.log('##[section]Starting Trivy task...');
-  // get the task inputs
   const inputs = getTaskInputs();
   task.debug(`Task inputs: ${JSON.stringify(inputs)}`);
 
-  // ensure the temp dir is created for the task
   task.mkdirP(tmpPath);
 
-  // copy the process env
   const env = { ...process.env };
 
-  // configure the environment variables for Aqua Plugin
   if (inputs.hasAquaAccount) {
     if (inputs.scanType === 'image') {
       throw new Error(
@@ -51,7 +46,6 @@ async function run() {
     env.TRIVY_RUN_AS_PLUGIN = 'aqua';
   }
 
-  // create the runner and configure the scan
   const runner = await createRunner(inputs);
   configureScan(runner, inputs);
 
@@ -59,21 +53,14 @@ async function run() {
 
   const result = runner.execSync({ env });
 
-  checkScanResult(result.code, inputs);
-
-  if (inputs.hasAquaAccount && task.exist(assuranceFilePath)) {
-    console.log('Publishing JSON assurance results...');
-    task.addAttachment(
-      'ASSURANCE_RESULT',
-      assuranceFileName,
-      assuranceFilePath
-    );
-  }
-
-  await generateReports(inputs, resultsFilePath);
+  await publishAssuranceResults(inputs, assuranceFilePath, assuranceFileName);
+  await finalizeScan(result.code, inputs, resultsFilePath);
 }
 
-function configureScan(runner: ToolRunner, inputs: TaskInputs) {
+function configureScan(
+  runner: ToolRunner,
+  inputs: ReturnType<typeof getTaskInputs>
+) {
   task.rmRF(resultsFilePath);
   console.log('Configuring options for image scan...');
   runner.arg(inputs.scanType);
@@ -87,70 +74,6 @@ function configureScan(runner: ToolRunner, inputs: TaskInputs) {
   runner.arg(['--output', resultsFilePath]);
   runner.arg(inputs.options);
   runner.arg(inputs.target);
-}
-
-function highestSeverityBreached(
-  inputs: TaskInputs,
-  resultsFilePath: string
-): boolean {
-  task.debug(`Fail on severity threshold: ${inputs.failOnSeverityThreshold}`);
-
-  const severityThreshold = inputs.failOnSeverityThreshold.toUpperCase();
-  const highestFoundSeverity = getHighestSeverityLevel(resultsFilePath);
-
-  const severityThresholdIndex = severityLevels.indexOf(severityThreshold);
-  const highestIndex = severityLevels.indexOf(highestFoundSeverity);
-
-  task.debug(
-    `Highest severity found: ${highestFoundSeverity} (index: ${highestIndex})`
-  );
-  task.debug(
-    `Severity threshold: ${severityThreshold} (index: ${severityThresholdIndex})`
-  );
-
-  return (
-    severityThresholdIndex >= 0 &&
-    highestIndex >= 0 &&
-    highestIndex >= severityThresholdIndex
-  );
-}
-
-function checkScanResult(exitCode: number, inputs: TaskInputs) {
-  task.debug(`Trivy scan completed with exit code: ${exitCode}`);
-
-  if (exitCode === 0) {
-    task.setResult(task.TaskResult.Succeeded, 'No issues found.');
-    return;
-  }
-
-  const isHighestSeverityBreached = highestSeverityBreached(
-    inputs,
-    resultsFilePath
-  );
-
-  task.debug(`Highest severity breached: ${isHighestSeverityBreached}`);
-  if (exitCode === 2 && inputs.ignoreScanErrors) {
-    if (isHighestSeverityBreached) {
-      task.setResult(task.TaskResult.SucceededWithIssues, 'Issues found.');
-      return;
-    } else {
-      task.setResult(
-        task.TaskResult.Succeeded,
-        'Issues found but ignoring scan errors as per configuration.'
-      );
-      return;
-    }
-  } else if (exitCode === 2 && !inputs.ignoreScanErrors) {
-    if (isHighestSeverityBreached) {
-      task.setResult(task.TaskResult.Failed, 'Issues found.');
-    } else {
-      task.setResult(task.TaskResult.Succeeded, 'No issues found.');
-    }
-    return;
-  } else {
-    task.setResult(task.TaskResult.Failed, 'Trivy runner error.', true);
-    return;
-  }
 }
 
 run().catch((err: Error) => {
