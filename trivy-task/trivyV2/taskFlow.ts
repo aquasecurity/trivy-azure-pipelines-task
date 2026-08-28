@@ -1,3 +1,4 @@
+import task = require('azure-pipelines-task-lib/task');
 import { TaskInputs } from './inputs';
 
 type FinalizeScanHandlers = {
@@ -41,8 +42,6 @@ export async function publishAssuranceResults(
   assuranceFilePath: string,
   assuranceFileName: string
 ) {
-  const task = (await import('azure-pipelines-task-lib/task')).default;
-
   if (inputs.hasAquaAccount && task.exist(assuranceFilePath)) {
     console.log('Publishing JSON assurance results...');
     task.addAttachment(
