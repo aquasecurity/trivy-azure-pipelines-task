@@ -41,7 +41,10 @@ export async function publishAssuranceResults(
   assuranceFilePath: string,
   assuranceFileName: string
 ) {
-  const task = (await import('azure-pipelines-task-lib/task')).default;
+  // azure-pipelines-task-lib/task is a CommonJS module that sets __esModule,
+  // so it has no default export and the namespace is what carries exist() and
+  // addAttachment().
+  const task = await import('azure-pipelines-task-lib/task');
 
   if (inputs.hasAquaAccount && task.exist(assuranceFilePath)) {
     console.log('Publishing JSON assurance results...');
