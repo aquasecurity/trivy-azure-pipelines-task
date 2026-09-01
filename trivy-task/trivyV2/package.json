@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "tsc taskFlowStandalone.ts scanResultLogic.ts --outDir dist --esModuleInterop --skipLibCheck --module commonjs --target es2019 --moduleResolution node && node scripts/taskFlow.test.js && node scripts/scanResultLogic.test.js",
+    "test": "tsc taskFlow.ts taskFlowStandalone.ts scanResultLogic.ts --outDir dist --esModuleInterop --skipLibCheck --module commonjs --target es2019 --moduleResolution node && node scripts/taskFlow.test.js && node scripts/scanResultLogic.test.js && node scripts/publishAssuranceResults.test.js",
     "build": "tsc -b tsconfig.json"
   },
   "dependencies": {
