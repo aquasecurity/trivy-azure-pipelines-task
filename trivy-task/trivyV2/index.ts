@@ -4,7 +4,10 @@ import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner';
 import { randomUUID } from 'crypto';
 import { createRunner, tmpPath } from './runner';
 import { getTaskInputs } from './inputs';
-import { resolveAquaPlatformEnv } from './aquaEnvLogic';
+import {
+  getAquaEnvConfigurationError,
+  resolveAquaPlatformEnv,
+} from './aquaEnvLogic';
 import { finalizeScan, publishAssuranceResults } from './taskFlow';
 
 const randomPrefix = randomUUID();
@@ -66,6 +69,23 @@ async function run() {
     if (aquaEnv.TRIVY_SERVER_URL) {
       env.TRIVY_SERVER_URL = aquaEnv.TRIVY_SERVER_URL;
       task.debug(`Configured TRIVY_SERVER_URL=${aquaEnv.TRIVY_SERVER_URL}`);
+    }
+
+    const aquaEnvError = getAquaEnvConfigurationError(
+      {
+        aquaRegion: inputs.aquaRegion,
+        authUrl: inputs.authUrl,
+        aquaUrl: inputs.aquaUrl,
+      },
+      {
+        AQUA_REGION: env.AQUA_REGION,
+        TRIVY_SERVER_URL: env.TRIVY_SERVER_URL,
+      },
+      aquaEnv
+    );
+
+    if (aquaEnvError) {
+      throw new Error(aquaEnvError);
     }
   }
 

@@ -84,3 +84,31 @@ export function resolveAquaPlatformEnv(
 
   return {};
 }
+
+export function getAquaEnvConfigurationError(
+  inputs: AquaEnvInputs,
+  existing: AquaEnvSnapshot = {},
+  resolved: AquaEnvSnapshot = {}
+): string | undefined {
+  if (existing.AQUA_REGION || existing.TRIVY_SERVER_URL) {
+    return undefined;
+  }
+
+  if (resolved.AQUA_REGION || resolved.TRIVY_SERVER_URL) {
+    return undefined;
+  }
+
+  if (!inputs.authUrl?.trim()) {
+    return undefined;
+  }
+
+  const cspmBase = getBaseUrl(inputs.authUrl);
+  if (cspmBase && CSPM_URL_TO_TRIVY_SERVER[cspmBase]) {
+    return undefined;
+  }
+
+  return (
+    'Unable to determine Aqua Platform region for the configured CSPM authentication URL. ' +
+    'Set the Aqua Platform Region task input to one of: us, eu, singapore, australia, dev.'
+  );
+}

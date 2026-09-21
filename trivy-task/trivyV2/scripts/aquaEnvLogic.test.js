@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { getBaseUrl, resolveAquaPlatformEnv } = require('../dist/aquaEnvLogic');
+const { getAquaEnvConfigurationError, getBaseUrl, resolveAquaPlatformEnv } = require('../dist/aquaEnvLogic');
 
 function test(name, fn) {
   try {
@@ -53,4 +53,28 @@ test('resolveAquaPlatformEnv maps Aqua console URL to AQUA_REGION for custom CSP
 
 test('resolveAquaPlatformEnv rejects invalid aquaRegion input', () => {
   assert.throws(() => resolveAquaPlatformEnv({ aquaRegion: 'invalid' }), /Invalid Aqua Platform region/);
+});
+
+test('getAquaEnvConfigurationError returns guidance for unresolved custom CSPM', () => {
+  assert.match(
+    getAquaEnvConfigurationError({
+      authUrl: 'https://custom-cspm.example.com',
+      aquaUrl: 'https://unknown.example.com',
+    }),
+    /Set the Aqua Platform Region task input/
+  );
+});
+
+test('getAquaEnvConfigurationError stays silent when region is resolved', () => {
+  assert.strictEqual(
+    getAquaEnvConfigurationError(
+      {
+        authUrl: 'https://custom-cspm.example.com',
+        aquaUrl: 'https://cloud.aquasec.com/',
+      },
+      {},
+      { AQUA_REGION: 'us' }
+    ),
+    undefined
+  );
 });
