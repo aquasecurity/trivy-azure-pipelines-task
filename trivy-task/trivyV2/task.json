@@ -41,6 +41,15 @@
       "helpMarkDown": "Select the Aqua Security Platform service connection."
     },
     {
+      "name": "aquaRegion",
+      "type": "string",
+      "label": "Aqua Platform Region",
+      "defaultValue": "",
+      "required": false,
+      "visibleRule": "aquaPlatform != \"\"",
+      "helpMarkDown": "Optional. Required for some custom CSPM authentication URLs. Valid values: `us`, `eu`, `singapore`, `australia`, `dev`. Auto-detected from the service connection when left empty."
+    },
+    {
       "groupName": "runnerInput",
       "name": "method",
       "type": "pickList",
