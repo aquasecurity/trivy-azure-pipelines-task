@@ -31,40 +31,48 @@ export class BaseReport extends React.Component<
   BaseReportState
 > {
   public props: BaseReportProps;
-  assuranceCount: number;
-  suppressedCount: number;
-  licensesCount: number;
-  secretsCount: number;
-  misconfigCount: number;
-  vulnCount: number;
+  assuranceCount: number = 0;
+  suppressedCount: number = 0;
+  licensesCount: number = 0;
+  secretsCount: number = 0;
+  misconfigCount: number = 0;
+  vulnCount: number = 0;
 
   constructor(props: BaseReportProps) {
     super(props);
     this.props = props;
+    this.updateCounts();
+    this.state = {
+      selectedTabId: this.getDefaultTab(),
+    };
+  }
 
+  componentDidUpdate(prevProps: BaseReportProps) {
+    if (prevProps.report !== this.props.report || prevProps.assurance !== this.props.assurance) {
+      this.updateCounts();
+      this.setState({
+        selectedTabId: this.getDefaultTab(),
+      });
+    }
+  }
+
+  private updateCounts(): void {
     this.vulnCount = countReportVulnerabilities(this.props.report);
     this.misconfigCount = countReportMisconfigurations(this.props.report);
     this.secretsCount = countReportSecrets(this.props.report);
     this.licensesCount = countReportLicenses(this.props.report);
     this.suppressedCount = countReportSuppressed(this.props.report);
     this.assuranceCount = countAssuranceIssues(this.props.assurance);
+  }
 
-    this.state = {
-      selectedTabId:
-        this.vulnCount > 0
-          ? 'vulnerabilities'
-          : this.misconfigCount > 0
-            ? 'misconfigurations'
-            : this.secretsCount > 0
-              ? 'secrets'
-              : this.licensesCount > 0
-                ? 'licenses'
-                : this.suppressedCount > 0
-                  ? 'suppressed'
-                  : this.assuranceCount > 0
-                    ? 'assurance'
-                    : 'vulnerabilities',
-    };
+  private getDefaultTab(): string {
+    if (this.vulnCount > 0) return 'vulnerabilities';
+    if (this.misconfigCount > 0) return 'misconfigurations';
+    if (this.secretsCount > 0) return 'secrets';
+    if (this.licensesCount > 0) return 'licenses';
+    if (this.suppressedCount > 0) return 'suppressed';
+    if (this.assuranceCount > 0) return 'assurance';
+    return 'vulnerabilities';
   }
 
   private onSelectedTabChanged = (newTabId: string) => {
