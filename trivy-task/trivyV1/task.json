@@ -312,10 +312,10 @@
     }
   ],
   "execution": {
-    "Node20_1": {
+    "Node24": {
       "target": "dist/index.js"
     },
-    "Node10": {
+    "Node20_1": {
       "target": "dist/index.js"
     }
   }

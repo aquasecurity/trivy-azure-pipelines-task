@@ -4,7 +4,7 @@
     "build": "tsc -b tsconfig.json"
   },
   "dependencies": {
-    "azure-pipelines-task-lib": "^4.17.3",
-    "azure-pipelines-tool-lib": "^2.0.8"
+    "azure-pipelines-task-lib": "^5.282.0",
+    "azure-pipelines-tool-lib": "^2.281.0"
   }
 }
